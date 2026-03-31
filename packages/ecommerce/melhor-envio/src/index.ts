@@ -12,6 +12,16 @@
  * - cancel_shipment: Cancel a shipment
  * - get_balance: Get account balance
  * - add_cart: Add shipment to cart for batch processing
+ * - checkout_cart: Checkout all items in the cart and pay
+ * - preview_label: Preview a shipping label before generating
+ * - print_label: Print/download label PDF
+ * - get_shipment: Get shipment order details
+ * - list_shipments: List all shipment orders with filters
+ * - get_store: Get store/company info
+ * - search_agencies: Search pickup agencies by service and location
+ * - create_address: Create a stored address for sender/recipient
+ * - list_services_available: List available shipping services for a route
+ * - get_tracking_history: Get complete tracking history with events
  *
  * Environment:
  *   MELHOR_ENVIO_TOKEN — Bearer token from https://melhorenvio.com.br/
@@ -177,6 +187,134 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         required: ["orders"],
       },
     },
+    {
+      name: "checkout_cart",
+      description: "Checkout all items in the cart and pay",
+      inputSchema: {
+        type: "object",
+        properties: {
+          orders: {
+            type: "array",
+            items: { type: "string" },
+            description: "Array of order IDs to checkout",
+          },
+        },
+        required: ["orders"],
+      },
+    },
+    {
+      name: "preview_label",
+      description: "Preview a shipping label before generating",
+      inputSchema: {
+        type: "object",
+        properties: {
+          orders: {
+            type: "array",
+            items: { type: "string" },
+            description: "Array of order IDs to preview",
+          },
+        },
+        required: ["orders"],
+      },
+    },
+    {
+      name: "print_label",
+      description: "Print/download label PDF",
+      inputSchema: {
+        type: "object",
+        properties: {
+          orders: {
+            type: "array",
+            items: { type: "string" },
+            description: "Array of order IDs to print labels",
+          },
+        },
+        required: ["orders"],
+      },
+    },
+    {
+      name: "get_shipment",
+      description: "Get shipment order details by ID",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "Shipment order ID" },
+        },
+        required: ["id"],
+      },
+    },
+    {
+      name: "list_shipments",
+      description: "List all shipment orders with filters",
+      inputSchema: {
+        type: "object",
+        properties: {
+          status: { type: "string", enum: ["pending", "released", "posted", "delivered", "canceled"], description: "Filter by status" },
+          limit: { type: "number", description: "Number of results" },
+          offset: { type: "number", description: "Pagination offset" },
+        },
+      },
+    },
+    {
+      name: "get_store",
+      description: "Get store/company information",
+      inputSchema: { type: "object", properties: {} },
+    },
+    {
+      name: "search_agencies",
+      description: "Search pickup agencies by service and location",
+      inputSchema: {
+        type: "object",
+        properties: {
+          service: { type: "number", description: "Service ID" },
+          state: { type: "string", description: "State abbreviation (e.g. SP)" },
+          city: { type: "string", description: "City name" },
+        },
+      },
+    },
+    {
+      name: "create_address",
+      description: "Create a stored address for sender/recipient",
+      inputSchema: {
+        type: "object",
+        properties: {
+          name: { type: "string", description: "Address label/name" },
+          phone: { type: "string", description: "Phone number" },
+          email: { type: "string", description: "Email address" },
+          address: { type: "string", description: "Street address" },
+          complement: { type: "string", description: "Complement" },
+          number: { type: "string", description: "Street number" },
+          district: { type: "string", description: "Neighborhood/district" },
+          city: { type: "string", description: "City" },
+          state_abbr: { type: "string", description: "State abbreviation (UF)" },
+          postal_code: { type: "string", description: "CEP" },
+          country_id: { type: "string", description: "Country ID (BR)" },
+        },
+        required: ["name", "address", "number", "district", "city", "state_abbr", "postal_code"],
+      },
+    },
+    {
+      name: "list_services_available",
+      description: "List available shipping services for a route",
+      inputSchema: {
+        type: "object",
+        properties: {
+          from: { type: "string", description: "Origin postal code (CEP)" },
+          to: { type: "string", description: "Destination postal code (CEP)" },
+        },
+      },
+    },
+    {
+      name: "get_tracking_history",
+      description: "Get complete tracking history with events",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "Shipment order ID" },
+        },
+        required: ["id"],
+      },
+    },
   ],
 }));
 
@@ -206,6 +344,40 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return { content: [{ type: "text", text: JSON.stringify(await melhorEnvioRequest("GET", "/me/balance"), null, 2) }] };
       case "add_cart":
         return { content: [{ type: "text", text: JSON.stringify(await melhorEnvioRequest("POST", "/me/shipment/checkout", { orders: args?.orders }), null, 2) }] };
+      case "checkout_cart":
+        return { content: [{ type: "text", text: JSON.stringify(await melhorEnvioRequest("POST", "/me/shipment/checkout", { orders: args?.orders }), null, 2) }] };
+      case "preview_label":
+        return { content: [{ type: "text", text: JSON.stringify(await melhorEnvioRequest("POST", "/me/shipment/preview", { orders: args?.orders }), null, 2) }] };
+      case "print_label":
+        return { content: [{ type: "text", text: JSON.stringify(await melhorEnvioRequest("POST", "/me/shipment/print", { orders: args?.orders }), null, 2) }] };
+      case "get_shipment":
+        return { content: [{ type: "text", text: JSON.stringify(await melhorEnvioRequest("GET", `/me/orders/${args?.id}`), null, 2) }] };
+      case "list_shipments": {
+        const params = new URLSearchParams();
+        if (args?.status) params.set("status", String(args.status));
+        if (args?.limit) params.set("limit", String(args.limit));
+        if (args?.offset) params.set("offset", String(args.offset));
+        return { content: [{ type: "text", text: JSON.stringify(await melhorEnvioRequest("GET", `/me/orders?${params}`), null, 2) }] };
+      }
+      case "get_store":
+        return { content: [{ type: "text", text: JSON.stringify(await melhorEnvioRequest("GET", "/me/companies"), null, 2) }] };
+      case "search_agencies": {
+        const params = new URLSearchParams();
+        if (args?.service) params.set("service", String(args.service));
+        if (args?.state) params.set("state", String(args.state));
+        if (args?.city) params.set("city", String(args.city));
+        return { content: [{ type: "text", text: JSON.stringify(await melhorEnvioRequest("GET", `/me/shipment/agencies?${params}`), null, 2) }] };
+      }
+      case "create_address":
+        return { content: [{ type: "text", text: JSON.stringify(await melhorEnvioRequest("POST", "/me/addresses", args), null, 2) }] };
+      case "list_services_available": {
+        const params = new URLSearchParams();
+        if (args?.from) params.set("from", String(args.from));
+        if (args?.to) params.set("to", String(args.to));
+        return { content: [{ type: "text", text: JSON.stringify(await melhorEnvioRequest("GET", `/me/shipment/services?${params}`), null, 2) }] };
+      }
+      case "get_tracking_history":
+        return { content: [{ type: "text", text: JSON.stringify(await melhorEnvioRequest("GET", `/me/tracking/${args?.id}`), null, 2) }] };
       default:
         return { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true };
     }

@@ -14,6 +14,16 @@
  * - create_buyer: Create a buyer
  * - get_balance: Get seller or marketplace balance
  * - create_transfer: Create a transfer to a seller's bank account
+ * - refund_transaction: Refund a transaction (full or partial)
+ * - get_receivables: Get receivables for a transaction
+ * - create_token_card: Tokenize a credit card
+ * - create_bank_account: Create a bank account token for a seller
+ * - get_seller_balance: Get detailed balance for a specific seller
+ * - update_seller: Update seller information
+ * - list_transfers: List marketplace transfers with filters
+ * - get_transfer: Get transfer details
+ * - create_subscription: Create a recurring subscription
+ * - list_receivables: List all receivables for the marketplace
  *
  * Environment:
  *   ZOOP_API_KEY — API key from https://docs.zoop.co/
@@ -239,6 +249,148 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         required: ["seller_id", "amount"],
       },
     },
+    {
+      name: "refund_transaction",
+      description: "Refund a transaction (full or partial)",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "Transaction ID to refund" },
+          amount: { type: "number", description: "Amount in cents for partial refund (omit for full refund)" },
+        },
+        required: ["id"],
+      },
+    },
+    {
+      name: "get_receivables",
+      description: "Get receivables for a transaction",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "Transaction ID" },
+        },
+        required: ["id"],
+      },
+    },
+    {
+      name: "create_token_card",
+      description: "Tokenize a credit card for secure payments",
+      inputSchema: {
+        type: "object",
+        properties: {
+          holder_name: { type: "string", description: "Cardholder name" },
+          card_number: { type: "string", description: "Card number" },
+          expiration_month: { type: "string", description: "Expiration month (MM)" },
+          expiration_year: { type: "string", description: "Expiration year (YYYY)" },
+          security_code: { type: "string", description: "CVV/CVC security code" },
+        },
+        required: ["holder_name", "card_number", "expiration_month", "expiration_year", "security_code"],
+      },
+    },
+    {
+      name: "create_bank_account",
+      description: "Create a bank account token for a seller",
+      inputSchema: {
+        type: "object",
+        properties: {
+          holder_name: { type: "string", description: "Account holder name" },
+          bank_code: { type: "string", description: "Bank code (e.g. 001 for Banco do Brasil)" },
+          routing_number: { type: "string", description: "Branch number (agência)" },
+          account_number: { type: "string", description: "Account number with digit" },
+          type: { type: "string", enum: ["checking", "savings"], description: "Account type" },
+        },
+        required: ["holder_name", "bank_code", "routing_number", "account_number", "type"],
+      },
+    },
+    {
+      name: "get_seller_balance",
+      description: "Get detailed balance for a specific seller",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "Seller ID" },
+        },
+        required: ["id"],
+      },
+    },
+    {
+      name: "update_seller",
+      description: "Update seller information",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "Seller ID" },
+          first_name: { type: "string", description: "First name" },
+          last_name: { type: "string", description: "Last name" },
+          email: { type: "string", description: "Email address" },
+          phone_number: { type: "string", description: "Phone number" },
+          business_name: { type: "string", description: "Business name (business type)" },
+          address: {
+            type: "object",
+            description: "Updated address",
+            properties: {
+              line1: { type: "string" },
+              line2: { type: "string" },
+              neighborhood: { type: "string" },
+              city: { type: "string" },
+              state: { type: "string" },
+              postal_code: { type: "string" },
+              country_code: { type: "string" },
+            },
+          },
+        },
+        required: ["id"],
+      },
+    },
+    {
+      name: "list_transfers",
+      description: "List marketplace transfers with filters",
+      inputSchema: {
+        type: "object",
+        properties: {
+          status: { type: "string", enum: ["pending", "succeeded", "failed"], description: "Filter by status" },
+          limit: { type: "number", description: "Number of results" },
+          offset: { type: "number", description: "Pagination offset" },
+          sort: { type: "string", enum: ["time-descending", "time-ascending"], description: "Sort order" },
+        },
+      },
+    },
+    {
+      name: "get_transfer",
+      description: "Get transfer details by ID",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "Transfer ID" },
+        },
+        required: ["id"],
+      },
+    },
+    {
+      name: "create_subscription",
+      description: "Create a recurring subscription",
+      inputSchema: {
+        type: "object",
+        properties: {
+          plan_id: { type: "string", description: "Subscription plan ID" },
+          customer_id: { type: "string", description: "Customer/buyer ID" },
+          payment_method: { type: "string", description: "Payment method token or ID" },
+        },
+        required: ["plan_id", "customer_id", "payment_method"],
+      },
+    },
+    {
+      name: "list_receivables",
+      description: "List all receivables for the marketplace",
+      inputSchema: {
+        type: "object",
+        properties: {
+          status: { type: "string", enum: ["pending", "paid"], description: "Filter by status" },
+          limit: { type: "number", description: "Number of results" },
+          offset: { type: "number", description: "Pagination offset" },
+        },
+      },
+    },
   ],
 }));
 
@@ -292,6 +444,41 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case "create_transfer": {
         const { seller_id, ...transferBody } = args as Record<string, unknown>;
         return { content: [{ type: "text", text: JSON.stringify(await zoopRequest("POST", `/sellers/${seller_id}/transfers`, transferBody), null, 2) }] };
+      }
+      case "refund_transaction": {
+        const body = args?.amount ? { amount: args.amount } : undefined;
+        return { content: [{ type: "text", text: JSON.stringify(await zoopRequest("POST", `/transactions/${args?.id}/refund`, body), null, 2) }] };
+      }
+      case "get_receivables":
+        return { content: [{ type: "text", text: JSON.stringify(await zoopRequest("GET", `/transactions/${args?.id}/receivables`), null, 2) }] };
+      case "create_token_card":
+        return { content: [{ type: "text", text: JSON.stringify(await zoopRequest("POST", "/cards/tokens", args), null, 2) }] };
+      case "create_bank_account":
+        return { content: [{ type: "text", text: JSON.stringify(await zoopRequest("POST", "/bank_accounts", args), null, 2) }] };
+      case "get_seller_balance":
+        return { content: [{ type: "text", text: JSON.stringify(await zoopRequest("GET", `/sellers/${args?.id}/balances`), null, 2) }] };
+      case "update_seller": {
+        const { id, ...updateBody } = args as Record<string, unknown>;
+        return { content: [{ type: "text", text: JSON.stringify(await zoopRequest("PUT", `/sellers/${id}`, updateBody), null, 2) }] };
+      }
+      case "list_transfers": {
+        const params = new URLSearchParams();
+        if (args?.status) params.set("status", String(args.status));
+        if (args?.limit) params.set("limit", String(args.limit));
+        if (args?.offset) params.set("offset", String(args.offset));
+        if (args?.sort) params.set("sort", String(args.sort));
+        return { content: [{ type: "text", text: JSON.stringify(await zoopRequest("GET", `/transfers?${params}`), null, 2) }] };
+      }
+      case "get_transfer":
+        return { content: [{ type: "text", text: JSON.stringify(await zoopRequest("GET", `/transfers/${args?.id}`), null, 2) }] };
+      case "create_subscription":
+        return { content: [{ type: "text", text: JSON.stringify(await zoopRequest("POST", "/subscriptions", args), null, 2) }] };
+      case "list_receivables": {
+        const params = new URLSearchParams();
+        if (args?.status) params.set("status", String(args.status));
+        if (args?.limit) params.set("limit", String(args.limit));
+        if (args?.offset) params.set("offset", String(args.offset));
+        return { content: [{ type: "text", text: JSON.stringify(await zoopRequest("GET", `/receivables?${params}`), null, 2) }] };
       }
       default:
         return { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true };
