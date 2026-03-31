@@ -35,7 +35,7 @@ MCP Brasil gives AI agents typed tools to interact with Brazilian APIs. Each ser
 
 ```
 🛒 Customer places order
-  → 💳 Agent charges via Pix (Asaas)
+  → 💳 Agent charges via Pix (Zoop)
   → 📄 Agent issues NFe (Nuvem Fiscal)
   → 📦 Agent generates shipping label (Melhor Envio)
   → 📱 Agent sends tracking via WhatsApp (Z-API)
@@ -56,12 +56,12 @@ Add to `~/.config/claude/claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
-    "asaas": {
+    "zoop": {
       "command": "npx",
-      "args": ["-y", "@codespar/mcp-asaas"],
+      "args": ["-y", "@codespar/mcp-zoop"],
       "env": {
-        "ASAAS_API_KEY": "your-api-key",
-        "ASAAS_SANDBOX": "true"
+        "ZOOP_API_KEY": "your-api-key",
+        "ZOOP_MARKETPLACE_ID": "your-marketplace-id"
       }
     }
   }
@@ -71,7 +71,7 @@ Add to `~/.config/claude/claude_desktop_config.json`:
 ### With any MCP client
 
 ```bash
-npx @codespar/mcp-asaas        # Payments
+npx @codespar/mcp-zoop          # Payments (marketplace, split)
 npx @codespar/mcp-nuvem-fiscal  # Fiscal
 npx @codespar/mcp-melhor-envio  # Logistics
 npx @codespar/mcp-z-api         # WhatsApp
@@ -98,7 +98,7 @@ This is what makes MCP Brasil different — not individual connectors, but a **c
 
 | Step | Vertical | Server | What the agent does |
 |------|----------|--------|-------------------|
-| 1 | 💳 Payment | Asaas | Creates Pix charge, monitors payment |
+| 1 | 💳 Payment | Zoop | Creates Pix charge, splits to sellers |
 | 2 | 📄 Fiscal | Nuvem Fiscal | Issues NFe/NFSe when payment confirmed |
 | 3 | 📦 Logistics | Melhor Envio | Quotes shipping, generates label |
 | 4 | 📱 Messaging | Z-API | Sends tracking code via WhatsApp |
