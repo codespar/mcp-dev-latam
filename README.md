@@ -1,5 +1,5 @@
 <p align="center">
-  <h1 align="center">MCP Brasil 🇧🇷</h1>
+  <h1 align="center">MCP Dev Brasil 🇧🇷</h1>
   <p align="center">
     <strong>Every API your AI agent needs to run a business in Brazil.</strong>
   </p>
@@ -77,7 +77,7 @@ npx @codespar/mcp-melhor-envio  # Logistics
 npx @codespar/mcp-z-api         # WhatsApp
 npx @codespar/mcp-omie          # ERP
 npx @codespar/mcp-stark-bank    # Banking
-npx @codespar/mcp-brasil-api    # CEP, CNPJ (no key needed!)
+npx @codespar/mcp-dev-brasil-api    # CEP, CNPJ (no key needed!)
 ```
 
 ### Try it now (no API key)
@@ -85,7 +85,7 @@ npx @codespar/mcp-brasil-api    # CEP, CNPJ (no key needed!)
 BrasilAPI is free and public. Try it in your terminal:
 
 ```bash
-npx @codespar/mcp-brasil-api
+npx @codespar/mcp-dev-brasil-api
 ```
 
 Then ask your agent: _"What is the address for CEP 01001-000?"_ or _"Look up CNPJ 00.000.000/0001-91"_
@@ -204,7 +204,7 @@ The MCP Generator in CodeSpar Enterprise can automatically generate MCP servers 
 
 We welcome contributions! See [CONTRIBUTING.md](docs/CONTRIBUTING.md).
 
-**Want a server for a service not listed?** [Open an issue](https://github.com/codespar/mcp-brasil/issues) with the "server request" label.
+**Want a server for a service not listed?** [Open an issue](https://github.com/codespar/mcp-dev-brasil/issues) with the "server request" label.
 
 ## License
 
