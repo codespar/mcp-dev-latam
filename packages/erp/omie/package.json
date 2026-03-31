@@ -1,0 +1,20 @@
+{
+  "name": "@codespar/mcp-omie",
+  "version": "0.1.0",
+  "description": "MCP server for Omie — ERP, customers, products, orders, invoices, financials",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": { "mcp-omie": "./dist/index.js" },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.0"
+  },
+  "license": "MIT",
+  "keywords": ["mcp", "omie", "erp", "nfe", "orders", "customers", "brazil"]
+}

@@ -1,0 +1,20 @@
+{
+  "name": "@codespar/mcp-nuvem-fiscal",
+  "version": "0.1.0",
+  "description": "MCP server for Nuvem Fiscal — NF-e, NFS-e, NFC-e, CNPJ, CEP",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": { "mcp-nuvem-fiscal": "./dist/index.js" },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.0"
+  },
+  "license": "MIT",
+  "keywords": ["mcp", "nuvem-fiscal", "nfe", "nfse", "nfce", "cnpj", "cep", "brazil"]
+}
