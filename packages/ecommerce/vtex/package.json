@@ -1,0 +1,20 @@
+{
+  "name": "@codespar/mcp-vtex",
+  "version": "0.1.0",
+  "description": "MCP server for VTEX — e-commerce, orders, products, inventory, shipping",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": { "mcp-vtex": "./dist/index.js" },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.0"
+  },
+  "license": "MIT",
+  "keywords": ["mcp", "vtex", "ecommerce", "orders", "products", "brazil"]
+}

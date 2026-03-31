@@ -1,0 +1,20 @@
+{
+  "name": "@codespar/mcp-take-blip",
+  "version": "0.1.0",
+  "description": "MCP server for Take Blip — chatbots, messaging, contacts, broadcasts",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": { "mcp-take-blip": "./dist/index.js" },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.0"
+  },
+  "license": "MIT",
+  "keywords": ["mcp", "take-blip", "chatbot", "messaging", "whatsapp", "brazil"]
+}

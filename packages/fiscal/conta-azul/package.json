@@ -1,0 +1,20 @@
+{
+  "name": "@codespar/mcp-conta-azul",
+  "version": "0.1.0",
+  "description": "MCP server for Conta Azul — accounting, invoicing, customers, products",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": { "mcp-conta-azul": "./dist/index.js" },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.0"
+  },
+  "license": "MIT",
+  "keywords": ["mcp", "conta-azul", "accounting", "fiscal", "invoicing", "brazil"]
+}

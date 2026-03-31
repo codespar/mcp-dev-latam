@@ -1,0 +1,20 @@
+{
+  "name": "@codespar/mcp-stone",
+  "version": "0.1.0",
+  "description": "MCP server for Stone — open banking, payments, Pix, transfers",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": { "mcp-stone": "./dist/index.js" },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.0"
+  },
+  "license": "MIT",
+  "keywords": ["mcp", "stone", "payments", "pix", "banking", "brazil"]
+}

@@ -1,0 +1,20 @@
+{
+  "name": "@codespar/mcp-vindi",
+  "version": "0.1.0",
+  "description": "MCP server for Vindi — recurring billing, subscriptions, invoices",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": { "mcp-vindi": "./dist/index.js" },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.0"
+  },
+  "license": "MIT",
+  "keywords": ["mcp", "vindi", "payments", "subscriptions", "billing", "brazil"]
+}

@@ -1,0 +1,20 @@
+{
+  "name": "@codespar/mcp-celcoin",
+  "version": "0.1.0",
+  "description": "MCP server for Celcoin — Pix, boleto, transfers, bill payments, top-ups",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": { "mcp-celcoin": "./dist/index.js" },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.0"
+  },
+  "license": "MIT",
+  "keywords": ["mcp", "celcoin", "pix", "boleto", "payments", "brazil"]
+}
