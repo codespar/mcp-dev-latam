@@ -4,7 +4,7 @@
     <strong>Every API your AI agent needs to run a business in Brazil.</strong>
   </p>
   <p align="center">
-    33 MCP servers · ~320 tools · 9 verticals · MIT License
+    33 MCP servers · ~340 tools · 8 verticals · MIT License
   </p>
   <p align="center">
     <a href="https://codespar.dev/mcp">Landing Page</a> ·
