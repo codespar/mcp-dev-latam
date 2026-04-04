@@ -1,0 +1,39 @@
+name: Server Request
+description: Request a new MCP server for a Brazilian API
+title: "[Server Request] "
+labels: ["server-request"]
+body:
+  - type: input
+    id: service
+    attributes:
+      label: Service Name
+      placeholder: e.g., Pix Itaú, Shipay, Pluggy
+    validations:
+      required: true
+  - type: dropdown
+    id: vertical
+    attributes:
+      label: Vertical
+      options: [Payments, Fiscal, Communication, Logistics, Banking, Identity, ERP, Crypto, Other]
+    validations:
+      required: true
+  - type: input
+    id: api_docs
+    attributes:
+      label: API Documentation URL
+      placeholder: https://docs.example.com/api
+  - type: textarea
+    id: tools
+    attributes:
+      label: Key tools/endpoints needed
+      placeholder: "List the main operations (e.g., create payment, list invoices, send message)"
+  - type: dropdown
+    id: sandbox
+    attributes:
+      label: Has sandbox/test mode?
+      options: ["Yes", "No", "Unknown"]
+  - type: textarea
+    id: context
+    attributes:
+      label: Why is this important?
+      placeholder: "Explain your use case"

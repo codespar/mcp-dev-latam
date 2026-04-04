@@ -1,0 +1,32 @@
+name: Bug Report
+description: Report a bug in an existing MCP server
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: server
+    attributes:
+      label: Which server?
+      options: [zoop, asaas, brasil-api, z-api, melhor-envio, nuvem-fiscal, pagar-me, iugu, ebanx, efi, vindi, stone, celcoin, cielo, pagseguro, pix-bcb, focus-nfe, conta-azul, evolution-api, rd-station, zenvia, take-blip, omie, bling, tiny, open-finance, stark-bank, correios, vtex, mercado-bitcoin, bitso, circle, unblockpay, Other]
+    validations:
+      required: true
+  - type: input
+    id: tool
+    attributes:
+      label: Which tool?
+      placeholder: e.g., create_payment, get_cep
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+  - type: textarea
+    id: error
+    attributes:
+      label: Error message or output
+      render: shell
