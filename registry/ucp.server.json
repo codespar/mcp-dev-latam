@@ -1,0 +1,47 @@
+{
+  "name": "io.github.codespar/mcp-ucp",
+  "description": "Universal Commerce Protocol — agentic shopping, cart, checkout, orders, delivery — Google UCP",
+  "repository": {
+    "url": "https://github.com/codespar/mcp-dev-brasil/tree/main/packages/payments/ucp"
+  },
+  "version_detail": {
+    "version": "0.1.0",
+    "release_date": "2026-04-08",
+    "is_latest": true
+  },
+  "packages": [
+    {
+      "registry_name": "npm",
+      "name": "@codespar/mcp-ucp",
+      "version": "0.1.0",
+      "runtime": "node",
+      "environment_variables": [
+        { "name": "UCP_API_KEY", "description": "API key for UCP platform", "required": true },
+        { "name": "UCP_MERCHANT_ID", "description": "Default merchant ID", "required": false },
+        { "name": "UCP_SANDBOX", "description": "Set to true for sandbox mode", "required": false }
+      ]
+    }
+  ],
+  "tools": [
+    { "name": "search_products", "description": "Search product catalog" },
+    { "name": "get_product", "description": "Get product details" },
+    { "name": "check_availability", "description": "Check stock availability" },
+    { "name": "list_merchants", "description": "List UCP merchants" },
+    { "name": "create_cart", "description": "Create shopping cart" },
+    { "name": "add_to_cart", "description": "Add item to cart" },
+    { "name": "remove_from_cart", "description": "Remove item from cart" },
+    { "name": "get_cart", "description": "Get cart contents" },
+    { "name": "clear_cart", "description": "Clear cart" },
+    { "name": "get_delivery_options", "description": "Get shipping options" },
+    { "name": "initiate_checkout", "description": "Start checkout" },
+    { "name": "apply_payment", "description": "Apply payment method" },
+    { "name": "confirm_order", "description": "Place the order" },
+    { "name": "get_order", "description": "Get order details" },
+    { "name": "list_orders", "description": "List orders" },
+    { "name": "cancel_order", "description": "Cancel order" },
+    { "name": "request_return", "description": "Request return" },
+    { "name": "track_shipment", "description": "Track shipment" },
+    { "name": "link_identity", "description": "Link buyer identity" },
+    { "name": "get_profile", "description": "Get buyer profile" }
+  ]
+}
