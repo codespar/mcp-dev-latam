@@ -1,0 +1,42 @@
+{
+  "name": "io.github.codespar/mcp-stripe-acp",
+  "description": "Agentic Commerce Protocol — AI agent checkout, payment delegation, products, invoices — Stripe ACP",
+  "repository": {
+    "url": "https://github.com/codespar/mcp-dev-brasil/tree/main/packages/payments/stripe-acp"
+  },
+  "version_detail": {
+    "version": "0.1.0",
+    "release_date": "2026-04-06",
+    "is_latest": true
+  },
+  "packages": [
+    {
+      "registry_name": "npm",
+      "name": "@codespar/mcp-stripe-acp",
+      "version": "0.1.0",
+      "runtime": "node",
+      "environment_variables": [
+        { "name": "STRIPE_API_KEY", "description": "Stripe secret or restricted API key", "required": true },
+        { "name": "STRIPE_ACP_BASE", "description": "Seller ACP endpoint base URL", "required": false }
+      ]
+    }
+  ],
+  "tools": [
+    { "name": "create_checkout", "description": "Create an ACP checkout session" },
+    { "name": "get_checkout", "description": "Retrieve checkout session state" },
+    { "name": "update_checkout", "description": "Update checkout quantities/address" },
+    { "name": "complete_checkout", "description": "Submit payment and finalize order" },
+    { "name": "cancel_checkout", "description": "Cancel a checkout session" },
+    { "name": "create_customer", "description": "Create a Stripe customer" },
+    { "name": "list_customers", "description": "List customers" },
+    { "name": "create_payment_link", "description": "Create a payment link" },
+    { "name": "list_payment_intents", "description": "List payment intents" },
+    { "name": "create_refund", "description": "Refund a payment" },
+    { "name": "get_balance", "description": "Get account balance" },
+    { "name": "list_products", "description": "List products" },
+    { "name": "create_product", "description": "Create a product" },
+    { "name": "list_prices", "description": "List prices" },
+    { "name": "create_invoice", "description": "Create an invoice" },
+    { "name": "list_subscriptions", "description": "List subscriptions" }
+  ]
+}

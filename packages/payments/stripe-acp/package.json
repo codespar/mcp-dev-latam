@@ -1,0 +1,32 @@
+{
+  "name": "@codespar/mcp-stripe-acp",
+  "version": "0.1.0",
+  "description": "MCP server for Stripe ACP — Agentic Commerce Protocol for AI agent checkout, payment delegation, and product discovery",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "mcp-stripe-acp": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.8.0"
+  },
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "stripe",
+    "acp",
+    "agentic-commerce",
+    "checkout",
+    "payment-delegation",
+    "ai-agent",
+    "agent-commerce-protocol"
+  ]
+}
