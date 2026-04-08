@@ -1,0 +1,40 @@
+{
+  "name": "io.github.codespar/mcp-ap2",
+  "description": "Agent authorization, audit trails, trust framework — AP2 protocol (Google)",
+  "repository": {
+    "url": "https://github.com/codespar/mcp-dev-brasil/tree/main/packages/payments/ap2"
+  },
+  "version_detail": {
+    "version": "0.1.0",
+    "release_date": "2026-04-06",
+    "is_latest": true
+  },
+  "packages": [
+    {
+      "registry_name": "npm",
+      "name": "@codespar/mcp-ap2",
+      "version": "0.1.0",
+      "runtime": "node",
+      "environment_variables": [
+        { "name": "AP2_API_KEY", "description": "API key from AP2", "required": true },
+        { "name": "AP2_AGENT_ID", "description": "Registered agent ID", "required": true },
+        { "name": "AP2_SANDBOX", "description": "Set to true for sandbox mode", "required": false }
+      ]
+    }
+  ],
+  "tools": [
+    { "name": "register_agent", "description": "Register an AI agent as a trusted payer" },
+    { "name": "get_agent", "description": "Get agent registration and trust status" },
+    { "name": "list_agents", "description": "List registered agents" },
+    { "name": "revoke_agent", "description": "Revoke an agent's payment authorization" },
+    { "name": "authorize_payment", "description": "Request payment authorization with scoped limits" },
+    { "name": "get_authorization", "description": "Get authorization details" },
+    { "name": "list_authorizations", "description": "List payment authorizations" },
+    { "name": "execute_payment", "description": "Execute an authorized payment" },
+    { "name": "get_audit_trail", "description": "Get full audit trail for a transaction" },
+    { "name": "list_audit_events", "description": "List audit events with filters" },
+    { "name": "list_payment_methods", "description": "List available payment methods via AP2 partners" },
+    { "name": "get_transaction", "description": "Get transaction details" },
+    { "name": "list_transactions", "description": "List transactions with filters" }
+  ]
+}

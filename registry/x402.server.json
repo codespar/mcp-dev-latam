@@ -1,0 +1,37 @@
+{
+  "name": "io.github.codespar/mcp-x402",
+  "description": "HTTP-native micropayments, paywalls, USDC on Base/Solana — x402 protocol (Coinbase)",
+  "repository": {
+    "url": "https://github.com/codespar/mcp-dev-brasil/tree/main/packages/crypto/x402"
+  },
+  "version_detail": {
+    "version": "0.1.0",
+    "release_date": "2026-04-06",
+    "is_latest": true
+  },
+  "packages": [
+    {
+      "registry_name": "npm",
+      "name": "@codespar/mcp-x402",
+      "version": "0.1.0",
+      "runtime": "node",
+      "environment_variables": [
+        { "name": "X402_API_KEY", "description": "API key for x402 facilitator", "required": true },
+        { "name": "X402_WALLET_ADDRESS", "description": "Wallet address for payments", "required": true },
+        { "name": "X402_NETWORK", "description": "Blockchain network: base (default) or solana", "required": false }
+      ]
+    }
+  ],
+  "tools": [
+    { "name": "pay_request", "description": "Pay for a 402-protected resource and return its content" },
+    { "name": "verify_payment", "description": "Verify if a x402 payment was received and settled" },
+    { "name": "create_paywall", "description": "Create a x402 paywall for an endpoint" },
+    { "name": "get_paywall", "description": "Get paywall configuration for a URL" },
+    { "name": "list_paywalls", "description": "List all configured paywalls" },
+    { "name": "delete_paywall", "description": "Remove a paywall from an endpoint" },
+    { "name": "get_balance", "description": "Get available USDC balance" },
+    { "name": "list_payments", "description": "List x402 payment history" },
+    { "name": "get_payment", "description": "Get payment details by ID" },
+    { "name": "get_supported_networks", "description": "List supported networks and tokens" }
+  ]
+}

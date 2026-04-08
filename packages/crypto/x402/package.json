@@ -1,0 +1,34 @@
+{
+  "name": "@codespar/mcp-x402",
+  "version": "0.1.0",
+  "description": "MCP server for x402 — HTTP-native micropayments protocol by Coinbase (USDC on Base/Solana)",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "mcp-x402": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.8.0"
+  },
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "x402",
+    "coinbase",
+    "micropayments",
+    "usdc",
+    "http-402",
+    "machine-to-machine",
+    "agentic-payments",
+    "base",
+    "solana"
+  ]
+}
