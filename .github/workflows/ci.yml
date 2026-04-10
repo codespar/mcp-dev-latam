@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npm run build --workspaces --if-present
+      - run: npm test
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+
+      - name: npm audit
+        run: npm audit --omit=dev || true
+
+      - name: Scan for hardcoded secrets
+        run: |
+          echo "Scanning for hardcoded API keys..."
+          if grep -rn "sk_live_\|AKIA[A-Z0-9]\{16\}" --include="*.ts" packages/ 2>/dev/null | grep -v node_modules | grep -v ".env"; then
+            echo "::error::Hardcoded secret found in source code"
+            exit 1
+          fi
+          echo "No hardcoded secrets found"
