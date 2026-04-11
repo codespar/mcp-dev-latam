@@ -1,0 +1,31 @@
+{
+  "name": "@codespar/mcp-superfrete",
+  "version": "0.1.0",
+  "description": "MCP server for SuperFrete shipping API - freight calculation, label creation, tracking, and account management for Brazilian logistics",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "mcp-superfrete": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "keywords": [
+    "mcp",
+    "superfrete",
+    "shipping",
+    "freight",
+    "logistics",
+    "brazil",
+    "e-commerce"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "typescript": "^5.8.0"
+  }
+}
