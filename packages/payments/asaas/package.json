@@ -1,6 +1,6 @@
 {
   "name": "@codespar/mcp-asaas",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "MCP server for Asaas — billing automation, Pix, boleto, credit card, subscriptions",
   "type": "module",
   "main": "./dist/index.js",

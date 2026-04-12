@@ -1,6 +1,6 @@
 {
   "name": "@codespar/mcp-unblockpay",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "MCP server for UnblockPay — fiat-to-stablecoin onramp/offramp, wallets, transfers",
   "type": "module",
   "main": "./dist/index.js",

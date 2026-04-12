@@ -1,6 +1,6 @@
 {
   "name": "@codespar/mcp-iugu",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "MCP server for iugu — invoices, subscriptions, customers, payment methods",
   "type": "module",
   "main": "./dist/index.js",

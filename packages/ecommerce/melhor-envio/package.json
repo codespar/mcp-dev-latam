@@ -1,6 +1,6 @@
 {
   "name": "@codespar/mcp-melhor-envio",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "MCP server for Melhor Envio — shipping rates, labels, tracking, agencies",
   "type": "module",
   "main": "./dist/index.js",

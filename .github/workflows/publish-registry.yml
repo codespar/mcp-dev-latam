@@ -1,0 +1,42 @@
+name: Publish to MCP Registry
+
+on:
+  workflow_dispatch:
+    inputs:
+      server:
+        description: 'Server slug to publish (or "all")'
+        required: true
+        default: 'all'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install mcp-publisher
+        run: |
+          curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz" | tar xz
+          chmod +x mcp-publisher
+
+      - name: Login via GitHub OIDC
+        run: ./mcp-publisher login github-oidc
+
+      - name: Publish servers
+        run: |
+          if [ "${{ inputs.server }}" = "all" ]; then
+            for dir in $(find packages -name "server.json" -not -path "*/node_modules/*" | sed 's|/server.json||' | sort); do
+              slug=$(basename "$dir")
+              echo "Publishing $slug..."
+              cd "$GITHUB_WORKSPACE/$dir"
+              $GITHUB_WORKSPACE/mcp-publisher publish || echo "FAILED: $slug"
+              sleep 2
+            done
+          else
+            cd "packages/*/${{ inputs.server }}" 2>/dev/null || cd "packages/*/*/${{ inputs.server }}" 2>/dev/null
+            $GITHUB_WORKSPACE/mcp-publisher publish
+          fi

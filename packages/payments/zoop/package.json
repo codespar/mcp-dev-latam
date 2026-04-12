@@ -1,6 +1,6 @@
 {
   "name": "@codespar/mcp-zoop",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "MCP server for Zoop — marketplace payments, splits, sellers, buyers, transfers",
   "type": "module",
   "main": "./dist/index.js",

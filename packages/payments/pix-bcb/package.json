@@ -1,6 +1,6 @@
 {
   "name": "@codespar/mcp-pix-bcb",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "MCP server for Pix BCB API — official Banco Central do Brasil Pix standard",
   "type": "module",
   "main": "./dist/index.js",
