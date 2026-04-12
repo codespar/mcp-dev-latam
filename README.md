@@ -1,24 +1,25 @@
 <p align="center">
-  <h1 align="center">MCP Dev Brasil 🇧🇷</h1>
+  <h1 align="center">MCP Dev LATAM 🌎</h1>
   <p align="center">
-    <strong>Every API your AI agent needs to run a business in Brazil.</strong><br>
-    <em>Plus the agentic payment protocols to bridge them all.</em>
+    <strong>Every API your AI agent needs to run a business in Latin America.</strong><br>
+    <em>Brazil 🇧🇷 · Mexico 🇲🇽 · Argentina 🇦🇷 · Colombia 🇨🇴 — plus 4 agentic payment protocols.</em>
   </p>
   <p align="center">
-    37 MCP servers · ~400 tools · 9 verticals · MIT License
+    57 MCP servers · ~700 tools · 4 countries · MIT License
   </p>
   <p align="center">
     <a href="https://codespar.dev/mcp">Landing Page</a> ·
     <a href="#quick-start">Quick Start</a> ·
     <a href="#agentic-payment-protocols">Agentic Protocols</a> ·
-    <a href="#the-complete-loop">The Complete Loop</a> ·
+    <a href="#countries">Countries</a> ·
     <a href="#servers">All Servers</a> ·
     <a href="docs/CONTRIBUTING.md">Contribute</a>
   </p>
   <p align="center">
     <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
-    <img src="https://img.shields.io/badge/servers-37-green" alt="37 servers">
-    <img src="https://img.shields.io/badge/tools-~400-orange" alt="~400 tools">
+    <img src="https://img.shields.io/badge/servers-57-green" alt="57 servers">
+    <img src="https://img.shields.io/badge/tools-~700-orange" alt="~700 tools">
+    <img src="https://img.shields.io/badge/countries-4-blue" alt="4 countries">
     <img src="https://img.shields.io/badge/MCP-compatible-purple" alt="MCP compatible">
   </p>
 </p>

@@ -1,0 +1,25 @@
+{
+  "name": "@codespar/mcp-siigo",
+  "version": "0.1.0",
+  "description": "MCP server for Siigo — Colombian accounting + DIAN e-invoicing",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "mcp-siigo": "dist/index.js"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.8.0"
+  },
+  "license": "MIT",
+  "keywords": ["siigo", "accounting", "colombia", "dian", "e-invoicing", "mcp"],
+  "mcpName": "io.github.codespar/mcp-siigo"
+}

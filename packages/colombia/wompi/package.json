@@ -1,0 +1,25 @@
+{
+  "name": "@codespar/mcp-wompi",
+  "version": "0.1.0",
+  "description": "MCP server for Wompi — Colombian payment gateway (by Bancolombia)",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "mcp-wompi": "dist/index.js"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.8.0"
+  },
+  "license": "MIT",
+  "keywords": ["wompi", "payments", "colombia", "bancolombia", "pse", "mcp"],
+  "mcpName": "io.github.codespar/mcp-wompi"
+}

@@ -13,6 +13,8 @@
     "packages/erp/*",
     "packages/crypto/*",
     "packages/mexico/*",
+    "packages/argentina/*",
+    "packages/colombia/*",
     "packages/shared"
   ],
   "scripts": {

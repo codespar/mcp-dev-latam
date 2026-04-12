@@ -1,0 +1,20 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.codespar/mcp-bcra",
+  "description": "BCRA — Argentine Central Bank public data (exchange rates, inflation, reserves)",
+  "repository": {
+    "url": "https://github.com/codespar/mcp-dev-latam",
+    "source": "github",
+    "subfolder": "packages/argentina/bcra"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@codespar/mcp-bcra",
+      "version": "0.1.0",
+      "transport": { "type": "stdio" },
+      "environmentVariables": []
+    }
+  ]
+}
