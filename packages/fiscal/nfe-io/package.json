@@ -1,0 +1,32 @@
+{
+  "name": "@codespar/mcp-nfe-io",
+  "version": "0.1.0",
+  "description": "MCP server for NFe.io — NF-e, NFS-e, CNPJ, CEP",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "mcp-nfe-io": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "typescript": "^5.8.0"
+  },
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "nfe-io",
+    "nfe",
+    "nfse",
+    "cnpj",
+    "cep",
+    "brazil"
+  ],
+  "mcpName": "io.github.codespar/mcp-nfe-io"
+}

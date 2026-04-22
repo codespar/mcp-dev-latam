@@ -1,0 +1,37 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.codespar/mcp-nfe-io",
+  "description": "MCP server for NFe.io — NF-e, NFS-e, CNPJ, CEP",
+  "repository": {
+    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "source": "github",
+    "subfolder": "packages/fiscal/nfe-io"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@codespar/mcp-nfe-io",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "NFEIO_API_KEY",
+          "description": "API key for NFe.io (issuance + query)",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": true
+        },
+        {
+          "name": "NFEIO_COMPANY_ID",
+          "description": "Default company ID (CNPJ or NFe.io company UUID) to use when not provided per-call",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        }
+      ]
+    }
+  ]
+}
