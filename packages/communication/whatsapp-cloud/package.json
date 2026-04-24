@@ -1,6 +1,6 @@
 {
   "name": "@codespar/mcp-whatsapp-cloud",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "MCP server for WhatsApp Cloud API (Meta direct) — official Graph API integration for messages, media, and templates",
   "type": "module",
   "main": "./dist/index.js",

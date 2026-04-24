@@ -8,18 +8,29 @@
  * all sit on top of this. Target: merchants with an approved WhatsApp Business
  * Account (WABA) who want Meta-direct pricing and full control.
  *
- * Tools (11):
+ * Tools (22):
  *   send_text_message        — simple text message
  *   send_template_message    — approved template (required for 24h+ business-initiated)
  *   send_media_message       — image, video, document, or audio
- *   send_interactive_message — buttons or list
+ *   send_interactive_message — buttons or list (generic)
+ *   send_interactive_cta_url — interactive CTA URL button
+ *   send_interactive_flow    — WhatsApp Flows message
  *   send_location_message    — latitude/longitude pin
+ *   send_contacts_message    — vCard-style contact cards
+ *   send_reaction_message    — emoji reaction to an inbound message
+ *   send_typing_indicator    — show typing indicator on a received message
  *   mark_message_as_read     — mark an incoming message as read
  *   upload_media             — upload a file and get a media_id (multipart)
  *   retrieve_media_url       — resolve a media_id to a downloadable URL
  *   delete_media             — delete an uploaded media asset
  *   list_templates           — list templates on the WABA
  *   create_template          — submit a new template for Meta review
+ *   delete_template          — delete a template by name
+ *   get_business_profile     — read business profile on the phone number
+ *   update_business_profile  — edit business profile fields
+ *   list_phone_numbers       — list phone numbers on the WABA
+ *   request_verification_code — request SMS/voice code to verify a phone number
+ *   verify_code              — submit the received verification code
  *
  * Authentication
  *   Bearer token (permanent system-user access token).
@@ -103,7 +114,7 @@ async function whatsappRequest(
 }
 
 const server = new Server(
-  { name: "mcp-whatsapp-cloud", version: "0.1.0" },
+  { name: "mcp-whatsapp-cloud", version: "0.2.0" },
   { capabilities: { tools: {} } }
 );
 
@@ -172,6 +183,42 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
       },
     },
     {
+      name: "send_interactive_cta_url",
+      description: "Send an interactive message with a single CTA URL button. Opens the URL when the recipient taps it. Available without template approval inside the 24h window.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          to: { type: "string", description: "Recipient phone number in E.164 without +" },
+          body_text: { type: "string", description: "Main body text" },
+          button_text: { type: "string", description: "Label shown on the CTA button (max 20 chars)" },
+          url: { type: "string", description: "HTTPS URL the button opens" },
+          header_text: { type: "string", description: "Optional header text" },
+          footer_text: { type: "string", description: "Optional footer text" },
+        },
+        required: ["to", "body_text", "button_text", "url"],
+      },
+    },
+    {
+      name: "send_interactive_flow",
+      description: "Send a WhatsApp Flow message. Flows are Meta's structured UI experiences (forms, appointment booking, etc.) rendered inside WhatsApp.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          to: { type: "string", description: "Recipient phone number in E.164 without +" },
+          flow_id: { type: "string", description: "ID of the approved Flow" },
+          flow_token: { type: "string", description: "Opaque token your server correlates with this send" },
+          flow_cta: { type: "string", description: "Label on the button that opens the flow (max 20 chars)" },
+          body_text: { type: "string", description: "Body text above the CTA" },
+          header_text: { type: "string", description: "Optional header text" },
+          footer_text: { type: "string", description: "Optional footer text" },
+          flow_action: { type: "string", enum: ["navigate", "data_exchange"], description: "Flow action type (default navigate)" },
+          flow_action_payload: { type: "object", description: "Optional action payload: { screen, data }. Required for navigate." },
+          mode: { type: "string", enum: ["draft", "published"], description: "Flow mode. Use draft while testing." },
+        },
+        required: ["to", "flow_id", "flow_token", "flow_cta", "body_text"],
+      },
+    },
+    {
       name: "send_location_message",
       description: "Send a location pin with latitude/longitude and optional name/address.",
       inputSchema: {
@@ -184,6 +231,46 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
           address: { type: "string", description: "Optional location address" },
         },
         required: ["to", "latitude", "longitude"],
+      },
+    },
+    {
+      name: "send_contacts_message",
+      description: "Send one or more contact cards (vCard-like). Each contact includes name and at least one of phones, emails, addresses, urls, or org.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          to: { type: "string", description: "Recipient phone number in E.164 without +" },
+          contacts: {
+            type: "array",
+            description: "Array of contact objects per Cloud API spec (name, phones, emails, addresses, org, urls, birthday).",
+            items: { type: "object" },
+          },
+        },
+        required: ["to", "contacts"],
+      },
+    },
+    {
+      name: "send_reaction_message",
+      description: "Send an emoji reaction on a previously received/sent message. Pass empty string for `emoji` to clear a reaction.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          to: { type: "string", description: "Recipient phone number in E.164 without +" },
+          message_id: { type: "string", description: "wamid of the message being reacted to" },
+          emoji: { type: "string", description: "Single unicode emoji. Empty string clears the reaction." },
+        },
+        required: ["to", "message_id", "emoji"],
+      },
+    },
+    {
+      name: "send_typing_indicator",
+      description: "Show a typing indicator on a received message. Also marks the message as read. Indicator auto-clears after ~25s or when you reply.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          message_id: { type: "string", description: "wamid of the inbound message to show the indicator on" },
+        },
+        required: ["message_id"],
       },
     },
     {
@@ -263,6 +350,76 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         required: ["name", "language", "category", "components"],
       },
     },
+    {
+      name: "delete_template",
+      description: "Delete a message template from the WABA by name. Optionally scope by hsm_id when two templates share a name across languages.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          name: { type: "string", description: "Template name to delete" },
+          hsm_id: { type: "string", description: "Optional template id (when multiple languages share a name and only one should be deleted)" },
+        },
+        required: ["name"],
+      },
+    },
+    {
+      name: "get_business_profile",
+      description: "Read the WhatsApp business profile (about, description, email, websites, vertical, address) for the configured phone number.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          fields: { type: "string", description: "Comma-separated field list. Default: about,address,description,email,profile_picture_url,websites,vertical" },
+        },
+      },
+    },
+    {
+      name: "update_business_profile",
+      description: "Update the business profile on the configured phone number. Supply only the fields you want to change.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          about: { type: "string", description: "About text (max 139 chars)" },
+          address: { type: "string", description: "Physical address" },
+          description: { type: "string", description: "Business description" },
+          email: { type: "string", description: "Contact email" },
+          vertical: { type: "string", description: "Business vertical (e.g. RETAIL, EDU, HEALTH, FINANCE, OTHER)" },
+          websites: { type: "array", description: "Up to two URLs", items: { type: "string" } },
+        },
+      },
+    },
+    {
+      name: "list_phone_numbers",
+      description: "List all phone numbers registered under the WhatsApp Business Account, including display name, quality rating, and verification status.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          limit: { type: "number", description: "Max results per page (default 25)" },
+        },
+      },
+    },
+    {
+      name: "request_verification_code",
+      description: "Request Meta to send a verification code to the configured phone number via SMS or voice. Use before verify_code.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          code_method: { type: "string", enum: ["SMS", "VOICE"], description: "Delivery method for the verification code" },
+          language: { type: "string", description: "BCP-47 language tag for the voice/SMS copy (e.g. en_US, pt_BR)" },
+        },
+        required: ["code_method", "language"],
+      },
+    },
+    {
+      name: "verify_code",
+      description: "Submit the verification code received via SMS/voice after request_verification_code. Completes registration.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          code: { type: "string", description: "Verification code received (digits only, strip dashes)" },
+        },
+        required: ["code"],
+      },
+    },
   ],
 }));
 
@@ -325,6 +482,58 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         };
         return { content: [{ type: "text", text: JSON.stringify(await whatsappRequest("POST", `/${PHONE_NUMBER_ID}/messages`, body), null, 2) }] };
       }
+      case "send_interactive_cta_url": {
+        const interactive: Record<string, unknown> = {
+          type: "cta_url",
+          body: { text: a.body_text },
+          action: {
+            name: "cta_url",
+            parameters: {
+              display_text: a.button_text,
+              url: a.url,
+            },
+          },
+        };
+        if (a.header_text) interactive.header = { type: "text", text: a.header_text };
+        if (a.footer_text) interactive.footer = { text: a.footer_text };
+        const body = {
+          messaging_product: "whatsapp",
+          recipient_type: "individual",
+          to: a.to,
+          type: "interactive",
+          interactive,
+        };
+        return { content: [{ type: "text", text: JSON.stringify(await whatsappRequest("POST", `/${PHONE_NUMBER_ID}/messages`, body), null, 2) }] };
+      }
+      case "send_interactive_flow": {
+        const parameters: Record<string, unknown> = {
+          flow_message_version: "3",
+          flow_token: a.flow_token,
+          flow_id: a.flow_id,
+          flow_cta: a.flow_cta,
+          flow_action: a.flow_action ?? "navigate",
+        };
+        if (a.mode) parameters.mode = a.mode;
+        if (a.flow_action_payload) parameters.flow_action_payload = a.flow_action_payload;
+        const interactive: Record<string, unknown> = {
+          type: "flow",
+          body: { text: a.body_text },
+          action: {
+            name: "flow",
+            parameters,
+          },
+        };
+        if (a.header_text) interactive.header = { type: "text", text: a.header_text };
+        if (a.footer_text) interactive.footer = { text: a.footer_text };
+        const body = {
+          messaging_product: "whatsapp",
+          recipient_type: "individual",
+          to: a.to,
+          type: "interactive",
+          interactive,
+        };
+        return { content: [{ type: "text", text: JSON.stringify(await whatsappRequest("POST", `/${PHONE_NUMBER_ID}/messages`, body), null, 2) }] };
+      }
       case "send_location_message": {
         const location: Record<string, unknown> = {
           latitude: a.latitude,
@@ -338,6 +547,38 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           to: a.to,
           type: "location",
           location,
+        };
+        return { content: [{ type: "text", text: JSON.stringify(await whatsappRequest("POST", `/${PHONE_NUMBER_ID}/messages`, body), null, 2) }] };
+      }
+      case "send_contacts_message": {
+        const body = {
+          messaging_product: "whatsapp",
+          recipient_type: "individual",
+          to: a.to,
+          type: "contacts",
+          contacts: a.contacts,
+        };
+        return { content: [{ type: "text", text: JSON.stringify(await whatsappRequest("POST", `/${PHONE_NUMBER_ID}/messages`, body), null, 2) }] };
+      }
+      case "send_reaction_message": {
+        const body = {
+          messaging_product: "whatsapp",
+          recipient_type: "individual",
+          to: a.to,
+          type: "reaction",
+          reaction: {
+            message_id: a.message_id,
+            emoji: a.emoji,
+          },
+        };
+        return { content: [{ type: "text", text: JSON.stringify(await whatsappRequest("POST", `/${PHONE_NUMBER_ID}/messages`, body), null, 2) }] };
+      }
+      case "send_typing_indicator": {
+        const body = {
+          messaging_product: "whatsapp",
+          status: "read",
+          message_id: a.message_id,
+          typing_indicator: { type: "text" },
         };
         return { content: [{ type: "text", text: JSON.stringify(await whatsappRequest("POST", `/${PHONE_NUMBER_ID}/messages`, body), null, 2) }] };
       }
@@ -384,6 +625,43 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         if (a.allow_category_change !== undefined) body.allow_category_change = a.allow_category_change;
         return { content: [{ type: "text", text: JSON.stringify(await whatsappRequest("POST", `/${BUSINESS_ACCOUNT_ID}/message_templates`, body), null, 2) }] };
       }
+      case "delete_template": {
+        const q = new URLSearchParams();
+        q.set("name", String(a.name));
+        if (a.hsm_id) q.set("hsm_id", String(a.hsm_id));
+        const path = `/${BUSINESS_ACCOUNT_ID}/message_templates?${q.toString()}`;
+        return { content: [{ type: "text", text: JSON.stringify(await whatsappRequest("DELETE", path), null, 2) }] };
+      }
+      case "get_business_profile": {
+        const fields = a.fields ? String(a.fields) : "about,address,description,email,profile_picture_url,websites,vertical";
+        const path = `/${PHONE_NUMBER_ID}/whatsapp_business_profile?fields=${encodeURIComponent(fields)}`;
+        return { content: [{ type: "text", text: JSON.stringify(await whatsappRequest("GET", path), null, 2) }] };
+      }
+      case "update_business_profile": {
+        const body: Record<string, unknown> = { messaging_product: "whatsapp" };
+        for (const k of ["about", "address", "description", "email", "vertical", "websites"]) {
+          if (a[k] !== undefined) body[k] = a[k];
+        }
+        return { content: [{ type: "text", text: JSON.stringify(await whatsappRequest("POST", `/${PHONE_NUMBER_ID}/whatsapp_business_profile`, body), null, 2) }] };
+      }
+      case "list_phone_numbers": {
+        const q = new URLSearchParams();
+        if (a.limit !== undefined) q.set("limit", String(a.limit));
+        const qs = q.toString();
+        const path = `/${BUSINESS_ACCOUNT_ID}/phone_numbers${qs ? `?${qs}` : ""}`;
+        return { content: [{ type: "text", text: JSON.stringify(await whatsappRequest("GET", path), null, 2) }] };
+      }
+      case "request_verification_code": {
+        const body = {
+          code_method: a.code_method,
+          language: a.language,
+        };
+        return { content: [{ type: "text", text: JSON.stringify(await whatsappRequest("POST", `/${PHONE_NUMBER_ID}/request_code`, body), null, 2) }] };
+      }
+      case "verify_code": {
+        const body = { code: a.code };
+        return { content: [{ type: "text", text: JSON.stringify(await whatsappRequest("POST", `/${PHONE_NUMBER_ID}/verify_code`, body), null, 2) }] };
+      }
       default:
         return { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true };
     }
@@ -406,7 +684,7 @@ async function main() {
       if (!sid && isInitializeRequest(req.body)) {
         const t = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID(), onsessioninitialized: (id) => { transports.set(id, t); } });
         t.onclose = () => { if (t.sessionId) transports.delete(t.sessionId); };
-        const s = new Server({ name: "mcp-whatsapp-cloud", version: "0.1.0" }, { capabilities: { tools: {} } });
+        const s = new Server({ name: "mcp-whatsapp-cloud", version: "0.2.0" }, { capabilities: { tools: {} } });
         (server as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.forEach((v, k) => (s as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.set(k, v));
         (server as unknown as { _notificationHandlers?: Map<unknown, unknown> })._notificationHandlers?.forEach((v, k) => (s as unknown as { _notificationHandlers: Map<unknown, unknown> })._notificationHandlers.set(k, v));
         await s.connect(t);
