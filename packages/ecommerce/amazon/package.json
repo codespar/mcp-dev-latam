@@ -1,0 +1,38 @@
+{
+  "name": "@codespar/mcp-amazon",
+  "version": "0.1.0-alpha.1",
+  "description": "MCP server for Amazon Selling Partner API (SP-API) — the global marketplace, including Amazon BR/MX/US. Orders, listings, catalog, inventory, reports, finances, fulfillment, notifications.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "mcp-amazon": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "typescript": "^5.8.0"
+  },
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "amazon",
+    "sp-api",
+    "selling-partner-api",
+    "ecommerce",
+    "marketplace",
+    "orders",
+    "listings",
+    "catalog",
+    "inventory",
+    "fba",
+    "brazil",
+    "latam"
+  ],
+  "mcpName": "io.github.codespar/mcp-amazon"
+}
