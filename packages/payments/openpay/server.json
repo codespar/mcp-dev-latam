@@ -1,0 +1,44 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.codespar/mcp-openpay",
+  "description": "MCP server for Openpay — BBVA-owned Mexican payment gateway (cards, SPEI, OXXO, subscriptions, payouts)",
+  "repository": {
+    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "source": "github",
+    "subfolder": "packages/payments/openpay"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@codespar/mcp-openpay",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "OPENPAY_MERCHANT_ID",
+          "description": "Openpay merchant id (forms part of the API URL path)",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "OPENPAY_PRIVATE_KEY",
+          "description": "Openpay private API key (used as HTTP Basic auth username with empty password)",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": true
+        },
+        {
+          "name": "OPENPAY_ENV",
+          "description": "Environment: 'sandbox' (default) or 'production'. Selects between https://sandbox-api.openpay.mx and https://api.openpay.mx.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        }
+      ]
+    }
+  ]
+}

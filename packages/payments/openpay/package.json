@@ -1,0 +1,36 @@
+{
+  "name": "@codespar/mcp-openpay",
+  "version": "0.1.0",
+  "description": "MCP server for Openpay — BBVA-owned Mexican payment gateway (cards, SPEI, OXXO, subscriptions, payouts)",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "mcp-openpay": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "typescript": "^5.8.0"
+  },
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "openpay",
+    "bbva",
+    "payments",
+    "mexico",
+    "mxn",
+    "spei",
+    "oxxo",
+    "subscriptions",
+    "payouts",
+    "cards"
+  ],
+  "mcpName": "io.github.codespar/mcp-openpay"
+}
