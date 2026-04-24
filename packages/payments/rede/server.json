@@ -1,0 +1,44 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.codespar/mcp-rede",
+  "description": "MCP server for Rede — Itaú-owned Brazilian card acquirer. Authorize/capture/refund, zero-auth, card tokens, and native recurrences.",
+  "repository": {
+    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "source": "github",
+    "subfolder": "packages/payments/rede"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@codespar/mcp-rede",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "REDE_PV",
+          "description": "Rede merchant filiação (PV) — numeric merchant identifier issued with your commercial contract.",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "REDE_TOKEN",
+          "description": "Rede API security token paired with PV. Used in HTTP Basic auth as the password.",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": true
+        },
+        {
+          "name": "REDE_ENV",
+          "description": "Environment selector: 'sandbox' (default) or 'production'.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        }
+      ]
+    }
+  ]
+}
