@@ -24,6 +24,13 @@
  * - get_labels: List all available labels
  * - read_message: Mark messages as read
  * - delete_message: Delete a message
+ * - get_contact_metadata: Get metadata (name, picture, status) for a single contact
+ * - add_contacts: Add one or more contacts to the WhatsApp address book
+ * - list_chats: List chats with pagination
+ * - mark_chat_as_read: Mark an entire chat as read or unread
+ * - list_groups: List WhatsApp groups with pagination
+ * - send_option_list: Send an interactive option list (WhatsApp native list)
+ * - send_button_actions: Send interactive action buttons (CALL, URL, REPLY)
  *
  * Environment:
  *   ZAPI_INSTANCE_ID — Z-API instance ID
@@ -80,7 +87,7 @@ async function zapiRequest(method: string, path: string, body?: unknown): Promis
 }
 
 const server = new Server(
-  { name: "mcp-z-api", version: "0.1.0" },
+  { name: "mcp-z-api", version: "0.2.0" },
   { capabilities: { tools: {} } }
 );
 
@@ -309,6 +316,130 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         required: ["phone", "messageId", "owner"],
       },
     },
+    {
+      name: "get_contact_metadata",
+      description: "Get metadata (name, WhatsApp display name, profile picture, status) for a single contact",
+      inputSchema: {
+        type: "object",
+        properties: {
+          phone: { type: "string", description: "Phone number with country code (DDI DDD NUMBER)" },
+        },
+        required: ["phone"],
+      },
+    },
+    {
+      name: "add_contacts",
+      description: "Add one or more contacts to the WhatsApp address book. Accepts an array of contacts.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          contacts: {
+            type: "array",
+            description: "Array of contacts to add",
+            items: {
+              type: "object",
+              properties: {
+                firstName: { type: "string", description: "First name (required)" },
+                lastName: { type: "string", description: "Last name (optional)" },
+                phone: { type: "string", description: "Phone number with country code" },
+              },
+              required: ["firstName", "phone"],
+            },
+          },
+        },
+        required: ["contacts"],
+      },
+    },
+    {
+      name: "list_chats",
+      description: "List all WhatsApp chats with pagination",
+      inputSchema: {
+        type: "object",
+        properties: {
+          page: { type: "number", description: "Page number (starts at 1)" },
+          pageSize: { type: "number", description: "Number of chats per page" },
+        },
+        required: ["page", "pageSize"],
+      },
+    },
+    {
+      name: "mark_chat_as_read",
+      description: "Mark an entire chat as read or unread",
+      inputSchema: {
+        type: "object",
+        properties: {
+          phone: { type: "string", description: "Phone number with country code" },
+          action: { type: "string", enum: ["read", "unread"], description: "Action to perform" },
+        },
+        required: ["phone", "action"],
+      },
+    },
+    {
+      name: "list_groups",
+      description: "List all WhatsApp groups with pagination",
+      inputSchema: {
+        type: "object",
+        properties: {
+          page: { type: "number", description: "Page number (starts at 1)" },
+          pageSize: { type: "number", description: "Number of groups per page" },
+        },
+        required: ["page", "pageSize"],
+      },
+    },
+    {
+      name: "send_option_list",
+      description: "Send an interactive option list (WhatsApp native list). Does NOT work in groups.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          phone: { type: "string", description: "Phone number with country code" },
+          message: { type: "string", description: "Main message text" },
+          optionList: {
+            type: "object",
+            description: "Option list config",
+            properties: {
+              title: { type: "string", description: "List title" },
+              buttonLabel: { type: "string", description: "Label for the button that opens the list" },
+              options: {
+                type: "array",
+                description: "Selectable options",
+                items: {
+                  type: "object",
+                  properties: {
+                    title: { type: "string", description: "Option title" },
+                    description: { type: "string", description: "Option description (optional)" },
+                    id: { type: "string", description: "Option identifier (optional)" },
+                  },
+                  required: ["title"],
+                },
+              },
+            },
+            required: ["title", "buttonLabel", "options"],
+          },
+          delayMessage: { type: "number", description: "Delay between 1-15 seconds before sending (optional)" },
+        },
+        required: ["phone", "message", "optionList"],
+      },
+    },
+    {
+      name: "send_button_actions",
+      description: "Send interactive action buttons (CALL, URL, REPLY). Do not mix REPLY with CALL/URL in the same message.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          phone: { type: "string", description: "Phone number with country code" },
+          message: { type: "string", description: "Message text" },
+          title: { type: "string", description: "Optional title" },
+          footer: { type: "string", description: "Optional footer" },
+          buttonActions: {
+            type: "array",
+            description: "Array of button action objects. Each has type (CALL|URL|REPLY), label, and type-specific fields (phone, url, id).",
+            items: { type: "object" },
+          },
+        },
+        required: ["phone", "message", "buttonActions"],
+      },
+    },
   ],
 }));
 
@@ -326,6 +457,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       "check_number", "get_profile_picture", "get_messages",
       "send_button_list", "send_location", "send_contact",
       "add_label", "read_message", "delete_message",
+      "get_contact_metadata", "mark_chat_as_read",
+      "send_option_list", "send_button_actions",
     ];
     if (toolsWithPhone.includes(name) && args?.phone) {
       const r = phoneSchema.safeParse(args.phone);
@@ -389,6 +522,27 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return { content: [{ type: "text", text: JSON.stringify(await zapiRequest("POST", "/read-message", args), null, 2) }] };
       case "delete_message":
         return { content: [{ type: "text", text: JSON.stringify(await zapiRequest("POST", "/delete-message", args), null, 2) }] };
+      case "get_contact_metadata":
+        return { content: [{ type: "text", text: JSON.stringify(await zapiRequest("GET", `/contacts/${args?.phone}`), null, 2) }] };
+      case "add_contacts":
+        // Z-API expects the array as the top-level body
+        return { content: [{ type: "text", text: JSON.stringify(await zapiRequest("POST", "/contacts/add", (args as any)?.contacts ?? []), null, 2) }] };
+      case "list_chats": {
+        const page = (args as any)?.page;
+        const pageSize = (args as any)?.pageSize;
+        return { content: [{ type: "text", text: JSON.stringify(await zapiRequest("GET", `/chats?page=${page}&pageSize=${pageSize}`), null, 2) }] };
+      }
+      case "mark_chat_as_read":
+        return { content: [{ type: "text", text: JSON.stringify(await zapiRequest("POST", "/modify-chat", args), null, 2) }] };
+      case "list_groups": {
+        const page = (args as any)?.page;
+        const pageSize = (args as any)?.pageSize;
+        return { content: [{ type: "text", text: JSON.stringify(await zapiRequest("GET", `/groups?page=${page}&pageSize=${pageSize}`), null, 2) }] };
+      }
+      case "send_option_list":
+        return { content: [{ type: "text", text: JSON.stringify(await zapiRequest("POST", "/send-option-list", args), null, 2) }] };
+      case "send_button_actions":
+        return { content: [{ type: "text", text: JSON.stringify(await zapiRequest("POST", "/send-button-actions", args), null, 2) }] };
       default:
         return { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true };
     }
@@ -411,7 +565,7 @@ async function main() {
       if (!sid && isInitializeRequest(req.body)) {
         const t = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID(), onsessioninitialized: (id) => { transports.set(id, t); } });
         t.onclose = () => { if (t.sessionId) transports.delete(t.sessionId); };
-        const s = new Server({ name: "mcp-z-api", version: "0.1.0" }, { capabilities: { tools: {} } }); (server as any)._requestHandlers.forEach((v: any, k: any) => (s as any)._requestHandlers.set(k, v)); (server as any)._notificationHandlers?.forEach((v: any, k: any) => (s as any)._notificationHandlers.set(k, v)); await s.connect(t);
+        const s = new Server({ name: "mcp-z-api", version: "0.2.0" }, { capabilities: { tools: {} } }); (server as any)._requestHandlers.forEach((v: any, k: any) => (s as any)._requestHandlers.set(k, v)); (server as any)._notificationHandlers?.forEach((v: any, k: any) => (s as any)._notificationHandlers.set(k, v)); await s.connect(t);
         await t.handleRequest(req, res, req.body); return;
       }
       res.status(400).json({ jsonrpc: "2.0", error: { code: -32000, message: "Bad Request" }, id: null });
