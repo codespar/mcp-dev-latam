@@ -9,18 +9,27 @@
  * QR code. PicPay also supports recurring charges ("Recurrency") via a
  * subscription-plan API.
  *
- * Tools (10):
- *   create_payment         — POST /payments: create a checkout, returns paymentUrl + qrcode
- *   get_payment_status     — GET  /payments/{referenceId}/status
- *   cancel_payment         — POST /payments/{referenceId}/cancellations (also refunds if paid)
- *   create_plan            — POST /recurrency/plans
- *   list_plans             — GET  /recurrency/plans
- *   update_plan            — PUT  /recurrency/plans/{planId}
- *   delete_plan            — DELETE /recurrency/plans/{planId}
- *   create_subscription    — POST /recurrency/subscriptions
- *   get_subscription       — GET  /recurrency/subscriptions/{subscriptionId}
- *   cancel_subscription    — POST /recurrency/subscriptions/{subscriptionId}/cancel
- *   validate_notification  — verify an incoming webhook by x-seller-token header
+ * Tools (20):
+ *   create_payment           — POST /payments: create a checkout, returns paymentUrl + qrcode
+ *   get_payment_status       — GET  /payments/{referenceId}/status
+ *   cancel_payment           — POST /payments/{referenceId}/cancellations (also refunds if paid)
+ *   refund_payment           — POST /payments/{referenceId}/refunds (explicit refund with optional amount)
+ *   create_plan              — POST /recurrency/plans
+ *   list_plans               — GET  /recurrency/plans
+ *   update_plan              — PUT  /recurrency/plans/{planId}
+ *   delete_plan              — DELETE /recurrency/plans/{planId}
+ *   create_subscription      — POST /recurrency/subscriptions
+ *   get_subscription         — GET  /recurrency/subscriptions/{subscriptionId}
+ *   cancel_subscription      — POST /recurrency/subscriptions/{subscriptionId}/cancel
+ *   validate_notification    — verify an incoming webhook by x-seller-token header
+ *   create_b2p_transfer      — POST /b2p/transfers: business-to-person transfer to a PicPay user
+ *   get_b2p_transfer         — GET  /b2p/transfers/{referenceId}: query B2P transfer status
+ *   create_batch_payment     — POST /b2p/transfers/batch: batch payments to many PicPay users
+ *   list_transactions        — GET  /transactions?startDate&endDate: list merchant transactions by date range
+ *   get_wallet_balance       — GET  /wallet/balance: merchant wallet balance
+ *   generate_static_qrcode   — POST /qrcode/static: static PicPay Pay QR code (buyer sets amount)
+ *   generate_dynamic_qrcode  — POST /qrcode/dynamic: dynamic PicPay Pay QR code (merchant-fixed amount)
+ *   create_payment_link      — POST /payment-links: shareable payment link URL
  *
  * Authentication
  *   Header: x-picpay-token: <PICPAY_TOKEN>  (merchant integration token)
@@ -73,7 +82,7 @@ async function picpayRequest(method: string, path: string, body?: unknown): Prom
 }
 
 const server = new Server(
-  { name: "mcp-picpay", version: "0.1.0-alpha.1" },
+  { name: "mcp-picpay", version: "0.2.0-alpha.1" },
   { capabilities: { tools: {} } }
 );
 
@@ -236,6 +245,135 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         required: ["headerToken"],
       },
     },
+    {
+      name: "refund_payment",
+      description: "Refund a paid PicPay order, optionally partially. Unlike cancel_payment, this is the explicit refund endpoint and accepts a custom amount for partial refunds. The merchant wallet must have enough balance to cover the refund.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          referenceId: { type: "string", description: "Merchant-side order reference of the paid payment to refund" },
+          authorizationId: { type: "string", description: "PicPay authorizationId returned by get_payment_status for the paid order" },
+          value: { type: "number", description: "Optional refund amount in BRL (decimal). Omit for a full refund." },
+        },
+        required: ["referenceId", "authorizationId"],
+      },
+    },
+    {
+      name: "create_b2p_transfer",
+      description: "Create a Business-to-Person (B2P) transfer: push funds from the merchant wallet to a PicPay user identified by CPF/CNPJ. Useful for payouts, cashbacks, rewards and marketplace splits. Amount in BRL decimal.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          referenceId: { type: "string", description: "Merchant-side unique identifier for this transfer" },
+          value: { type: "number", description: "Transfer amount in BRL (decimal, e.g. 50.00)" },
+          document: { type: "string", description: "Recipient CPF/CNPJ, digits only or formatted" },
+          description: { type: "string", description: "Optional message shown to the recipient in PicPay" },
+          callbackUrl: { type: "string", description: "Optional HTTPS endpoint PicPay POSTs to on transfer status change" },
+        },
+        required: ["referenceId", "value", "document"],
+      },
+    },
+    {
+      name: "get_b2p_transfer",
+      description: "Get the status of a B2P transfer by referenceId. Typical statuses: created, processing, completed, failed.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          referenceId: { type: "string", description: "Merchant-side transfer reference passed to create_b2p_transfer" },
+        },
+        required: ["referenceId"],
+      },
+    },
+    {
+      name: "create_batch_payment",
+      description: "Submit a batch of B2P transfers in a single request. Each item is an independent transfer to a PicPay user; PicPay processes them asynchronously and notifies per-item via callback.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          batchReferenceId: { type: "string", description: "Merchant-side unique identifier for the whole batch" },
+          callbackUrl: { type: "string", description: "Optional HTTPS endpoint PicPay POSTs to on per-item status changes" },
+          transfers: {
+            type: "array",
+            description: "Array of transfers. Each must have its own referenceId, value and document.",
+            items: {
+              type: "object",
+              properties: {
+                referenceId: { type: "string", description: "Merchant-side unique identifier for this item" },
+                value: { type: "number", description: "Transfer amount in BRL (decimal)" },
+                document: { type: "string", description: "Recipient CPF/CNPJ" },
+                description: { type: "string", description: "Optional message to the recipient" },
+              },
+              required: ["referenceId", "value", "document"],
+            },
+          },
+        },
+        required: ["batchReferenceId", "transfers"],
+      },
+    },
+    {
+      name: "list_transactions",
+      description: "List merchant transactions (payments and transfers) within a date range. Supports pagination and optional status filter.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          startDate: { type: "string", description: "Start of the window, ISO-8601 (e.g. 2026-04-01 or 2026-04-01T00:00:00-03:00)" },
+          endDate: { type: "string", description: "End of the window, ISO-8601" },
+          status: { type: "string", description: "Optional status filter (e.g. paid, refunded, completed)" },
+          page: { type: "number", description: "Optional page number (1-based)" },
+          pageSize: { type: "number", description: "Optional page size" },
+        },
+        required: ["startDate", "endDate"],
+      },
+    },
+    {
+      name: "get_wallet_balance",
+      description: "Retrieve the merchant's current PicPay wallet balance (available and blocked amounts in BRL). Useful before issuing refunds or B2P transfers.",
+      inputSchema: { type: "object", properties: {} },
+    },
+    {
+      name: "generate_static_qrcode",
+      description: "Generate a static PicPay Pay QR code for in-store / reusable use. The buyer opens PicPay, scans the QR and types in the amount. Returns the QR content and a base64 image.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          referenceId: { type: "string", description: "Merchant-side unique identifier for this QR (used to correlate incoming payments)" },
+          description: { type: "string", description: "Optional text shown to the buyer in the PicPay app" },
+        },
+        required: ["referenceId"],
+      },
+    },
+    {
+      name: "generate_dynamic_qrcode",
+      description: "Generate a dynamic PicPay Pay QR code with a fixed amount and optional expiration. Each QR is single-purpose. Returns qrcode content + base64 image and a paymentUrl.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          referenceId: { type: "string", description: "Merchant-side unique identifier for this QR / payment" },
+          value: { type: "number", description: "Amount in BRL (decimal)" },
+          expiresAt: { type: "string", description: "Optional ISO-8601 expiration timestamp" },
+          description: { type: "string", description: "Optional text shown to the buyer in the PicPay app" },
+          callbackUrl: { type: "string", description: "Optional HTTPS endpoint PicPay POSTs to on payment status change" },
+        },
+        required: ["referenceId", "value"],
+      },
+    },
+    {
+      name: "create_payment_link",
+      description: "Create a shareable PicPay payment link. Returns a short URL the merchant can send via WhatsApp / email. The buyer opens the link and completes payment inside PicPay.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          referenceId: { type: "string", description: "Merchant-side unique identifier for this link / order" },
+          value: { type: "number", description: "Amount in BRL (decimal)" },
+          description: { type: "string", description: "Optional text shown to the buyer" },
+          expiresAt: { type: "string", description: "Optional ISO-8601 expiration timestamp" },
+          callbackUrl: { type: "string", description: "Optional HTTPS endpoint PicPay POSTs to on status change" },
+          returnUrl: { type: "string", description: "Optional URL the buyer is redirected to after paying" },
+          maxUses: { type: "number", description: "Optional max number of times the link can be paid (default 1)" },
+        },
+        required: ["referenceId", "value"],
+      },
+    },
   ],
 }));
 
@@ -304,6 +442,37 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           ],
         };
       }
+      case "refund_payment": {
+        const ref = encodeURIComponent(String(a.referenceId));
+        const body: Record<string, unknown> = { authorizationId: a.authorizationId };
+        if (a.value !== undefined) body.value = a.value;
+        return { content: [{ type: "text", text: JSON.stringify(await picpayRequest("POST", `/payments/${ref}/refunds`, body), null, 2) }] };
+      }
+      case "create_b2p_transfer":
+        return { content: [{ type: "text", text: JSON.stringify(await picpayRequest("POST", "/b2p/transfers", a), null, 2) }] };
+      case "get_b2p_transfer": {
+        const ref = encodeURIComponent(String(a.referenceId));
+        return { content: [{ type: "text", text: JSON.stringify(await picpayRequest("GET", `/b2p/transfers/${ref}`), null, 2) }] };
+      }
+      case "create_batch_payment":
+        return { content: [{ type: "text", text: JSON.stringify(await picpayRequest("POST", "/b2p/transfers/batch", a), null, 2) }] };
+      case "list_transactions": {
+        const qs = new URLSearchParams();
+        if (a.startDate) qs.set("startDate", String(a.startDate));
+        if (a.endDate) qs.set("endDate", String(a.endDate));
+        if (a.status) qs.set("status", String(a.status));
+        if (a.page !== undefined) qs.set("page", String(a.page));
+        if (a.pageSize !== undefined) qs.set("pageSize", String(a.pageSize));
+        return { content: [{ type: "text", text: JSON.stringify(await picpayRequest("GET", `/transactions?${qs.toString()}`), null, 2) }] };
+      }
+      case "get_wallet_balance":
+        return { content: [{ type: "text", text: JSON.stringify(await picpayRequest("GET", "/wallet/balance"), null, 2) }] };
+      case "generate_static_qrcode":
+        return { content: [{ type: "text", text: JSON.stringify(await picpayRequest("POST", "/qrcode/static", a), null, 2) }] };
+      case "generate_dynamic_qrcode":
+        return { content: [{ type: "text", text: JSON.stringify(await picpayRequest("POST", "/qrcode/dynamic", a), null, 2) }] };
+      case "create_payment_link":
+        return { content: [{ type: "text", text: JSON.stringify(await picpayRequest("POST", "/payment-links", a), null, 2) }] };
       default:
         return { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true };
     }
@@ -326,7 +495,7 @@ async function main() {
       if (!sid && isInitializeRequest(req.body)) {
         const t = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID(), onsessioninitialized: (id) => { transports.set(id, t); } });
         t.onclose = () => { if (t.sessionId) transports.delete(t.sessionId); };
-        const s = new Server({ name: "mcp-picpay", version: "0.1.0-alpha.1" }, { capabilities: { tools: {} } });
+        const s = new Server({ name: "mcp-picpay", version: "0.2.0-alpha.1" }, { capabilities: { tools: {} } });
         (server as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.forEach((v, k) => (s as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.set(k, v));
         (server as unknown as { _notificationHandlers?: Map<unknown, unknown> })._notificationHandlers?.forEach((v, k) => (s as unknown as { _notificationHandlers: Map<unknown, unknown> })._notificationHandlers.set(k, v));
         await s.connect(t);
