@@ -1,6 +1,6 @@
 {
   "name": "@codespar/mcp-quickbooks",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "MCP server for QuickBooks Online (Intuit) — global ERP/accounting platform. Customers, invoices, payments, items, accounts, and P&L reports.",
   "type": "module",
   "main": "./dist/index.js",
