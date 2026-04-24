@@ -5,23 +5,33 @@
  *
  * Target customer: LatAm SaaS selling to US/EU buyers who already hold a
  * Braintree merchant account. Braintree's modern API is GraphQL — this server
- * wraps the 12 most-used operations (authorize / charge / capture / refund /
- * void, vault management, customer CRUD, transaction/customer lookups, client
- * token minting).
+ * wraps the most-used operations (authorize / charge / capture / submit-for-
+ * settlement / refund / void, vault management, customer CRUD, disputes,
+ * verifications, merchant accounts, client token minting).
  *
- * Tools (12):
- *   authorize_transaction     — authorizePaymentMethod (reserve funds)
- *   charge_transaction        — chargePaymentMethod (authorize + capture)
- *   capture_transaction       — captureTransaction (capture prior auth)
- *   refund_transaction        — refundTransaction (refund settled)
- *   void_transaction          — reverseTransaction (void unsettled)
- *   vault_payment_method      — vaultPaymentMethod (permanently store token)
- *   delete_payment_method     — deletePaymentMethodFromVault
- *   create_customer           — createCustomer
- *   update_customer           — updateCustomer
- *   get_transaction           — search.transactions (by id)
- *   get_customer              — node(id:) on Customer
- *   create_client_token       — createClientToken (for client-side tokenization)
+ * Tools (22):
+ *   authorize_transaction        — authorizePaymentMethod (reserve funds)
+ *   charge_transaction           — chargePaymentMethod (authorize + capture)
+ *   capture_transaction          — captureTransaction (capture prior auth)
+ *   submit_for_settlement        — submitTransactionForSettlement
+ *   refund_transaction           — refundTransaction (refund settled)
+ *   void_transaction             — reverseTransaction (void unsettled)
+ *   vault_payment_method         — vaultPaymentMethod (permanently store token)
+ *   update_payment_method        — updatePaymentMethod (vaulted token metadata)
+ *   delete_payment_method        — deletePaymentMethodFromVault
+ *   verify_payment_method        — verifyPaymentMethod (credit card verification)
+ *   create_customer              — createCustomer
+ *   update_customer              — updateCustomer
+ *   delete_customer              — deleteCustomer
+ *   find_customer                — search.customers (by email / id filters)
+ *   get_transaction              — search.transactions (by id)
+ *   search_transactions          — search.transactions (filters: status, date, customer)
+ *   get_customer                 — node(id:) on Customer
+ *   find_dispute                 — node(id:) on Dispute
+ *   accept_dispute               — acceptDispute
+ *   finalize_dispute             — finalizeDispute
+ *   find_merchant_account        — node(id:) on MerchantAccount
+ *   create_client_token          — createClientToken (for client-side tokenization)
  *
  * Authentication
  *   HTTP Basic auth with PUBLIC_KEY:PRIVATE_KEY (base64-encoded). Every request
@@ -86,7 +96,7 @@ async function braintreeRequest(
 }
 
 const server = new Server(
-  { name: "mcp-braintree", version: "0.1.0" },
+  { name: "mcp-braintree", version: "0.2.0" },
   { capabilities: { tools: {} } },
 );
 
@@ -284,6 +294,151 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
           customerId: { type: "string", description: "Braintree customer id (GraphQL global id)." },
         },
         required: ["customerId"],
+      },
+    },
+    {
+      name: "submit_for_settlement",
+      description:
+        "Submit a previously authorized transaction for settlement via submitTransactionForSettlement. Unlike capture_transaction (captureTransaction), this marks the transaction for the next settlement batch and supports optional order id / descriptor overrides.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          transactionId: { type: "string", description: "Braintree transaction id from a prior authorization." },
+          amount: {
+            type: "string",
+            description: "Optional partial settlement amount as decimal string. Omit for full authorized amount.",
+          },
+          orderId: { type: "string", description: "Optional order id to record with the settlement." },
+        },
+        required: ["transactionId"],
+      },
+    },
+    {
+      name: "update_payment_method",
+      description:
+        "Update metadata on a vaulted payment method via updatePaymentMethod. Use to change billing address, cardholder name, expiration, or set-as-default flag without re-tokenizing.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          paymentMethodId: { type: "string", description: "Vaulted payment method id." },
+          paymentMethod: {
+            type: "object",
+            description:
+              "UpdatePaymentMethodFieldsInput — e.g. { billingAddress, cardholderName, expirationMonth, expirationYear, usage }. Passed through verbatim.",
+          },
+        },
+        required: ["paymentMethodId", "paymentMethod"],
+      },
+    },
+    {
+      name: "verify_payment_method",
+      description:
+        "Run a credit-card verification (zero-auth or $1 auth) on a tokenized payment method via verifyPaymentMethod. Returns a CreditCardVerification with status and processor response. Useful before vaulting or charging.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          paymentMethodId: { type: "string", description: "Tokenized payment method id or nonce." },
+          amount: {
+            type: "string",
+            description: "Optional verification amount as decimal string. Omit for a zero-auth / processor default.",
+          },
+          merchantAccountId: { type: "string", description: "Optional merchant account id." },
+          riskCorrelationId: { type: "string", description: "Optional client-side risk correlation id." },
+        },
+        required: ["paymentMethodId"],
+      },
+    },
+    {
+      name: "delete_customer",
+      description:
+        "Delete a Braintree customer via deleteCustomer. Irreversible — also deletes any payment methods vaulted against the customer.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          customerId: { type: "string", description: "Braintree customer id to delete." },
+        },
+        required: ["customerId"],
+      },
+    },
+    {
+      name: "find_customer",
+      description:
+        "Search for customers via the GraphQL search.customers query. Pass one of email / firstName / lastName / company to filter; returns matching customer nodes. Leave all blank to list the first page of customers.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          email: { type: "string", description: "Filter by customer email (exact match)." },
+          firstName: { type: "string", description: "Filter by first name (exact match)." },
+          lastName: { type: "string", description: "Filter by last name (exact match)." },
+          company: { type: "string", description: "Filter by company name (exact match)." },
+        },
+      },
+    },
+    {
+      name: "search_transactions",
+      description:
+        "Search transactions via the GraphQL search.transactions query. Filter by status / customerId / orderId / createdAt range. Returns a page of transaction nodes with id, status, amount, orderId, createdAt.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          status: {
+            type: "array",
+            items: { type: "string" },
+            description: "Optional list of TransactionStatus values (e.g. ['AUTHORIZED','SETTLED','VOIDED']).",
+          },
+          customerId: { type: "string", description: "Filter by customer id (exact match)." },
+          orderId: { type: "string", description: "Filter by merchant-side order id (exact match)." },
+          createdAfter: { type: "string", description: "ISO 8601 lower bound for createdAt (greaterThanOrEqualTo)." },
+          createdBefore: { type: "string", description: "ISO 8601 upper bound for createdAt (lessThanOrEqualTo)." },
+        },
+      },
+    },
+    {
+      name: "find_dispute",
+      description:
+        "Fetch a dispute by id via the GraphQL node(id:) query. Returns id, status, reason, amountDisputed, receivedDate, replyByDate.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          disputeId: { type: "string", description: "Braintree dispute id (GraphQL global id)." },
+        },
+        required: ["disputeId"],
+      },
+    },
+    {
+      name: "accept_dispute",
+      description:
+        "Accept liability for a dispute via acceptDispute — the merchant concedes and the disputed amount is refunded to the buyer. Terminal action, cannot be undone.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          disputeId: { type: "string", description: "Braintree dispute id to accept." },
+        },
+        required: ["disputeId"],
+      },
+    },
+    {
+      name: "finalize_dispute",
+      description:
+        "Finalize a dispute via finalizeDispute — submits previously added evidence to the card network for review. After finalization, no further evidence can be added.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          disputeId: { type: "string", description: "Braintree dispute id to finalize." },
+        },
+        required: ["disputeId"],
+      },
+    },
+    {
+      name: "find_merchant_account",
+      description:
+        "Fetch a merchant account by id via the GraphQL node(id:) query. Returns id, status, currencyCode, and default flag — useful for multi-currency / multi-entity merchants.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          merchantAccountId: { type: "string", description: "Braintree merchant account id (GraphQL global id)." },
+        },
+        required: ["merchantAccountId"],
       },
     },
     {
@@ -541,6 +696,241 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           ],
         };
       }
+      case "submit_for_settlement": {
+        const transaction: Record<string, unknown> = {};
+        if (a.amount !== undefined) transaction.amount = a.amount;
+        if (a.orderId !== undefined) transaction.orderId = a.orderId;
+        const query = `mutation SubmitForSettlement($input: SubmitTransactionForSettlementInput!) {
+          submitTransactionForSettlement(input: $input) {
+            transaction { id status amount { value currencyCode } orderId }
+          }
+        }`;
+        const input: Record<string, unknown> = { transactionId: a.transactionId };
+        if (Object.keys(transaction).length > 0) input.transaction = transaction;
+        return {
+          content: [
+            { type: "text", text: JSON.stringify(await braintreeRequest(query, { input }), null, 2) },
+          ],
+        };
+      }
+      case "update_payment_method": {
+        const query = `mutation UpdatePaymentMethod($input: UpdatePaymentMethodInput!) {
+          updatePaymentMethod(input: $input) {
+            paymentMethod { id usage details { __typename } }
+            verification { id status }
+          }
+        }`;
+        const input = {
+          paymentMethodId: a.paymentMethodId,
+          paymentMethod: (a.paymentMethod as Record<string, unknown>) ?? {},
+        };
+        return {
+          content: [
+            { type: "text", text: JSON.stringify(await braintreeRequest(query, { input }), null, 2) },
+          ],
+        };
+      }
+      case "verify_payment_method": {
+        const query = `mutation VerifyPaymentMethod($input: VerifyPaymentMethodInput!) {
+          verifyPaymentMethod(input: $input) {
+            verification {
+              id
+              status
+              processorResponse { legacyCode message }
+              amount { value currencyCode }
+            }
+          }
+        }`;
+        const input: Record<string, unknown> = { paymentMethodId: a.paymentMethodId };
+        const options: Record<string, unknown> = {};
+        if (a.amount !== undefined) options.amount = a.amount;
+        if (a.merchantAccountId !== undefined) options.merchantAccountId = a.merchantAccountId;
+        if (a.riskCorrelationId !== undefined) options.riskCorrelationId = a.riskCorrelationId;
+        if (Object.keys(options).length > 0) input.options = options;
+        return {
+          content: [
+            { type: "text", text: JSON.stringify(await braintreeRequest(query, { input }), null, 2) },
+          ],
+        };
+      }
+      case "delete_customer": {
+        const query = `mutation DeleteCustomer($input: DeleteCustomerInput!) {
+          deleteCustomer(input: $input) { clientMutationId }
+        }`;
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(
+                await braintreeRequest(query, { input: { customerId: a.customerId } }),
+                null,
+                2,
+              ),
+            },
+          ],
+        };
+      }
+      case "find_customer": {
+        const filter: Record<string, unknown> = {};
+        if (a.email !== undefined) filter.email = { is: a.email };
+        if (a.firstName !== undefined) filter.firstName = { is: a.firstName };
+        if (a.lastName !== undefined) filter.lastName = { is: a.lastName };
+        if (a.company !== undefined) filter.company = { is: a.company };
+        const query = `query FindCustomer($input: CustomerSearchInput) {
+          search {
+            customers(input: $input) {
+              edges {
+                node { id firstName lastName email company phone }
+              }
+            }
+          }
+        }`;
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(
+                await braintreeRequest(query, {
+                  input: Object.keys(filter).length > 0 ? filter : null,
+                }),
+                null,
+                2,
+              ),
+            },
+          ],
+        };
+      }
+      case "search_transactions": {
+        const filter: Record<string, unknown> = {};
+        if (Array.isArray(a.status) && (a.status as unknown[]).length > 0) {
+          filter.status = { in: a.status };
+        }
+        if (a.customerId !== undefined) filter.customer = { id: { is: a.customerId } };
+        if (a.orderId !== undefined) filter.orderId = { is: a.orderId };
+        if (a.createdAfter !== undefined || a.createdBefore !== undefined) {
+          const createdAt: Record<string, unknown> = {};
+          if (a.createdAfter !== undefined) createdAt.greaterThanOrEqualTo = a.createdAfter;
+          if (a.createdBefore !== undefined) createdAt.lessThanOrEqualTo = a.createdBefore;
+          filter.createdAt = createdAt;
+        }
+        const query = `query SearchTransactions($input: TransactionSearchInput) {
+          search {
+            transactions(input: $input) {
+              edges {
+                node {
+                  id
+                  status
+                  amount { value currencyCode }
+                  orderId
+                  createdAt
+                }
+              }
+            }
+          }
+        }`;
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(
+                await braintreeRequest(query, {
+                  input: Object.keys(filter).length > 0 ? filter : null,
+                }),
+                null,
+                2,
+              ),
+            },
+          ],
+        };
+      }
+      case "find_dispute": {
+        const query = `query FindDispute($id: ID!) {
+          node(id: $id) {
+            ... on Dispute {
+              id
+              status
+              reason
+              amountDisputed { value currencyCode }
+              receivedDate
+              replyByDate
+            }
+          }
+        }`;
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(
+                await braintreeRequest(query, { id: a.disputeId }),
+                null,
+                2,
+              ),
+            },
+          ],
+        };
+      }
+      case "accept_dispute": {
+        const query = `mutation AcceptDispute($input: AcceptDisputeInput!) {
+          acceptDispute(input: $input) {
+            dispute { id status }
+          }
+        }`;
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(
+                await braintreeRequest(query, { input: { disputeId: a.disputeId } }),
+                null,
+                2,
+              ),
+            },
+          ],
+        };
+      }
+      case "finalize_dispute": {
+        const query = `mutation FinalizeDispute($input: FinalizeDisputeInput!) {
+          finalizeDispute(input: $input) {
+            dispute { id status }
+          }
+        }`;
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(
+                await braintreeRequest(query, { input: { disputeId: a.disputeId } }),
+                null,
+                2,
+              ),
+            },
+          ],
+        };
+      }
+      case "find_merchant_account": {
+        const query = `query FindMerchantAccount($id: ID!) {
+          node(id: $id) {
+            ... on MerchantAccount {
+              id
+              status
+              currencyCode
+              default
+            }
+          }
+        }`;
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(
+                await braintreeRequest(query, { id: a.merchantAccountId }),
+                null,
+                2,
+              ),
+            },
+          ],
+        };
+      }
       case "create_client_token": {
         const clientToken: Record<string, unknown> = {};
         if (a.merchantAccountId !== undefined) clientToken.merchantAccountId = a.merchantAccountId;
@@ -583,7 +973,7 @@ async function main() {
       if (!sid && isInitializeRequest(req.body)) {
         const t = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID(), onsessioninitialized: (id) => { transports.set(id, t); } });
         t.onclose = () => { if (t.sessionId) transports.delete(t.sessionId); };
-        const s = new Server({ name: "mcp-braintree", version: "0.1.0" }, { capabilities: { tools: {} } });
+        const s = new Server({ name: "mcp-braintree", version: "0.2.0" }, { capabilities: { tools: {} } });
         (server as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.forEach((v, k) => (s as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.set(k, v));
         (server as unknown as { _notificationHandlers?: Map<unknown, unknown> })._notificationHandlers?.forEach((v, k) => (s as unknown as { _notificationHandlers: Map<unknown, unknown> })._notificationHandlers.set(k, v));
         await s.connect(t);
