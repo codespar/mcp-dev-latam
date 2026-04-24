@@ -1,6 +1,6 @@
 {
   "name": "@codespar/mcp-braspag",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "MCP server for Braspag — Cielo's enterprise orchestration, token vault (Cartão Protegido), recurrence, and marketplace split",
   "type": "module",
   "main": "./dist/index.js",
