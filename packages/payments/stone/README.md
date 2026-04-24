@@ -1,6 +1,6 @@
 # @codespar/mcp-stone
 
-> MCP server for **Stone** — open banking, payments, Pix, and transfers
+> MCP server for **Stone** — acquiring (card / Pix / boleto), anticipations, receivables, terminals, and open banking
 
 [![npm](https://img.shields.io/npm/v/@codespar/mcp-stone)](https://www.npmjs.com/package/@codespar/mcp-stone)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
@@ -51,18 +51,52 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (21)
 
+### Banking — accounts
+| Tool | Description |
+|------|-------------|
+| `get_balance` | Get account balance |
+| `list_transactions` | List account transactions |
+| `get_statement` | Get account statement for a period |
+
+### Banking — payments & transfers
 | Tool | Description |
 |------|-------------|
 | `create_payment` | Create a payment via Stone |
 | `get_payment` | Get payment details by ID |
-| `list_payments` | List payments with optional filters |
-| `get_balance` | Get account balance |
-| `list_transactions` | List account transactions |
+| `list_payments` | List payments with filters |
 | `create_transfer` | Create a bank transfer (internal or external) |
-| `get_statement` | Get account statement for a period |
-| `create_pix_payment` | Create a Pix payment via Stone |
+| `create_pix_payment` | Send a Pix payment (outbound) |
+| `create_pix_charge` | Create a Pix charge / QR Code (inbound) |
+| `create_boleto` | Issue a boleto bancário |
+
+### Acquiring — charges & cards
+| Tool | Description |
+|------|-------------|
+| `create_card_charge` | Charge a credit / debit card |
+| `tokenize_card` | Tokenize a card into a PCI-safe token |
+| `refund_transaction` | Refund a settled transaction (full or partial) |
+| `cancel_transaction` | Cancel an authorized (not-yet-captured) transaction |
+
+### Anticipations & receivables
+| Tool | Description |
+|------|-------------|
+| `create_anticipation` | Anticipate future card receivables (Stone's flagship) |
+| `get_anticipation_limits` | Get available / min / max anticipation limits |
+| `list_receivables` | Search future receivables |
+
+### Terminals (Stone / TON POS)
+| Tool | Description |
+|------|-------------|
+| `list_terminals` | List physical POS terminals |
+| `get_terminal_status` | Get online / offline status for a terminal |
+
+### Webhooks
+| Tool | Description |
+|------|-------------|
+| `register_webhook` | Register a webhook endpoint |
+| `list_webhooks` | List registered webhook endpoints |
 
 ## Authentication
 
@@ -85,19 +119,17 @@ Stone provides a sandbox via the developer portal.
 |----------|----------|-------------|
 | `STONE_CLIENT_ID` | Yes | OAuth2 client ID |
 | `STONE_CLIENT_SECRET` | Yes | OAuth2 client secret |
+| `STONE_BASE_URL` | No | Override base URL (default `https://api.openbank.stone.com.br/api/v1`) |
 
 ## Roadmap
 
-### v0.2 (planned)
-- `list_pix_keys` — List registered Pix keys
-- `create_boleto` — Create a boleto payment
-- `get_boleto` — Get boleto details
-- `create_scheduled_payment` — Create a scheduled payment
-- `list_webhooks` — List registered webhooks
-
 ### v0.3 (planned)
-- `batch_transfers` — Process multiple transfers in a single request
-- `detailed_statements` — Generate detailed account statements
+- `list_pix_keys` — List registered Pix keys for a merchant
+- `create_recipient` — Marketplace / split recipients
+- `create_transfer_batch` — Batch transfer processing
+- `get_boleto` — Fetch boleto details
+- `create_scheduled_payment` — Schedule future-dated payments
+- `list_payouts` — List anticipation / settlement payouts
 
 Want to contribute? [Open a PR](https://github.com/codespar/mcp-dev-brasil) or [request a tool](https://github.com/codespar/mcp-dev-brasil/issues).
 
