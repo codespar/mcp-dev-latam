@@ -1,0 +1,58 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.codespar/mcp-itau",
+  "description": "MCP server for Itaú Unibanco — Brazil's largest private bank. Pix, Cobrança (boleto), Arrecadação, and Extrato via Itaú's Developer Portal APIs (OAuth2 + mTLS).",
+  "repository": {
+    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "source": "github",
+    "subfolder": "packages/banking/itau"
+  },
+  "version": "0.1.0-alpha.1",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@codespar/mcp-itau",
+      "version": "0.1.0-alpha.1",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "ITAU_CLIENT_ID",
+          "description": "Itaú OAuth client_id issued via the Developer Portal after contract onboarding.",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "ITAU_CLIENT_SECRET",
+          "description": "Itaú OAuth client_secret.",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": true
+        },
+        {
+          "name": "ITAU_CERT_PATH",
+          "description": "Absolute path to the mTLS client certificate (.crt or .pem). BACEN mandates mTLS for Pix v2.",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "ITAU_KEY_PATH",
+          "description": "Absolute path to the mTLS private key (.key or .pem).",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": true
+        },
+        {
+          "name": "ITAU_ENV",
+          "description": "Environment: 'sandbox' or 'production'. Defaults to 'sandbox'.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        }
+      ]
+    }
+  ]
+}
