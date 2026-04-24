@@ -1,0 +1,36 @@
+{
+  "name": "@codespar/mcp-caixa",
+  "version": "0.1.0-alpha.1",
+  "description": "MCP server for Caixa Econômica Federal — Brazil's largest state-owned bank. Pix, Cobrança (SICOB boleto), and Extrato via Caixa's Developer Portal APIs (OAuth2 + mTLS).",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "mcp-caixa": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "typescript": "^5.8.0"
+  },
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "caixa",
+    "caixa-economica",
+    "banking",
+    "pix",
+    "boleto",
+    "sicob",
+    "cobranca",
+    "extrato",
+    "brazil",
+    "public-bank"
+  ],
+  "mcpName": "io.github.codespar/mcp-caixa"
+}
