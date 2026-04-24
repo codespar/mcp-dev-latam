@@ -9,30 +9,47 @@
  * Billing, Refunds — the one nearly every LatAm SaaS that accepts Stripe
  * already uses today.
  *
- * Tools (15):
+ * Tools (30):
  *   Payment Intents:
  *     create_payment_intent       — POST /v1/payment_intents
  *     confirm_payment_intent      — POST /v1/payment_intents/{id}/confirm
  *     retrieve_payment_intent     — GET  /v1/payment_intents/{id}
  *     cancel_payment_intent       — POST /v1/payment_intents/{id}/cancel
+ *     list_payment_intents        — GET  /v1/payment_intents
  *   Refunds:
  *     create_refund               — POST /v1/refunds
+ *     list_refunds                — GET  /v1/refunds
  *   Customers:
  *     create_customer             — POST /v1/customers
  *     retrieve_customer           — GET  /v1/customers/{id}
  *     update_customer             — POST /v1/customers/{id}
+ *   Products & Prices (catalog):
+ *     create_product              — POST /v1/products
+ *     list_products               — GET  /v1/products
+ *     create_price                — POST /v1/prices
+ *     list_prices                 — GET  /v1/prices
  *   Subscriptions (Stripe Billing):
  *     create_subscription         — POST /v1/subscriptions
+ *     update_subscription         — POST /v1/subscriptions/{id}
  *     cancel_subscription         — DELETE /v1/subscriptions/{id}
  *     list_subscriptions          — GET  /v1/subscriptions
  *   Checkout (hosted):
  *     create_checkout_session     — POST /v1/checkout/sessions
  *   Payment Links:
  *     create_payment_link         — POST /v1/payment_links
+ *     list_payment_links          — GET  /v1/payment_links
  *   Invoices:
  *     create_invoice              — POST /v1/invoices
+ *     list_invoices               — GET  /v1/invoices
+ *     finalize_invoice            — POST /v1/invoices/{id}/finalize
+ *     send_invoice                — POST /v1/invoices/{id}/send
+ *     pay_invoice                 — POST /v1/invoices/{id}/pay
+ *     void_invoice                — POST /v1/invoices/{id}/void
  *   Disputes:
  *     update_dispute              — POST /v1/disputes/{id}  (submit evidence)
+ *     list_disputes               — GET  /v1/disputes
+ *   Balance:
+ *     retrieve_balance            — GET  /v1/balance
  *
  * Authentication
  *   Authorization: Bearer ${STRIPE_SECRET_KEY}
@@ -127,7 +144,7 @@ async function stripeRequest(method: string, path: string, body?: unknown): Prom
 }
 
 const server = new Server(
-  { name: "mcp-stripe", version: "0.1.0" },
+  { name: "mcp-stripe", version: "0.2.0" },
   { capabilities: { tools: {} } }
 );
 
@@ -194,6 +211,20 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         required: ["id"],
       },
     },
+    {
+      name: "list_payment_intents",
+      description: "List PaymentIntents. Filter by customer or created window.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          customer: { type: "string", description: "Filter by customer id (cus_...)" },
+          created: { type: "object", description: "Range filter, e.g. { gte: 1700000000, lte: 1710000000 }" },
+          limit: { type: "number", description: "Page size (1-100)" },
+          starting_after: { type: "string", description: "Cursor for pagination" },
+          ending_before: { type: "string", description: "Cursor for reverse pagination" },
+        },
+      },
+    },
 
     // Refunds
     {
@@ -207,6 +238,21 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
           amount: { type: "number", description: "Partial refund amount in smallest currency unit. Omit for full refund." },
           reason: { type: "string", enum: ["duplicate", "fraudulent", "requested_by_customer"], description: "Refund reason" },
           metadata: { type: "object", description: "Arbitrary key-value metadata" },
+        },
+      },
+    },
+    {
+      name: "list_refunds",
+      description: "List Refunds. Filter by charge or payment_intent.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          charge: { type: "string", description: "Filter by charge id" },
+          payment_intent: { type: "string", description: "Filter by PaymentIntent id" },
+          created: { type: "object", description: "Range filter, e.g. { gte, lte }" },
+          limit: { type: "number", description: "Page size (1-100)" },
+          starting_after: { type: "string" },
+          ending_before: { type: "string" },
         },
       },
     },
@@ -262,6 +308,77 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
       },
     },
 
+    // Products & Prices (catalog)
+    {
+      name: "create_product",
+      description: "Create a Product — the catalog entity Prices reference. For a digital/physical good or SaaS plan, create one Product then one or more Prices.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          name: { type: "string", description: "Human-readable product name" },
+          description: { type: "string" },
+          active: { type: "boolean", description: "Whether product is currently available for purchase" },
+          default_price_data: { type: "object", description: "Inline price to create alongside the product, e.g. { currency: 'usd', unit_amount: 1000 }" },
+          images: { type: "array", items: { type: "string" }, description: "Array of image URLs" },
+          tax_code: { type: "string", description: "Stripe Tax product tax code (e.g. 'txcd_10000000')" },
+          unit_label: { type: "string", description: "Label to describe units on invoices (e.g. 'seat', 'user')" },
+          url: { type: "string", description: "URL of a public-facing webpage for the product" },
+          metadata: { type: "object" },
+        },
+        required: ["name"],
+      },
+    },
+    {
+      name: "list_products",
+      description: "List Products. Filter by active flag or ids.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          active: { type: "boolean", description: "Only return products matching this active flag" },
+          ids: { type: "array", items: { type: "string" }, description: "Only return products with these ids" },
+          limit: { type: "number", description: "Page size (1-100)" },
+          starting_after: { type: "string" },
+          ending_before: { type: "string" },
+        },
+      },
+    },
+    {
+      name: "create_price",
+      description: "Create a Price attached to a Product. Set recurring for subscription prices; omit for one-time. Amount is in smallest currency unit.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          currency: { type: "string", description: "ISO-4217 code (usd, brl, mxn, ...)" },
+          product: { type: "string", description: "Existing Product id (prod_...)" },
+          product_data: { type: "object", description: "Inline product to create, e.g. { name: 'Pro Plan' }. Use instead of product." },
+          unit_amount: { type: "number", description: "Price in smallest currency unit (cents for USD)" },
+          unit_amount_decimal: { type: "string", description: "Alternative to unit_amount for sub-cent pricing" },
+          recurring: { type: "object", description: "For subscriptions, e.g. { interval: 'month', interval_count: 1 }" },
+          tax_behavior: { type: "string", enum: ["inclusive", "exclusive", "unspecified"] },
+          nickname: { type: "string", description: "Internal-only name" },
+          active: { type: "boolean" },
+          metadata: { type: "object" },
+        },
+        required: ["currency"],
+      },
+    },
+    {
+      name: "list_prices",
+      description: "List Prices. Filter by product, active flag, type (one_time/recurring), or currency.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          product: { type: "string", description: "Filter by Product id" },
+          active: { type: "boolean" },
+          type: { type: "string", enum: ["one_time", "recurring"] },
+          currency: { type: "string", description: "ISO-4217 code filter" },
+          limit: { type: "number", description: "Page size (1-100)" },
+          starting_after: { type: "string" },
+          ending_before: { type: "string" },
+        },
+      },
+    },
+
     // Subscriptions (Stripe Billing)
     {
       name: "create_subscription",
@@ -282,6 +399,25 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
           metadata: { type: "object" },
         },
         required: ["customer", "items"],
+      },
+    },
+    {
+      name: "update_subscription",
+      description: "Update a Subscription. Common uses: change items (plan swap), set cancel_at_period_end, apply a coupon, toggle pause_collection.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "Subscription id (sub_...)" },
+          items: { type: "array", items: { type: "object" }, description: "Subscription items to add/update/delete, e.g. [{ id: 'si_...', price: 'price_...' }]" },
+          cancel_at_period_end: { type: "boolean", description: "If true, subscription cancels at end of current billing period" },
+          default_payment_method: { type: "string", description: "PaymentMethod id (pm_...)" },
+          proration_behavior: { type: "string", enum: ["create_prorations", "none", "always_invoice"] },
+          coupon: { type: "string", description: "Coupon id to apply" },
+          pause_collection: { type: "object", description: "e.g. { behavior: 'mark_uncollectible' } — pass null to resume" },
+          trial_end: { type: "string", description: "Unix timestamp or 'now' to end trial" },
+          metadata: { type: "object" },
+        },
+        required: ["id"],
       },
     },
     {
@@ -359,6 +495,19 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         required: ["line_items"],
       },
     },
+    {
+      name: "list_payment_links",
+      description: "List Payment Links. Filter by active flag.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          active: { type: "boolean", description: "Filter by active flag" },
+          limit: { type: "number", description: "Page size (1-100)" },
+          starting_after: { type: "string" },
+          ending_before: { type: "string" },
+        },
+      },
+    },
 
     // Invoices
     {
@@ -378,6 +527,73 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         required: ["customer"],
       },
     },
+    {
+      name: "list_invoices",
+      description: "List Invoices. Filter by customer, status, or subscription.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          customer: { type: "string", description: "Filter by customer id" },
+          status: { type: "string", enum: ["draft", "open", "paid", "uncollectible", "void"] },
+          subscription: { type: "string", description: "Filter by subscription id" },
+          collection_method: { type: "string", enum: ["charge_automatically", "send_invoice"] },
+          created: { type: "object", description: "Range filter, e.g. { gte, lte }" },
+          limit: { type: "number", description: "Page size (1-100)" },
+          starting_after: { type: "string" },
+          ending_before: { type: "string" },
+        },
+      },
+    },
+    {
+      name: "finalize_invoice",
+      description: "Finalize a draft Invoice. Moves status draft → open and makes it payable. Required before send/pay when auto_advance=false.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "Invoice id (in_...)" },
+          auto_advance: { type: "boolean", description: "Whether Stripe should auto-advance the invoice lifecycle after finalization" },
+        },
+        required: ["id"],
+      },
+    },
+    {
+      name: "send_invoice",
+      description: "Send a finalized Invoice to the customer by email. Only works when collection_method=send_invoice.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "Invoice id (in_...)" },
+        },
+        required: ["id"],
+      },
+    },
+    {
+      name: "pay_invoice",
+      description: "Attempt to collect payment on an open Invoice. Charges the customer's default payment method (or the one provided).",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "Invoice id (in_...)" },
+          payment_method: { type: "string", description: "PaymentMethod id (pm_...) to charge" },
+          source: { type: "string", description: "Legacy source id" },
+          paid_out_of_band: { type: "boolean", description: "Mark as paid outside Stripe (no charge attempted)" },
+          forgive: { type: "boolean", description: "Allow payment even when smaller than amount_due" },
+          off_session: { type: "boolean" },
+        },
+        required: ["id"],
+      },
+    },
+    {
+      name: "void_invoice",
+      description: "Void a finalized Invoice. Similar to deletion but preserves the audit trail. Cannot be undone.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "Invoice id (in_...)" },
+        },
+        required: ["id"],
+      },
+    },
 
     // Disputes
     {
@@ -392,6 +608,31 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
           metadata: { type: "object" },
         },
         required: ["id"],
+      },
+    },
+    {
+      name: "list_disputes",
+      description: "List Disputes. Filter by charge, payment_intent, or created window.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          charge: { type: "string", description: "Filter by charge id" },
+          payment_intent: { type: "string", description: "Filter by PaymentIntent id" },
+          created: { type: "object", description: "Range filter, e.g. { gte, lte }" },
+          limit: { type: "number", description: "Page size (1-100)" },
+          starting_after: { type: "string" },
+          ending_before: { type: "string" },
+        },
+      },
+    },
+
+    // Balance
+    {
+      name: "retrieve_balance",
+      description: "Retrieve the current Stripe account balance — available, pending, and connect_reserved funds broken down by currency. No parameters.",
+      inputSchema: {
+        type: "object",
+        properties: {},
       },
     },
   ],
@@ -418,10 +659,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const { id, ...body } = a;
         return { content: [{ type: "text", text: JSON.stringify(await stripeRequest("POST", `/payment_intents/${id}/cancel`, body), null, 2) }] };
       }
+      case "list_payment_intents":
+        return { content: [{ type: "text", text: JSON.stringify(await stripeRequest("GET", "/payment_intents", a), null, 2) }] };
 
       // Refunds
       case "create_refund":
         return { content: [{ type: "text", text: JSON.stringify(await stripeRequest("POST", "/refunds", a), null, 2) }] };
+      case "list_refunds":
+        return { content: [{ type: "text", text: JSON.stringify(await stripeRequest("GET", "/refunds", a), null, 2) }] };
 
       // Customers
       case "create_customer":
@@ -435,9 +680,23 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return { content: [{ type: "text", text: JSON.stringify(await stripeRequest("POST", `/customers/${id}`, body), null, 2) }] };
       }
 
+      // Products & Prices
+      case "create_product":
+        return { content: [{ type: "text", text: JSON.stringify(await stripeRequest("POST", "/products", a), null, 2) }] };
+      case "list_products":
+        return { content: [{ type: "text", text: JSON.stringify(await stripeRequest("GET", "/products", a), null, 2) }] };
+      case "create_price":
+        return { content: [{ type: "text", text: JSON.stringify(await stripeRequest("POST", "/prices", a), null, 2) }] };
+      case "list_prices":
+        return { content: [{ type: "text", text: JSON.stringify(await stripeRequest("GET", "/prices", a), null, 2) }] };
+
       // Subscriptions
       case "create_subscription":
         return { content: [{ type: "text", text: JSON.stringify(await stripeRequest("POST", "/subscriptions", a), null, 2) }] };
+      case "update_subscription": {
+        const { id, ...body } = a;
+        return { content: [{ type: "text", text: JSON.stringify(await stripeRequest("POST", `/subscriptions/${id}`, body), null, 2) }] };
+      }
       case "cancel_subscription": {
         const { id, ...body } = a;
         return { content: [{ type: "text", text: JSON.stringify(await stripeRequest("DELETE", `/subscriptions/${id}${Object.keys(body).length ? "?" + flattenForm(body).toString() : ""}`), null, 2) }] };
@@ -452,16 +711,42 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       // Payment Links
       case "create_payment_link":
         return { content: [{ type: "text", text: JSON.stringify(await stripeRequest("POST", "/payment_links", a), null, 2) }] };
+      case "list_payment_links":
+        return { content: [{ type: "text", text: JSON.stringify(await stripeRequest("GET", "/payment_links", a), null, 2) }] };
 
       // Invoices
       case "create_invoice":
         return { content: [{ type: "text", text: JSON.stringify(await stripeRequest("POST", "/invoices", a), null, 2) }] };
+      case "list_invoices":
+        return { content: [{ type: "text", text: JSON.stringify(await stripeRequest("GET", "/invoices", a), null, 2) }] };
+      case "finalize_invoice": {
+        const { id, ...body } = a;
+        return { content: [{ type: "text", text: JSON.stringify(await stripeRequest("POST", `/invoices/${id}/finalize`, body), null, 2) }] };
+      }
+      case "send_invoice": {
+        const { id } = a;
+        return { content: [{ type: "text", text: JSON.stringify(await stripeRequest("POST", `/invoices/${id}/send`), null, 2) }] };
+      }
+      case "pay_invoice": {
+        const { id, ...body } = a;
+        return { content: [{ type: "text", text: JSON.stringify(await stripeRequest("POST", `/invoices/${id}/pay`, body), null, 2) }] };
+      }
+      case "void_invoice": {
+        const { id } = a;
+        return { content: [{ type: "text", text: JSON.stringify(await stripeRequest("POST", `/invoices/${id}/void`), null, 2) }] };
+      }
 
       // Disputes
       case "update_dispute": {
         const { id, ...body } = a;
         return { content: [{ type: "text", text: JSON.stringify(await stripeRequest("POST", `/disputes/${id}`, body), null, 2) }] };
       }
+      case "list_disputes":
+        return { content: [{ type: "text", text: JSON.stringify(await stripeRequest("GET", "/disputes", a), null, 2) }] };
+
+      // Balance
+      case "retrieve_balance":
+        return { content: [{ type: "text", text: JSON.stringify(await stripeRequest("GET", "/balance", a), null, 2) }] };
 
       default:
         return { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true };
@@ -485,7 +770,7 @@ async function main() {
       if (!sid && isInitializeRequest(req.body)) {
         const t = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID(), onsessioninitialized: (id) => { transports.set(id, t); } });
         t.onclose = () => { if (t.sessionId) transports.delete(t.sessionId); };
-        const s = new Server({ name: "mcp-stripe", version: "0.1.0" }, { capabilities: { tools: {} } });
+        const s = new Server({ name: "mcp-stripe", version: "0.2.0" }, { capabilities: { tools: {} } });
         (server as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.forEach((v, k) => (s as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.set(k, v));
         (server as unknown as { _notificationHandlers?: Map<unknown, unknown> })._notificationHandlers?.forEach((v, k) => (s as unknown as { _notificationHandlers: Map<unknown, unknown> })._notificationHandlers.set(k, v));
         await s.connect(t);
