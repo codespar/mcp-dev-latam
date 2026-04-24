@@ -13,19 +13,29 @@
  * into four products on separate hosts: gateway (payments), portal
  * (management), reconciliation, and webhook.
  *
- * Tools (12):
- *   authorize_payment    — authorize a credit-card payment (preauth or auth+capture)
- *   capture_payment      — capture a previously authorized payment
- *   cancel_payment       — cancel / void an authorized-but-uncaptured payment
- *   refund_payment       — full or partial refund of a captured payment
- *   create_pix           — create a Pix charge, returns QR + copy-paste payload
- *   create_boleto        — create a boleto charge
- *   get_payment          — retrieve a charge by id
- *   tokenize_card        — PCI-safe card tokenization (persistent or temporary)
- *   create_split_rule    — configure split distribution for a charge
- *   get_statement        — digital statement (Safrapay differentiator)
- *   list_transactions    — list charges with filters
- *   register_webhook     — bulk-register webhook subscriptions
+ * Tools (22):
+ *   authorize_payment        — authorize a credit-card payment (preauth or auth+capture)
+ *   capture_payment          — capture a previously authorized payment
+ *   cancel_payment           — cancel / void an authorized-but-uncaptured payment
+ *   refund_payment           — full or partial refund of a captured payment
+ *   create_pix               — create a Pix charge, returns QR + copy-paste payload
+ *   create_boleto            — create a boleto charge
+ *   get_payment              — retrieve a charge by id
+ *   tokenize_card            — PCI-safe card tokenization (persistent or temporary)
+ *   delete_card_token        — revoke a stored card token
+ *   create_split_rule        — configure split distribution for a charge
+ *   get_statement            — digital statement (Safrapay differentiator)
+ *   list_transactions        — list charges with filters
+ *   search_by_merchant_order — look up charges by merchant order id
+ *   query_chargeback         — retrieve chargeback details by charge id
+ *   query_installments       — simulate installment plan (fees, amounts per n)
+ *   authenticate_3ds         — kick off 3DS authentication before authorize_payment
+ *   create_recurrence        — create a recurring-billing subscription
+ *   get_recurrence           — retrieve a recurrence by id
+ *   cancel_recurrence        — cancel an active recurrence
+ *   get_settlement_report    — reconciliation host settlement report
+ *   create_payment_link      — create a hosted-checkout payment link
+ *   register_webhook         — bulk-register webhook subscriptions
  *
  * Authentication
  *   Gateway uses a two-step bootstrap. POST /v2/merchant/auth with headers
@@ -156,7 +166,7 @@ async function safrapayRequest(
 }
 
 const server = new Server(
-  { name: "mcp-safrapay", version: "0.1.0-alpha.1" },
+  { name: "mcp-safrapay", version: "0.2.0-alpha.1" },
   { capabilities: { tools: {} } },
 );
 
@@ -387,6 +397,175 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
       },
     },
     {
+      name: "delete_card_token",
+      description: "Revoke a stored card token. For persistent card-on-file tokens created via tokenize_card (temporary=false). DELETE /v2/card/{cardId}.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          card_id: { type: "string", description: "Safrapay card token id to revoke" },
+        },
+        required: ["card_id"],
+      },
+    },
+    {
+      name: "search_by_merchant_order",
+      description: "Look up charges by the merchant-side order identifier (the order_id supplied at creation). Useful when the Safrapay chargeId was lost but the merchant order id is known.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          order_id: { type: "string", description: "Merchant-side order identifier" },
+          page: { type: "number", description: "Page number (starts at 1)" },
+          page_size: { type: "number", description: "Page size" },
+        },
+        required: ["order_id"],
+      },
+    },
+    {
+      name: "query_chargeback",
+      description: "Retrieve chargeback (contestacao) detail for a charge: reason code, acquirer deadline, dispute amount, evidence status.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          charge_id: { type: "string", description: "Safrapay chargeId under dispute" },
+        },
+        required: ["charge_id"],
+      },
+    },
+    {
+      name: "query_installments",
+      description: "Simulate an installment plan for a given amount. Returns the per-installment amount, buyer-fee, and total for each available installment count.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          amount: { type: "number", description: "Amount in cents" },
+          brand: { type: "string", description: "Card brand (Visa, Mastercard, Elo, Amex, Hipercard)" },
+          max_installments: { type: "number", description: "Cap the plan at N installments (Safrapay defaults to merchant config)" },
+        },
+        required: ["amount"],
+      },
+    },
+    {
+      name: "authenticate_3ds",
+      description: "Kick off 3-D Secure authentication before authorize_payment. Returns a challenge URL / eci / cavv / xid to pass back into authorize_payment for a liability-shifted transaction.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          amount: { type: "number", description: "Amount in cents" },
+          order_id: { type: "string", description: "Merchant-side order identifier" },
+          card_token: { type: "string", description: "Token from tokenize_card — preferred over raw PAN" },
+          return_url: { type: "string", description: "URL the issuer ACS redirects back to after challenge" },
+          customer: {
+            type: "object",
+            properties: {
+              name: { type: "string" },
+              email: { type: "string" },
+              document_type: { type: "string", enum: ["CPF", "CNPJ"] },
+              document_number: { type: "string" },
+              phone: { type: "string" },
+            },
+            required: ["name", "document_type", "document_number"],
+          },
+        },
+        required: ["amount", "order_id", "return_url", "customer"],
+      },
+    },
+    {
+      name: "create_recurrence",
+      description: "Create a recurring-billing subscription. Safrapay will charge card_token on the configured interval until cancel_recurrence or end_date. POST /v2/recurrence.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          amount: { type: "number", description: "Per-cycle amount in cents" },
+          interval: { type: "string", enum: ["daily", "weekly", "monthly", "yearly"], description: "Billing interval" },
+          interval_count: { type: "number", description: "Number of intervals between charges (e.g. 1 monthly, 3 monthly = quarterly)" },
+          start_date: { type: "string", description: "First charge date, YYYY-MM-DD" },
+          end_date: { type: "string", description: "Optional last charge date, YYYY-MM-DD" },
+          card_token: { type: "string", description: "Persistent card token from tokenize_card" },
+          customer: {
+            type: "object",
+            properties: {
+              customer_id: { type: "string" },
+              name: { type: "string" },
+              email: { type: "string" },
+              document_type: { type: "string", enum: ["CPF", "CNPJ"] },
+              document_number: { type: "string" },
+            },
+            required: ["name", "document_type", "document_number"],
+          },
+          soft_descriptor: { type: "string", description: "Statement descriptor" },
+        },
+        required: ["amount", "interval", "start_date", "card_token", "customer"],
+      },
+    },
+    {
+      name: "get_recurrence",
+      description: "Retrieve a recurrence by id: schedule, next-charge date, charge history, status.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          recurrence_id: { type: "string", description: "Safrapay recurrenceId" },
+        },
+        required: ["recurrence_id"],
+      },
+    },
+    {
+      name: "cancel_recurrence",
+      description: "Cancel an active recurrence. Future charges will stop; already-charged cycles are untouched.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          recurrence_id: { type: "string", description: "Safrapay recurrenceId" },
+          reason: { type: "string", description: "Optional cancellation reason" },
+        },
+        required: ["recurrence_id"],
+      },
+    },
+    {
+      name: "get_settlement_report",
+      description: "Retrieve a settlement (liquidacao) report from the reconciliation host. Groups captured charges by settlement date so merchants can tie payouts to charges.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          start_date: { type: "string", description: "Settlement start date, YYYY-MM-DD" },
+          end_date: { type: "string", description: "Settlement end date, YYYY-MM-DD" },
+          payment_type: { type: "string", enum: ["credit", "pix", "boleto"], description: "Optional filter by payment method" },
+          page: { type: "number", description: "Page number (starts at 1)" },
+          page_size: { type: "number", description: "Page size" },
+        },
+        required: ["start_date", "end_date"],
+      },
+    },
+    {
+      name: "create_payment_link",
+      description: "Create a hosted-checkout payment link. Returns a short URL the merchant shares with the payer; Safrapay hosts the checkout and accepts credit/Pix/boleto per configuration.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          amount: { type: "number", description: "Amount in cents" },
+          order_id: { type: "string", description: "Merchant-side order identifier" },
+          description: { type: "string", description: "Description shown on the hosted page" },
+          expires_at: { type: "string", description: "ISO-8601 link expiration timestamp" },
+          max_installments: { type: "number", description: "Cap installments at N for this link" },
+          accepted_methods: {
+            type: "array",
+            description: "Payment methods accepted on the hosted page",
+            items: { type: "string", enum: ["credit", "pix", "boleto"] },
+          },
+          customer: {
+            type: "object",
+            description: "Optional pre-filled payer identity",
+            properties: {
+              name: { type: "string" },
+              email: { type: "string" },
+              document_type: { type: "string", enum: ["CPF", "CNPJ"] },
+              document_number: { type: "string" },
+            },
+          },
+        },
+        required: ["amount", "order_id"],
+      },
+    },
+    {
       name: "register_webhook",
       description: "Bulk-register webhook subscriptions on the Safrapay webhook product. Sends to POST /v1/webhook/bulk on the webhook host.",
       inputSchema: {
@@ -489,6 +668,62 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         if (a.page_size) params.set("pageSize", String(a.page_size));
         return { content: [{ type: "text", text: JSON.stringify(await safrapayRequest("GET", `/v2/charges?${params}`), null, 2) }] };
       }
+      case "delete_card_token": {
+        const a = args as { card_id: string };
+        return { content: [{ type: "text", text: JSON.stringify(await safrapayRequest("DELETE", `/v2/card/${a.card_id}`), null, 2) }] };
+      }
+      case "search_by_merchant_order": {
+        const a = args as Record<string, unknown>;
+        const params = new URLSearchParams();
+        if (a.order_id) params.set("orderId", String(a.order_id));
+        if (a.page) params.set("page", String(a.page));
+        if (a.page_size) params.set("pageSize", String(a.page_size));
+        return { content: [{ type: "text", text: JSON.stringify(await safrapayRequest("GET", `/v2/charges?${params}`), null, 2) }] };
+      }
+      case "query_chargeback": {
+        const a = args as { charge_id: string };
+        return { content: [{ type: "text", text: JSON.stringify(await safrapayRequest("GET", `/v2/chargeback/${a.charge_id}`), null, 2) }] };
+      }
+      case "query_installments": {
+        const a = args as Record<string, unknown>;
+        const params = new URLSearchParams();
+        if (a.amount !== undefined) params.set("amount", String(a.amount));
+        if (a.brand) params.set("brand", String(a.brand));
+        if (a.max_installments !== undefined) params.set("maxInstallments", String(a.max_installments));
+        return { content: [{ type: "text", text: JSON.stringify(await safrapayRequest("GET", `/v2/installments?${params}`), null, 2) }] };
+      }
+      case "authenticate_3ds": {
+        const body = { ...(args as Record<string, unknown>), merchantId: MERCHANT_ID };
+        return { content: [{ type: "text", text: JSON.stringify(await safrapayRequest("POST", "/v2/charge/3ds/authentication", body), null, 2) }] };
+      }
+      case "create_recurrence": {
+        const body = { ...(args as Record<string, unknown>), merchantId: MERCHANT_ID };
+        return { content: [{ type: "text", text: JSON.stringify(await safrapayRequest("POST", "/v2/recurrence", body), null, 2) }] };
+      }
+      case "get_recurrence": {
+        const a = args as { recurrence_id: string };
+        return { content: [{ type: "text", text: JSON.stringify(await safrapayRequest("GET", `/v2/recurrence/${a.recurrence_id}`), null, 2) }] };
+      }
+      case "cancel_recurrence": {
+        const a = args as { recurrence_id: string; reason?: string };
+        const body: Record<string, unknown> = {};
+        if (a.reason) body.reason = a.reason;
+        return { content: [{ type: "text", text: JSON.stringify(await safrapayRequest("PUT", `/v2/recurrence/cancelation/${a.recurrence_id}`, body), null, 2) }] };
+      }
+      case "get_settlement_report": {
+        const a = args as Record<string, unknown>;
+        const params = new URLSearchParams();
+        if (a.start_date) params.set("startDate", String(a.start_date));
+        if (a.end_date) params.set("endDate", String(a.end_date));
+        if (a.payment_type) params.set("paymentType", String(a.payment_type));
+        if (a.page) params.set("page", String(a.page));
+        if (a.page_size) params.set("pageSize", String(a.page_size));
+        return { content: [{ type: "text", text: JSON.stringify(await safrapayRequest("GET", `/v1/settlement?${params}`, undefined, "reconciliation"), null, 2) }] };
+      }
+      case "create_payment_link": {
+        const body = { ...(args as Record<string, unknown>), merchantId: MERCHANT_ID };
+        return { content: [{ type: "text", text: JSON.stringify(await safrapayRequest("POST", "/v2/paymentlink", body), null, 2) }] };
+      }
       case "register_webhook": {
         return { content: [{ type: "text", text: JSON.stringify(await safrapayRequest("POST", "/v1/webhook/bulk", args, "webhook"), null, 2) }] };
       }
@@ -514,7 +749,7 @@ async function main() {
       if (!sid && isInitializeRequest(req.body)) {
         const t = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID(), onsessioninitialized: (id) => { transports.set(id, t); } });
         t.onclose = () => { if (t.sessionId) transports.delete(t.sessionId); };
-        const s = new Server({ name: "mcp-safrapay", version: "0.1.0-alpha.1" }, { capabilities: { tools: {} } });
+        const s = new Server({ name: "mcp-safrapay", version: "0.2.0-alpha.1" }, { capabilities: { tools: {} } });
         (server as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.forEach((v, k) => (s as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.set(k, v));
         (server as unknown as { _notificationHandlers?: Map<unknown, unknown> })._notificationHandlers?.forEach((v, k) => (s as unknown as { _notificationHandlers: Map<unknown, unknown> })._notificationHandlers.set(k, v));
         await s.connect(t);
