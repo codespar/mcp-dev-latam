@@ -7,12 +7,12 @@
     "source": "github",
     "subfolder": "packages/crypto/circle"
   },
-  "version": "0.1.2",
+  "version": "0.2.0",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "@codespar/mcp-circle",
-      "version": "0.1.2",
+      "version": "0.2.0",
       "transport": {
         "type": "stdio"
       },
