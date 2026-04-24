@@ -1,6 +1,6 @@
 {
   "name": "@codespar/mcp-matera",
-  "version": "0.1.0",
+  "version": "0.1.0-alpha.1",
   "description": "MCP server for Matera — Brazilian core-banking infrastructure (BaaS) for fintechs building on top of Pix, DICT, and Pix Automático",
   "type": "module",
   "main": "./dist/index.js",
