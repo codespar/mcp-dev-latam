@@ -1,0 +1,44 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.codespar/mcp-transbank",
+  "description": "MCP server for Transbank — Chile's dominant card acquirer (Webpay Plus + Webpay OneClick Mall)",
+  "repository": {
+    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "source": "github",
+    "subfolder": "packages/payments/transbank"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@codespar/mcp-transbank",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "TRANSBANK_COMMERCE_CODE",
+          "description": "Transbank merchant commerce code (sent as Tbk-Api-Key-Id header)",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "TRANSBANK_API_KEY_SECRET",
+          "description": "Transbank API secret key (sent as Tbk-Api-Key-Secret header)",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": true
+        },
+        {
+          "name": "TRANSBANK_ENV",
+          "description": "Environment: 'integration' (default, https://webpay3gint.transbank.cl) or 'production' (https://webpay3g.transbank.cl)",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        }
+      ]
+    }
+  ]
+}
