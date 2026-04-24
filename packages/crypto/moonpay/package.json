@@ -1,0 +1,35 @@
+{
+  "name": "@codespar/mcp-moonpay",
+  "version": "0.1.0",
+  "description": "MCP server for MoonPay — fiat-to-crypto on/off-ramp covering 100+ crypto assets, multi-geography, Pix supported for Brazil",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "mcp-moonpay": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "typescript": "^5.8.0"
+  },
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "moonpay",
+    "crypto",
+    "onramp",
+    "offramp",
+    "fiat-to-crypto",
+    "pix",
+    "brazil",
+    "latam",
+    "stablecoin"
+  ],
+  "mcpName": "io.github.codespar/mcp-moonpay"
+}

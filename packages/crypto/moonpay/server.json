@@ -1,0 +1,37 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.codespar/mcp-moonpay",
+  "description": "MCP server for MoonPay — fiat-to-crypto on/off-ramp across 100+ crypto assets and multiple geographies. Pix supported for Brazil onramp.",
+  "repository": {
+    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "source": "github",
+    "subfolder": "packages/crypto/moonpay"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@codespar/mcp-moonpay",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "MOONPAY_API_KEY",
+          "description": "MoonPay API key (sandbox or production — the key selects the environment)",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": true
+        },
+        {
+          "name": "MOONPAY_BASE_URL",
+          "description": "MoonPay API base URL. Defaults to https://api.moonpay.com.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        }
+      ]
+    }
+  ]
+}
