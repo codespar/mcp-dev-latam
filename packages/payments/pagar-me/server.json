@@ -1,28 +1,35 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.codespar/mcp-pagar-me",
-  "description": "MCP server for Pagar.me — orders, charges, recipients, transfers",
+  "description": "MCP server for Pagar.me — orders, charges, recipients, transfers, anticipations, plans, subscriptions, tokens, withdrawals, webhooks",
   "repository": {
     "url": "https://github.com/codespar/mcp-dev-brasil",
     "source": "github",
     "subfolder": "packages/payments/pagar-me"
   },
-  "version": "0.1.2",
+  "version": "0.2.0",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "@codespar/mcp-pagar-me",
-      "version": "0.1.2",
+      "version": "0.2.0",
       "transport": {
         "type": "stdio"
       },
       "environmentVariables": [
         {
           "name": "PAGARME_API_KEY",
-          "description": "API key for pagar-me",
+          "description": "Secret key (sk_xxx) for Pagar.me",
           "isRequired": true,
           "format": "string",
           "isSecret": true
+        },
+        {
+          "name": "PAGARME_PUBLIC_KEY",
+          "description": "Public key (pk_xxx) for card tokenization (required only for create_card_token)",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
         }
       ]
     }

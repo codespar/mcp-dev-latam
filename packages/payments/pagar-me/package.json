@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-pagar-me",
-  "version": "0.1.2",
-  "description": "MCP server for Pagar.me — orders, charges, recipients, transfers",
+  "version": "0.2.0",
+  "description": "MCP server for Pagar.me — orders, charges, recipients, transfers, anticipations, plans, subscriptions, tokens, withdrawals, webhooks",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

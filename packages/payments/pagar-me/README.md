@@ -51,6 +51,7 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 
 ## Tools
 
+### Orders & Charges
 | Tool | Description |
 |------|-------------|
 | `create_order` | Create an order in Pagar.me with items and payment |
@@ -58,11 +59,39 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 | `list_orders` | List orders with optional filters |
 | `create_charge` | Create a charge (Pix, boleto, or credit card) |
 | `get_charge` | Get charge details by ID |
+| `capture_charge` | Capture a pre-authorized charge (auth-then-capture flow) |
+| `refund` | Refund a charge (full or partial) |
+| `partial_refund` | Explicit partial refund with required amount |
+
+### Recipients & Money Movement
+| Tool | Description |
+|------|-------------|
 | `create_recipient` | Create a recipient for split payments |
+| `list_recipients` | List recipients with optional filters |
 | `get_balance` | Get current account balance |
 | `create_transfer` | Create a transfer to a recipient |
-| `refund` | Refund a charge (full or partial) |
-| `list_recipients` | List recipients with optional filters |
+| `create_withdrawal` | Withdraw recipient balance to their bank account |
+
+### Anticipations
+| Tool | Description |
+|------|-------------|
+| `create_anticipation` | Request anticipation of receivables |
+| `get_anticipation` | Get anticipation details |
+| `get_anticipation_limits` | Get anticipation limits for a recipient |
+
+### Subscriptions
+| Tool | Description |
+|------|-------------|
+| `create_plan` | Create a subscription plan |
+| `update_plan` | Update plan name/description/status |
+| `create_subscription` | Create a recurring subscription |
+| `cancel_subscription` | Cancel a subscription |
+
+### Tokens & Webhooks
+| Tool | Description |
+|------|-------------|
+| `create_card_token` | Tokenize a credit card (PCI-safe, uses public key) |
+| `register_webhook` | Register a webhook endpoint for events |
 
 ## Authentication
 
@@ -84,20 +113,16 @@ Pagar.me provides test mode via the dashboard. Use a test-mode API key to avoid 
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `PAGARME_API_KEY` | Yes | Secret key (sk_xxx) from Pagar.me dashboard |
+| `PAGARME_PUBLIC_KEY` | No | Public key (pk_xxx) for `create_card_token` only |
 
 ## Roadmap
 
-### v0.2 (planned)
-- `list_charges` — List charges with filters
-- `create_plan` — Create a subscription plan
-- `create_subscription` — Create a recurring subscription
-- `get_payables` — Get receivables/payables details
-- `create_anticipation` — Request anticipation of receivables
-
 ### v0.3 (planned)
+- `list_charges` — List charges with filters
+- `list_subscriptions` — List subscriptions
+- `list_plans` — List plans
 - `batch_charges` — Create multiple charges in a single request
-- `get_postback` — Get postback/webhook details
-- `webhook_management` — Register, list, and delete webhooks
+- `list_webhooks` / `delete_webhook` — Full webhook management
 
 Want to contribute? [Open a PR](https://github.com/codespar/mcp-dev-brasil) or [request a tool](https://github.com/codespar/mcp-dev-brasil/issues).
 
