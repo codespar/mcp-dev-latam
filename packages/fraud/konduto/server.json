@@ -1,0 +1,37 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.codespar/mcp-konduto",
+  "description": "MCP server for Konduto — Brazilian fraud prevention, API-first order risk scoring, behavioral device intelligence, and blocklist/allowlist/reviewlist management",
+  "repository": {
+    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "source": "github",
+    "subfolder": "packages/fraud/konduto"
+  },
+  "version": "0.1.0-alpha.1",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@codespar/mcp-konduto",
+      "version": "0.1.0-alpha.1",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "KONDUTO_API_KEY",
+          "description": "Konduto API key (private key). Used as the Basic auth username with an empty password.",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": true
+        },
+        {
+          "name": "KONDUTO_BASE_URL",
+          "description": "Konduto API base URL. Defaults to https://api.konduto.com/v1.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        }
+      ]
+    }
+  ]
+}

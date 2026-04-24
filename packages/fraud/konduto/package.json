@@ -1,0 +1,36 @@
+{
+  "name": "@codespar/mcp-konduto",
+  "version": "0.1.0-alpha.1",
+  "description": "MCP server for Konduto — Brazilian fraud prevention, API-first order risk scoring, behavioral device intelligence, and blocklist/allowlist/reviewlist management",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "mcp-konduto": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "typescript": "^5.8.0"
+  },
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "konduto",
+    "fraud",
+    "fraud-prevention",
+    "risk-scoring",
+    "device-intelligence",
+    "behavioral-fingerprint",
+    "blocklist",
+    "antifraud",
+    "brazil",
+    "ecommerce"
+  ],
+  "mcpName": "io.github.codespar/mcp-konduto"
+}
