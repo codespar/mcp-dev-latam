@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-focus-nfe",
-  "version": "0.1.2",
-  "description": "MCP server for Focus NFe — NFe, NFSe, NFCe emission and management",
+  "version": "0.2.0",
+  "description": "MCP server for Focus NFe — NFe, NFSe, NFCe, CTe, MDFe emission, correction letters, and webhooks",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {
@@ -24,6 +24,9 @@
     "focus-nfe",
     "nfe",
     "nfse",
+    "nfce",
+    "cte",
+    "mdfe",
     "fiscal",
     "brazil"
   ],
