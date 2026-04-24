@@ -1,6 +1,6 @@
 {
   "name": "@codespar/mcp-itau",
-  "version": "0.1.0-alpha.1",
+  "version": "0.2.0-alpha.1",
   "description": "MCP server for Itaú Unibanco — Brazil's largest private bank. Pix, Cobrança (boleto), Arrecadação, and Extrato via Itaú's Developer Portal APIs (OAuth2 + mTLS).",
   "type": "module",
   "main": "./dist/index.js",

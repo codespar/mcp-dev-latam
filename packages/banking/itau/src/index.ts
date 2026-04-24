@@ -12,18 +12,29 @@
  *   Arrecadação  — pay utility / tax / concessionária bills
  *   Extrato      — account statement / transactions
  *
- * Tools (11):
- *   get_oauth_token   — mint/return a cached OAuth bearer (exposed for inspection)
- *   send_pix          — initiate an outbound Pix payment
- *   create_pix_qr     — create a dynamic Pix charge + QR (cobv / cob)
- *   get_pix           — retrieve a Pix by endToEndId
- *   resolve_dict_key  — resolve a DICT key (CPF, CNPJ, email, phone, EVP) to account data
- *   refund_pix        — refund / devolução of a received Pix
- *   create_boleto     — issue a boleto
- *   get_boleto        — retrieve a boleto by id / nosso_numero
- *   cancel_boleto     — cancel (baixa) a boleto
- *   get_statement     — account statement transactions
- *   arrecadacao_pay   — pay a utility / tax / concessionária bill
+ * Tools (22):
+ *   get_oauth_token          — mint/return a cached OAuth bearer (exposed for inspection)
+ *   send_pix                 — initiate an outbound Pix payment
+ *   create_pix_qr            — create a dynamic Pix charge + QR (cob)
+ *   create_pix_cobv          — create a dynamic Pix charge with due date (cobv)
+ *   list_pix_charges         — list immediate Pix charges (cob) by date range
+ *   get_pix                  — retrieve a Pix by endToEndId
+ *   resolve_dict_key         — resolve a DICT key (CPF, CNPJ, email, phone, EVP) to account data
+ *   register_pix_key         — register a DICT key owned by the merchant
+ *   delete_pix_key           — delete a DICT key owned by the merchant
+ *   list_pix_keys            — list DICT keys owned by the merchant
+ *   refund_pix               — refund / devolução of a received Pix
+ *   create_boleto            — issue a boleto
+ *   get_boleto               — retrieve a boleto by id / nosso_numero
+ *   get_boleto_pdf           — download the boleto PDF (base64)
+ *   cancel_boleto            — cancel (baixa) a boleto
+ *   get_statement            — account statement transactions
+ *   arrecadacao_pay          — pay a utility / tax / concessionária bill
+ *   send_ted                 — send a TED transfer to another bank
+ *   transfer_between_accounts — TAA: transfer between Itaú accounts
+ *   get_tariffs              — query applicable tariffs for merchant products
+ *   list_dda_bills           — list bills registered under the merchant's DDA enrolment
+ *   schedule_payment         — schedule a future-dated payment (Pix/boleto/arrecadação)
  *
  * Authentication
  *   OAuth 2.0 client_credentials + mandatory mTLS. BACEN requires mTLS for
@@ -31,7 +42,7 @@
  *   This server loads the client cert + key from disk (paths via env) and
  *   routes all HTTPS requests through a Node https.Agent that presents them.
  *
- * Version: 0.1.0-alpha.1
+ * Version: 0.2.0-alpha.1
  *   Itaú's devportal.itau.com.br is contract-gated — full OpenAPI specs are
  *   only visible to onboarded merchants. Endpoint paths below are best-guess
  *   based on (a) BACEN Pix v2 standard paths, (b) Itaú public marketing
@@ -187,7 +198,7 @@ async function itauRequest(method: string, path: string, body?: unknown): Promis
 }
 
 const server = new Server(
-  { name: "mcp-itau", version: "0.1.0-alpha.1" },
+  { name: "mcp-itau", version: "0.2.0-alpha.1" },
   { capabilities: { tools: {} } }
 );
 
@@ -373,6 +384,201 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         required: ["barcode", "payer_account", "idempotency_key"],
       },
     },
+    {
+      name: "create_pix_cobv",
+      description: "Create a Pix charge with due date (cobv) — used for boleto-like Pix where the payer can pay at or after a due date with optional fine/interest. Returns txid, copy-paste EMV payload, and location URL.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          amount: { type: "string", description: "Original amount in BRL major units, e.g. '250.00'" },
+          due_date: { type: "string", description: "Due date ISO-8601 (YYYY-MM-DD)" },
+          validity_after_due_days: { type: "number", description: "Days after due date the Pix remains payable (default 30)" },
+          payer: {
+            type: "object",
+            description: "Payer identification (required for cobv)",
+            properties: {
+              document: { type: "string", description: "CPF or CNPJ digits only" },
+              name: { type: "string" },
+              address: {
+                type: "object",
+                properties: {
+                  street: { type: "string" },
+                  city: { type: "string" },
+                  state: { type: "string", description: "2-letter UF code" },
+                  postal_code: { type: "string", description: "CEP digits only" },
+                },
+              },
+            },
+            required: ["document", "name"],
+          },
+          description: { type: "string", description: "Payer-visible description" },
+          fine: { type: "object", description: "Multa after due date: { percentage?, amount? }" },
+          interest: { type: "object", description: "Juros (daily) after due date: { percentage?, amount? }" },
+          discount: { type: "object", description: "Desconto up to due date: { percentage?, amount? }" },
+        },
+        required: ["amount", "due_date", "payer"],
+      },
+    },
+    {
+      name: "list_pix_charges",
+      description: "List immediate Pix charges (cob) registered by the merchant within a date range. Paginated per BACEN Pix v2.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          from: { type: "string", description: "Start date-time ISO-8601 (inicio)" },
+          to: { type: "string", description: "End date-time ISO-8601 (fim)" },
+          status: { type: "string", description: "Optional status filter: ATIVA | CONCLUIDA | REMOVIDA_PELO_USUARIO_RECEBEDOR | REMOVIDA_PELO_PSP" },
+          cpf: { type: "string", description: "Optional payer CPF filter (digits only)" },
+          cnpj: { type: "string", description: "Optional payer CNPJ filter (digits only)" },
+          page: { type: "number", description: "Page number (paginacao.paginaAtual)" },
+          page_size: { type: "number", description: "Items per page (paginacao.itensPorPagina)" },
+        },
+        required: ["from", "to"],
+      },
+    },
+    {
+      name: "register_pix_key",
+      description: "Register a DICT key (CPF, CNPJ, email, phone, or EVP) on an Itaú account owned by the merchant. Subject to BCB validation flows (e.g. email/SMS confirmation for email/phone keys).",
+      inputSchema: {
+        type: "object",
+        properties: {
+          key_type: { type: "string", description: "DICT key type: CPF | CNPJ | EMAIL | PHONE | EVP" },
+          key: { type: "string", description: "The key value. Omit for EVP (Itaú generates the UUID)." },
+          account: {
+            type: "object",
+            description: "Account to bind the key to",
+            properties: {
+              branch: { type: "string", description: "Agência" },
+              account: { type: "string", description: "Conta" },
+              account_type: { type: "string", description: "CACC (checking) | SVGS (savings) | SLRY (payroll) | TRAN (payment account)" },
+            },
+            required: ["branch", "account", "account_type"],
+          },
+        },
+        required: ["key_type", "account"],
+      },
+    },
+    {
+      name: "delete_pix_key",
+      description: "Delete a DICT key owned by the merchant. Irreversible — the key becomes available for re-registration by any PSP after BCB lockout window.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          key: { type: "string", description: "DICT key value to delete" },
+        },
+        required: ["key"],
+      },
+    },
+    {
+      name: "list_pix_keys",
+      description: "List DICT keys currently registered to the merchant's Itaú accounts.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          account: { type: "string", description: "Optional agência-conta filter" },
+        },
+      },
+    },
+    {
+      name: "get_boleto_pdf",
+      description: "Download the PDF of an issued boleto. Returns the document as base64 (content-type application/pdf).",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "Boleto id or nosso_numero" },
+        },
+        required: ["id"],
+      },
+    },
+    {
+      name: "send_ted",
+      description: "Send a TED transfer to an account at another bank. Same-day settlement within banking hours; otherwise queued.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          amount: { type: "string", description: "Amount in BRL major units, e.g. '1500.00'" },
+          payer_account: { type: "string", description: "Merchant account to debit (agência-conta)" },
+          payee: {
+            type: "object",
+            description: "Payee bank account",
+            properties: {
+              name: { type: "string" },
+              document: { type: "string", description: "CPF or CNPJ digits only" },
+              bank_code: { type: "string", description: "3-digit COMPE bank code (e.g. '237' Bradesco)" },
+              bank_ispb: { type: "string", description: "8-digit ISPB of payee's bank (alternative to bank_code)" },
+              branch: { type: "string" },
+              account: { type: "string" },
+              account_type: { type: "string", description: "CC (checking) | PP (savings)" },
+            },
+            required: ["name", "document", "branch", "account"],
+          },
+          purpose_code: { type: "string", description: "TED purpose code (finalidade) per BCB table — default '1' (crédito em conta)" },
+          description: { type: "string", description: "Free-text description (histórico)" },
+          idempotency_key: { type: "string", description: "Merchant-side idempotency key" },
+        },
+        required: ["amount", "payer_account", "payee", "idempotency_key"],
+      },
+    },
+    {
+      name: "transfer_between_accounts",
+      description: "TAA — transfer between two Itaú accounts (owned by the merchant or a counterparty). Instant settlement, no BCB fee.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          amount: { type: "string", description: "Amount in BRL major units" },
+          payer_account: { type: "string", description: "Debit account (agência-conta)" },
+          payee_branch: { type: "string", description: "Credit account agência" },
+          payee_account: { type: "string", description: "Credit account conta" },
+          payee_account_type: { type: "string", description: "CC (checking) | PP (savings)" },
+          description: { type: "string", description: "Free-text description" },
+          idempotency_key: { type: "string", description: "Merchant-side idempotency key" },
+        },
+        required: ["amount", "payer_account", "payee_branch", "payee_account", "idempotency_key"],
+      },
+    },
+    {
+      name: "get_tariffs",
+      description: "Query the tariff schedule applicable to the merchant's active contracts (Pix per-transaction, boleto registration, TED, arrecadação, etc.).",
+      inputSchema: {
+        type: "object",
+        properties: {
+          product: { type: "string", description: "Optional product filter: PIX | BOLETO | TED | ARRECADACAO | EXTRATO" },
+          account: { type: "string", description: "Optional agência-conta filter" },
+        },
+      },
+    },
+    {
+      name: "list_dda_bills",
+      description: "List bills registered for the merchant under the DDA (Débito Direto Autorizado) enrolment. Returns pending boletos/concessionária bills the merchant has opted in to.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          from: { type: "string", description: "Due-date window start (YYYY-MM-DD)" },
+          to: { type: "string", description: "Due-date window end (YYYY-MM-DD)" },
+          status: { type: "string", description: "PENDENTE | PAGO | VENCIDO" },
+          page: { type: "number" },
+          page_size: { type: "number" },
+        },
+      },
+    },
+    {
+      name: "schedule_payment",
+      description: "Schedule a future-dated payment (Pix, boleto, arrecadação, or TED). Itaú executes the debit on the scheduled date at D+0 cut-off.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          payment_type: { type: "string", description: "PIX | BOLETO | ARRECADACAO | TED" },
+          scheduled_date: { type: "string", description: "Execution date ISO-8601 (YYYY-MM-DD)" },
+          amount: { type: "string", description: "Amount in BRL major units" },
+          payer_account: { type: "string", description: "Merchant account to debit" },
+          barcode: { type: "string", description: "Required for BOLETO / ARRECADACAO — 44/47/48-digit digitável" },
+          pix: { type: "object", description: "Required for PIX — same shape as send_pix.payee + description" },
+          ted: { type: "object", description: "Required for TED — same shape as send_ted.payee + purpose_code" },
+          idempotency_key: { type: "string", description: "Merchant-side idempotency key" },
+        },
+        required: ["payment_type", "scheduled_date", "amount", "payer_account", "idempotency_key"],
+      },
+    },
   ],
 }));
 
@@ -438,6 +644,78 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         // TODO(verify): path. Itaú Arrecadação is often /arrecadacao/v1/pagamentos.
         return { content: [{ type: "text", text: JSON.stringify(await itauRequest("POST", "/arrecadacao/v1/pagamentos", a), null, 2) }] };
       }
+      case "create_pix_cobv": {
+        // TODO(verify): path. BACEN Pix v2 standard is POST /pix/v2/cobv for
+        // due-date charges; Itaú may also expose it under /cobrancas/v2.
+        return { content: [{ type: "text", text: JSON.stringify(await itauRequest("POST", "/pix/v2/cobv", a), null, 2) }] };
+      }
+      case "list_pix_charges": {
+        const params = new URLSearchParams();
+        if (a.from !== undefined) params.set("inicio", String(a.from));
+        if (a.to !== undefined) params.set("fim", String(a.to));
+        if (a.status !== undefined) params.set("status", String(a.status));
+        if (a.cpf !== undefined) params.set("cpf", String(a.cpf));
+        if (a.cnpj !== undefined) params.set("cnpj", String(a.cnpj));
+        if (a.page !== undefined) params.set("paginacao.paginaAtual", String(a.page));
+        if (a.page_size !== undefined) params.set("paginacao.itensPorPagina", String(a.page_size));
+        // TODO(verify): path. BACEN Pix v2 standard is GET /pix/v2/cob.
+        return { content: [{ type: "text", text: JSON.stringify(await itauRequest("GET", `/pix/v2/cob?${params}`), null, 2) }] };
+      }
+      case "register_pix_key": {
+        // TODO(verify): path. BACEN Pix v2 DICT maintenance is POST /pix/v2/dict
+        // for registration. Itaú may additionally require an ownership proof body.
+        return { content: [{ type: "text", text: JSON.stringify(await itauRequest("POST", "/pix/v2/dict", a), null, 2) }] };
+      }
+      case "delete_pix_key": {
+        const key = encodeURIComponent(String(a.key ?? ""));
+        // TODO(verify): path. BACEN standard is DELETE /pix/v2/dict/{key}.
+        return { content: [{ type: "text", text: JSON.stringify(await itauRequest("DELETE", `/pix/v2/dict/${key}`), null, 2) }] };
+      }
+      case "list_pix_keys": {
+        const qs = a.account ? `?conta=${encodeURIComponent(String(a.account))}` : "";
+        // TODO(verify): path. Not part of BACEN DICT spec; Itaú-specific listing endpoint.
+        return { content: [{ type: "text", text: JSON.stringify(await itauRequest("GET", `/pix/v2/dict${qs}`), null, 2) }] };
+      }
+      case "get_boleto_pdf": {
+        const id = encodeURIComponent(String(a.id ?? ""));
+        // TODO(verify): path. Typically /cobranca/v2/boletos/{id}/pdf returning application/pdf.
+        return { content: [{ type: "text", text: JSON.stringify(await itauRequest("GET", `/cobranca/v2/boletos/${id}/pdf`), null, 2) }] };
+      }
+      case "send_ted": {
+        // TODO(verify): path. Itaú Cash Management TED is commonly under
+        // /cash_management/v1/transferencias/ted or /pagamentos/v1/ted.
+        return { content: [{ type: "text", text: JSON.stringify(await itauRequest("POST", "/cash_management/v1/transferencias/ted", a), null, 2) }] };
+      }
+      case "transfer_between_accounts": {
+        // TODO(verify): path. TAA (transferência entre contas Itaú) sits in the
+        // same product family as TED: /cash_management/v1/transferencias/taa.
+        return { content: [{ type: "text", text: JSON.stringify(await itauRequest("POST", "/cash_management/v1/transferencias/taa", a), null, 2) }] };
+      }
+      case "get_tariffs": {
+        const params = new URLSearchParams();
+        if (a.product !== undefined) params.set("produto", String(a.product));
+        if (a.account !== undefined) params.set("conta", String(a.account));
+        const qs = params.toString();
+        // TODO(verify): path. Itaú Tarifas query endpoint commonly /tarifas/v1/consulta.
+        return { content: [{ type: "text", text: JSON.stringify(await itauRequest("GET", `/tarifas/v1/consulta${qs ? `?${qs}` : ""}`), null, 2) }] };
+      }
+      case "list_dda_bills": {
+        const params = new URLSearchParams();
+        if (a.from !== undefined) params.set("dataInicio", String(a.from));
+        if (a.to !== undefined) params.set("dataFim", String(a.to));
+        if (a.status !== undefined) params.set("situacao", String(a.status));
+        if (a.page !== undefined) params.set("pagina", String(a.page));
+        if (a.page_size !== undefined) params.set("tamanhoPagina", String(a.page_size));
+        const qs = params.toString();
+        // TODO(verify): path. Itaú DDA (Débito Direto Autorizado) listing is
+        // commonly /dda/v1/boletos; Febraban DDA 2.0 spec shares this shape.
+        return { content: [{ type: "text", text: JSON.stringify(await itauRequest("GET", `/dda/v1/boletos${qs ? `?${qs}` : ""}`), null, 2) }] };
+      }
+      case "schedule_payment": {
+        // TODO(verify): path. Itaú scheduled payments (agendamentos) are
+        // commonly /pagamentos/v1/agendamentos with a payment_type discriminator.
+        return { content: [{ type: "text", text: JSON.stringify(await itauRequest("POST", "/pagamentos/v1/agendamentos", a), null, 2) }] };
+      }
       default:
         return { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true };
     }
@@ -460,7 +738,7 @@ async function main() {
       if (!sid && isInitializeRequest(req.body)) {
         const t = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID(), onsessioninitialized: (id) => { transports.set(id, t); } });
         t.onclose = () => { if (t.sessionId) transports.delete(t.sessionId); };
-        const s = new Server({ name: "mcp-itau", version: "0.1.0-alpha.1" }, { capabilities: { tools: {} } });
+        const s = new Server({ name: "mcp-itau", version: "0.2.0-alpha.1" }, { capabilities: { tools: {} } });
         (server as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.forEach((v, k) => (s as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.set(k, v));
         (server as unknown as { _notificationHandlers?: Map<unknown, unknown> })._notificationHandlers?.forEach((v, k) => (s as unknown as { _notificationHandlers: Map<unknown, unknown> })._notificationHandlers.set(k, v));
         await s.connect(t);
