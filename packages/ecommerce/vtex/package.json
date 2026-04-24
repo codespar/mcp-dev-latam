@@ -1,6 +1,6 @@
 {
   "name": "@codespar/mcp-vtex",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "MCP server for VTEX — e-commerce, orders, products, inventory, shipping",
   "type": "module",
   "main": "./dist/index.js",

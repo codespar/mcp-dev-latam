@@ -55,18 +55,74 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 
 ## Tools
 
+### Catalog
 | Tool | Description |
 |------|-------------|
 | `list_products` | List products from VTEX catalog |
 | `get_product` | Get product details by ID |
-| `list_orders` | List orders with optional filters |
-| `get_order` | Get order details by ID |
+| `create_product` | Create a new product |
+| `update_product` | Update product details |
 | `list_skus` | List SKUs for a product |
-| `get_inventory` | Get inventory/stock for a SKU across warehouses |
-| `update_inventory` | Update inventory quantity for a SKU at a specific warehouse |
-| `get_shipping_rates` | Simulate shipping rates for items to a postal code |
-| `create_promotion` | Create a promotion/discount in VTEX |
+| `create_sku` | Create a new SKU |
+| `list_categories` | List categories with pagination |
+| `create_category` | Create a new category |
 | `get_catalog` | Get the catalog category tree |
+
+### Orders (OMS)
+| Tool | Description |
+|------|-------------|
+| `list_orders` | List orders with optional filters |
+| `get_order` | Get full OMS order details by ID |
+| `update_order_status` | Start handling (fulfillment) on an order |
+| `invoice_order` | Issue a fiscal invoice (nota fiscal) for an order |
+| `track_order_invoice` | Update tracking info on an issued invoice |
+| `cancel_order` | Cancel an order |
+| `list_customer_orders` | List order history for a customer email |
+
+### Pricing
+| Tool | Description |
+|------|-------------|
+| `get_sku_price` | Get base / list / cost price and fixed prices for an SKU |
+| `update_sku_price` | Update pricing for an SKU |
+| `list_price_tables` | List configured price tables (trade policies) |
+
+### Inventory & Shipping
+| Tool | Description |
+|------|-------------|
+| `get_inventory` | Get inventory/stock for a SKU across warehouses |
+| `update_inventory` | Update inventory quantity at a warehouse |
+| `get_shipping_rates` | Simulate shipping rates for items to a postal code |
+
+### Logistics
+| Tool | Description |
+|------|-------------|
+| `list_warehouses` | List all warehouses |
+| `create_warehouse` | Register a new warehouse (fulfillment center) |
+
+### Promotions & Coupons
+| Tool | Description |
+|------|-------------|
+| `create_promotion` | Create a promotion/discount |
+| `list_coupons` | List promotion coupons |
+| `create_coupon` | Create a coupon code |
+
+### Subscriptions
+| Tool | Description |
+|------|-------------|
+| `list_subscriptions` | List customer subscriptions |
+| `create_subscription` | Create a recurring subscription |
+
+### Master Data (customer profiles & custom entities)
+| Tool | Description |
+|------|-------------|
+| `get_masterdata_document` | Get a document from a data entity |
+| `search_masterdata` | Search documents with filters |
+
+### Giftcards
+| Tool | Description |
+|------|-------------|
+| `create_giftcard` | Issue a gift card for a customer |
+| `get_giftcard` | Get gift card details by ID |
 
 ## Authentication
 
@@ -90,19 +146,14 @@ VTEX provides sandbox access via partner accounts. Contact VTEX for developer ac
 | `VTEX_ACCOUNT_NAME` | Yes | VTEX account name |
 | `VTEX_APP_KEY` | Yes | API app key |
 | `VTEX_APP_TOKEN` | Yes | API app token |
+| `VTEX_ENVIRONMENT` | No | Environment host slug (default `vtexcommercestable`) |
 
 ## Roadmap
 
-### v0.2 (planned)
-- `create_product` — Create a new product
-- `update_product` — Update product details
-- `create_sku` — Create a SKU for a product
-- `create_category` — Create a product category
-- `list_categories` — List all product categories
-
 ### v0.3 (planned)
-- `checkout_management` — Manage checkout cart and order form
-- `marketplace_integration` — Marketplace seller and offer management
+- Checkout / cart session management
+- Marketplace seller and offer management
+- Carrier (shipping policy) registration
 
 Want to contribute? [Open a PR](https://github.com/codespar/mcp-dev-brasil) or [request a tool](https://github.com/codespar/mcp-dev-brasil/issues).
 
