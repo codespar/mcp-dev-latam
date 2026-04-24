@@ -8,11 +8,21 @@
  * - get_boleto: Get boleto by ID
  * - list_boletos: List boletos with filters
  * - cancel_boleto: Cancel/write-off a boleto
+ * - get_boleto_pdf: Download boleto PDF (base64)
  * - create_pix: Create PIX payment
  * - get_pix: Get PIX transaction by ID
  * - list_pix: List PIX transactions
+ * - create_pix_cob: Create PIX immediate charge (cob) with txid
+ * - get_pix_cob: Retrieve PIX immediate charge by txid
+ * - list_pix_cob: List PIX immediate charges
+ * - create_pix_cobv: Create PIX due charge (cobv) with dueDate
+ * - get_pix_cobv: Retrieve PIX due charge by txid
+ * - create_pix_devolucao: Create PIX return (devolução) for a received e2eId
+ * - list_pix_keys: List PIX keys registered for the account
  * - get_balance: Get account balance
  * - get_statement: Get account statement
+ * - get_statement_enriched: Get enriched statement with detailed transaction info
+ * - get_statement_pdf: Download account statement as PDF (base64)
  * - create_transfer: Create TED/internal transfer
  * - get_webhook: Get configured webhooks
  * - create_webhook: Register webhook for notifications
@@ -82,7 +92,7 @@ async function interRequest(method: string, path: string, scope: string, body?: 
 }
 
 const server = new Server(
-  { name: "mcp-inter-bank", version: "0.1.0" },
+  { name: "mcp-inter-bank", version: "0.2.0" },
   { capabilities: { tools: {} } }
 );
 
@@ -144,6 +154,15 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
       },
     },
     {
+      name: "get_boleto_pdf",
+      description: "Download boleto PDF (returns base64 payload)",
+      inputSchema: {
+        type: "object",
+        properties: { boletoId: { type: "string", description: "Boleto ID (codigoSolicitacao)" } },
+        required: ["boletoId"],
+      },
+    },
+    {
       name: "create_pix",
       description: "Create a PIX payment",
       inputSchema: {
@@ -180,6 +199,99 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
       },
     },
     {
+      name: "create_pix_cob",
+      description: "Create PIX immediate charge (cob) with txid — returns BR Code/copia-e-cola",
+      inputSchema: {
+        type: "object",
+        properties: {
+          txid: { type: "string", description: "Unique txid (26-35 alphanumeric chars). Omit to let Inter generate." },
+          amount: { type: "number", description: "Charge amount in BRL" },
+          expiration: { type: "number", description: "Expiration in seconds (default 3600)" },
+          payer_cpf: { type: "string", description: "Payer CPF (optional)" },
+          payer_cnpj: { type: "string", description: "Payer CNPJ (optional)" },
+          payer_name: { type: "string", description: "Payer name (optional)" },
+          description: { type: "string", description: "Charge description (solicitacaoPagador)" },
+        },
+        required: ["amount"],
+      },
+    },
+    {
+      name: "get_pix_cob",
+      description: "Retrieve PIX immediate charge by txid",
+      inputSchema: {
+        type: "object",
+        properties: { txid: { type: "string", description: "Charge txid" } },
+        required: ["txid"],
+      },
+    },
+    {
+      name: "list_pix_cob",
+      description: "List PIX immediate charges within a time range (with optional end_to_end_id filters)",
+      inputSchema: {
+        type: "object",
+        properties: {
+          inicio: { type: "string", description: "Start timestamp (ISO 8601, e.g. 2024-01-01T00:00:00Z)" },
+          fim: { type: "string", description: "End timestamp (ISO 8601)" },
+          cpf: { type: "string", description: "Filter by payer CPF" },
+          cnpj: { type: "string", description: "Filter by payer CNPJ" },
+          status: { type: "string", enum: ["ATIVA", "CONCLUIDA", "REMOVIDA_PELO_USUARIO_RECEBEDOR", "REMOVIDA_PELO_PSP"], description: "Filter by charge status" },
+          paginaAtual: { type: "number", description: "Page index" },
+          itensPorPagina: { type: "number", description: "Items per page" },
+        },
+        required: ["inicio", "fim"],
+      },
+    },
+    {
+      name: "create_pix_cobv",
+      description: "Create PIX due charge (cobv) with dueDate — boleto-like PIX with expiration date",
+      inputSchema: {
+        type: "object",
+        properties: {
+          txid: { type: "string", description: "Unique txid (26-35 alphanumeric chars)" },
+          amount: { type: "number", description: "Charge amount in BRL" },
+          due_date: { type: "string", description: "Due date (YYYY-MM-DD)" },
+          validity_after_due: { type: "number", description: "Days valid after due date (default 30)" },
+          payer_cpf: { type: "string", description: "Payer CPF (optional)" },
+          payer_cnpj: { type: "string", description: "Payer CNPJ (optional)" },
+          payer_name: { type: "string", description: "Payer name" },
+          payer_address: { type: "string", description: "Payer street address" },
+          payer_city: { type: "string", description: "Payer city" },
+          payer_state: { type: "string", description: "Payer state (UF)" },
+          payer_zip: { type: "string", description: "Payer ZIP (CEP)" },
+          description: { type: "string", description: "Charge description (solicitacaoPagador)" },
+        },
+        required: ["txid", "amount", "due_date", "payer_name"],
+      },
+    },
+    {
+      name: "get_pix_cobv",
+      description: "Retrieve PIX due charge (cobv) by txid",
+      inputSchema: {
+        type: "object",
+        properties: { txid: { type: "string", description: "Due charge txid" } },
+        required: ["txid"],
+      },
+    },
+    {
+      name: "create_pix_devolucao",
+      description: "Create PIX return (devolução) for a received transaction",
+      inputSchema: {
+        type: "object",
+        properties: {
+          e2eId: { type: "string", description: "End-to-end ID of the received PIX transaction" },
+          devolucao_id: { type: "string", description: "Unique return ID (max 35 alphanumeric chars)" },
+          amount: { type: "number", description: "Return amount in BRL (may be partial)" },
+          description: { type: "string", description: "Return description" },
+        },
+        required: ["e2eId", "devolucao_id", "amount"],
+      },
+    },
+    {
+      name: "list_pix_keys",
+      description: "List PIX keys (chaves) registered to the Inter account",
+      inputSchema: { type: "object", properties: {} },
+    },
+    {
       name: "get_balance",
       description: "Get account balance",
       inputSchema: { type: "object", properties: {} },
@@ -194,6 +306,34 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
           date_to: { type: "string", description: "End date (YYYY-MM-DD)" },
           page: { type: "number", description: "Page number" },
           size: { type: "number", description: "Page size" },
+        },
+        required: ["date_from", "date_to"],
+      },
+    },
+    {
+      name: "get_statement_enriched",
+      description: "Get enriched statement with detailed transaction info (counterparty, category, Pix details)",
+      inputSchema: {
+        type: "object",
+        properties: {
+          date_from: { type: "string", description: "Start date (YYYY-MM-DD)" },
+          date_to: { type: "string", description: "End date (YYYY-MM-DD)" },
+          page: { type: "number", description: "Page number" },
+          size: { type: "number", description: "Page size" },
+          tipoOperacao: { type: "string", enum: ["C", "D"], description: "C=Credit, D=Debit" },
+          tipoTransacao: { type: "string", description: "Transaction type filter (e.g. PIX, BOLETO, TED, TARIFA)" },
+        },
+        required: ["date_from", "date_to"],
+      },
+    },
+    {
+      name: "get_statement_pdf",
+      description: "Download account statement as PDF (base64 payload) for a date range",
+      inputSchema: {
+        type: "object",
+        properties: {
+          date_from: { type: "string", description: "Start date (YYYY-MM-DD)" },
+          date_to: { type: "string", description: "End date (YYYY-MM-DD)" },
         },
         required: ["date_from", "date_to"],
       },
@@ -278,6 +418,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       }
       case "cancel_boleto":
         return { content: [{ type: "text", text: JSON.stringify(await interRequest("POST", `/cobranca/v3/cobrancas/${args?.boletoId}/cancelar`, "boleto-cobranca.write", { motivoCancelamento: args?.reason }), null, 2) }] };
+      case "get_boleto_pdf":
+        return { content: [{ type: "text", text: JSON.stringify(await interRequest("GET", `/cobranca/v3/cobrancas/${args?.boletoId}/pdf`, "boleto-cobranca.read"), null, 2) }] };
       case "create_pix": {
         const payload: any = {
           valor: args?.amount,
@@ -296,6 +438,64 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
         if (args?.size) params.set("itensPorPagina", String(args.size));
         return { content: [{ type: "text", text: JSON.stringify(await interRequest("GET", `/pix/v2/pix?${params}`, "pix.read"), null, 2) }] };
       }
+      case "create_pix_cob": {
+        const payload: any = {
+          calendario: { expiracao: args?.expiration ?? 3600 },
+          valor: { original: typeof args?.amount === "number" ? args.amount.toFixed(2) : String(args?.amount) },
+          chave: args?.pix_key || process.env.INTER_PIX_KEY || "",
+          solicitacaoPagador: args?.description,
+        };
+        if (args?.payer_cpf) payload.devedor = { cpf: args.payer_cpf, nome: args?.payer_name };
+        else if (args?.payer_cnpj) payload.devedor = { cnpj: args.payer_cnpj, nome: args?.payer_name };
+        const method = args?.txid ? "PUT" : "POST";
+        const path = args?.txid ? `/pix/v2/cob/${args.txid}` : "/pix/v2/cob";
+        return { content: [{ type: "text", text: JSON.stringify(await interRequest(method, path, "cob.write", payload), null, 2) }] };
+      }
+      case "get_pix_cob":
+        return { content: [{ type: "text", text: JSON.stringify(await interRequest("GET", `/pix/v2/cob/${args?.txid}`, "cob.read"), null, 2) }] };
+      case "list_pix_cob": {
+        const params = new URLSearchParams();
+        params.set("inicio", String(args?.inicio));
+        params.set("fim", String(args?.fim));
+        if (args?.cpf) params.set("cpf", String(args.cpf));
+        if (args?.cnpj) params.set("cnpj", String(args.cnpj));
+        if (args?.status) params.set("status", String(args.status));
+        if (args?.paginaAtual !== undefined) params.set("paginacao.paginaAtual", String(args.paginaAtual));
+        if (args?.itensPorPagina !== undefined) params.set("paginacao.itensPorPagina", String(args.itensPorPagina));
+        return { content: [{ type: "text", text: JSON.stringify(await interRequest("GET", `/pix/v2/cob?${params}`, "cob.read"), null, 2) }] };
+      }
+      case "create_pix_cobv": {
+        const payload: any = {
+          calendario: {
+            dataDeVencimento: args?.due_date,
+            validadeAposVencimento: args?.validity_after_due ?? 30,
+          },
+          valor: { original: typeof args?.amount === "number" ? args.amount.toFixed(2) : String(args?.amount) },
+          chave: args?.pix_key || process.env.INTER_PIX_KEY || "",
+          devedor: {
+            nome: args?.payer_name,
+            logradouro: args?.payer_address || "",
+            cidade: args?.payer_city || "",
+            uf: args?.payer_state || "",
+            cep: args?.payer_zip || "",
+          },
+          solicitacaoPagador: args?.description,
+        };
+        if (args?.payer_cpf) payload.devedor.cpf = args.payer_cpf;
+        else if (args?.payer_cnpj) payload.devedor.cnpj = args.payer_cnpj;
+        return { content: [{ type: "text", text: JSON.stringify(await interRequest("PUT", `/pix/v2/cobv/${args?.txid}`, "cobv.write", payload), null, 2) }] };
+      }
+      case "get_pix_cobv":
+        return { content: [{ type: "text", text: JSON.stringify(await interRequest("GET", `/pix/v2/cobv/${args?.txid}`, "cobv.read"), null, 2) }] };
+      case "create_pix_devolucao": {
+        const payload: any = {
+          valor: typeof args?.amount === "number" ? args.amount.toFixed(2) : String(args?.amount),
+        };
+        if (args?.description) payload.descricao = args.description;
+        return { content: [{ type: "text", text: JSON.stringify(await interRequest("PUT", `/pix/v2/pix/${args?.e2eId}/devolucao/${args?.devolucao_id}`, "pix.write", payload), null, 2) }] };
+      }
+      case "list_pix_keys":
+        return { content: [{ type: "text", text: JSON.stringify(await interRequest("GET", "/banking/v2/pix", "pagamento-pix.read"), null, 2) }] };
       case "get_balance":
         return { content: [{ type: "text", text: JSON.stringify(await interRequest("GET", "/banking/v2/saldo", "extrato.read"), null, 2) }] };
       case "get_statement": {
@@ -305,6 +505,22 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
         if (args?.page) params.set("paginaAtual", String(args.page));
         if (args?.size) params.set("itensPorPagina", String(args.size));
         return { content: [{ type: "text", text: JSON.stringify(await interRequest("GET", `/banking/v2/extrato?${params}`, "extrato.read"), null, 2) }] };
+      }
+      case "get_statement_enriched": {
+        const params = new URLSearchParams();
+        params.set("dataInicio", String(args?.date_from));
+        params.set("dataFim", String(args?.date_to));
+        if (args?.page) params.set("pagina", String(args.page));
+        if (args?.size) params.set("tamanhoPagina", String(args.size));
+        if (args?.tipoOperacao) params.set("tipoOperacao", String(args.tipoOperacao));
+        if (args?.tipoTransacao) params.set("tipoTransacao", String(args.tipoTransacao));
+        return { content: [{ type: "text", text: JSON.stringify(await interRequest("GET", `/banking/v2/extrato/completo?${params}`, "extrato.read"), null, 2) }] };
+      }
+      case "get_statement_pdf": {
+        const params = new URLSearchParams();
+        params.set("dataInicio", String(args?.date_from));
+        params.set("dataFim", String(args?.date_to));
+        return { content: [{ type: "text", text: JSON.stringify(await interRequest("GET", `/banking/v2/extrato/exportar?${params}`, "extrato.read"), null, 2) }] };
       }
       case "create_transfer": {
         const payload: any = {
@@ -352,7 +568,7 @@ async function main() {
       if (!sid && isInitializeRequest(req.body)) {
         const t = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID(), onsessioninitialized: (id) => { transports.set(id, t); } });
         t.onclose = () => { if (t.sessionId) transports.delete(t.sessionId); };
-        const s = new Server({ name: "mcp-inter-bank", version: "0.1.0" }, { capabilities: { tools: {} } }); (server as any)._requestHandlers.forEach((v: any, k: any) => (s as any)._requestHandlers.set(k, v)); (server as any)._notificationHandlers?.forEach((v: any, k: any) => (s as any)._notificationHandlers.set(k, v)); await s.connect(t);
+        const s = new Server({ name: "mcp-inter-bank", version: "0.2.0" }, { capabilities: { tools: {} } }); (server as any)._requestHandlers.forEach((v: any, k: any) => (s as any)._requestHandlers.set(k, v)); (server as any)._notificationHandlers?.forEach((v: any, k: any) => (s as any)._notificationHandlers.set(k, v)); await s.connect(t);
         await t.handleRequest(req, res, req.body); return;
       }
       res.status(400).json({ jsonrpc: "2.0", error: { code: -32000, message: "Bad Request" }, id: null });

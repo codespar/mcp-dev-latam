@@ -1,6 +1,6 @@
 {
   "name": "@codespar/mcp-inter-bank",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "MCP server for Banco Inter — digital bank, boleto, PIX, statements, transfers",
   "type": "module",
   "main": "dist/index.js",
