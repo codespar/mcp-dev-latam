@@ -1,0 +1,33 @@
+{
+  "name": "@codespar/mcp-nupay",
+  "version": "0.1.0",
+  "description": "MCP server for NuPay — Nubank's merchant checkout rail. Pix + NuPay wallet one-click checkout backed by Nubank's 100M+ BR customer distribution.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "mcp-nupay": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "typescript": "^5.8.0"
+  },
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "nupay",
+    "nubank",
+    "payments",
+    "pix",
+    "checkout",
+    "one-click",
+    "brazil"
+  ],
+  "mcpName": "io.github.codespar/mcp-nupay"
+}

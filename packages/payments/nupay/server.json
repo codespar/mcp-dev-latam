@@ -1,0 +1,58 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.codespar/mcp-nupay",
+  "description": "MCP server for NuPay — Nubank's merchant checkout rail. Pix + NuPay wallet one-click checkout backed by Nubank's 100M+ BR customer distribution.",
+  "repository": {
+    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "source": "github",
+    "subfolder": "packages/payments/nupay"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@codespar/mcp-nupay",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "NUPAY_MERCHANT_KEY",
+          "description": "NuPay X-Merchant-Key issued to your merchant",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "NUPAY_MERCHANT_TOKEN",
+          "description": "NuPay X-Merchant-Token issued to your merchant",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": true
+        },
+        {
+          "name": "NUPAY_CLIENT_ID",
+          "description": "OAuth2/CIBA client_id for pre-authorized (recurrence) flows. Optional unless using backchannel_start / backchannel_complete.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "NUPAY_CLIENT_SECRET",
+          "description": "OAuth2/CIBA client_secret for pre-authorized flows. Optional unless using backchannel_* tools.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": true
+        },
+        {
+          "name": "NUPAY_ENV",
+          "description": "sandbox | production. Defaults to sandbox. Drives both checkout API and auth base URLs.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        }
+      ]
+    }
+  ]
+}
