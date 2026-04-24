@@ -1,6 +1,6 @@
 {
   "name": "@codespar/mcp-shopee",
-  "version": "0.1.0-alpha.1",
+  "version": "0.2.0-alpha.1",
   "description": "MCP server for Shopee — major LatAm ecommerce marketplace. Shopee Partner API v2 for merchant integrations (orders, products, shipping, returns).",
   "type": "module",
   "main": "./dist/index.js",

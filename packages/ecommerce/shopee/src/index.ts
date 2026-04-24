@@ -8,19 +8,29 @@
  * marketplaces where LatAm merchants concentrate most of their online GMV.
  * Each has its own seller ecosystem — bundle both for full regional reach.
  *
- * Tools (12):
- *   get_shop_info            — GET  /shop/get_shop_info
- *   list_orders              — GET  /order/get_order_list
- *   get_order_detail         — GET  /order/get_order_detail
- *   ship_order               — POST /order/ship_order
- *   cancel_order             — POST /order/cancel_order
- *   list_products            — GET  /product/get_item_list
- *   get_product_detail       — GET  /product/get_item_base_info
- *   update_product_stock     — POST /product/update_stock
- *   update_product_price     — POST /product/update_price
- *   get_shipment_list        — GET  /order/get_shipment_list
- *   get_return_list          — GET  /returns/get_return_list
- *   confirm_return           — POST /returns/confirm
+ * Tools (22):
+ *   get_shop_info                — GET  /shop/get_shop_info
+ *   list_orders                  — GET  /order/get_order_list
+ *   get_order_detail             — GET  /order/get_order_detail
+ *   ship_order                   — POST /order/ship_order
+ *   cancel_order                 — POST /order/cancel_order
+ *   list_products                — GET  /product/get_item_list
+ *   get_product_detail           — GET  /product/get_item_base_info
+ *   add_item                     — POST /product/add_item
+ *   update_item                  — POST /product/update_item
+ *   delete_item                  — POST /product/delete_item
+ *   update_product_stock         — POST /product/update_stock
+ *   update_product_price         — POST /product/update_price
+ *   get_shipment_list            — GET  /order/get_shipment_list
+ *   get_shipping_parameter       — GET  /logistics/get_shipping_parameter
+ *   get_tracking_number          — GET  /logistics/get_tracking_number
+ *   download_shipping_document   — POST /logistics/download_shipping_document
+ *   get_return_list              — GET  /returns/get_return_list
+ *   confirm_return               — POST /returns/confirm
+ *   accept_return_offer          — POST /returns/accept_offer
+ *   add_discount                 — POST /discount/add_discount
+ *   add_bundle_deal              — POST /bundle_deal/add_bundle_deal
+ *   send_chat_message            — POST /sellerchat/send_message
  *
  * Authentication
  *   Shopee uses partner-signed requests. For shop-level endpoints the base
@@ -111,7 +121,7 @@ async function shopeeRequest(
 }
 
 const server = new Server(
-  { name: "mcp-shopee", version: "0.1.0-alpha.1" },
+  { name: "mcp-shopee", version: "0.2.0-alpha.1" },
   { capabilities: { tools: {} } }
 );
 
@@ -276,6 +286,136 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         required: ["return_sn"],
       },
     },
+    {
+      name: "add_item",
+      description: "Create a new product (item) in the shop. Expects full item payload per Shopee /product/add_item spec (category_id, item_name, description, price+stock via model list or tier_variation, image.image_id_list, weight, logistic_info, etc.).",
+      inputSchema: {
+        type: "object",
+        properties: {
+          item: { type: "object", description: "Full item payload forwarded as the POST body to /product/add_item. Required fields typically include original_price, description, weight, item_name, category_id, image, and logistic_info. See Shopee Open Platform docs for the exact schema in your region." },
+        },
+        required: ["item"],
+      },
+    },
+    {
+      name: "update_item",
+      description: "Update an existing product. Only the provided fields on the item_id are changed. Use update_product_stock / update_product_price for SKU stock and price — this endpoint handles descriptive fields (name, description, images, attributes, logistics).",
+      inputSchema: {
+        type: "object",
+        properties: {
+          item_id: { type: "number", description: "Item ID to update." },
+          patch: { type: "object", description: "Object containing the fields to update (e.g. item_name, description, image.image_id_list, attribute_list, logistic_info). Merged into the POST body along with item_id." },
+        },
+        required: ["item_id"],
+      },
+    },
+    {
+      name: "delete_item",
+      description: "Delete an item (product) from the shop by item_id. Irreversible — item moves to SELLER_DELETE status.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          item_id: { type: "number", description: "Item ID to delete." },
+        },
+        required: ["item_id"],
+      },
+    },
+    {
+      name: "get_shipping_parameter",
+      description: "Fetch the required shipping parameters for an order before calling ship_order. Returns which of pickup / dropoff / non_integrated is expected and lists valid address_id, pickup_time_id, branch_id, slug values for the order's logistics channel.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          order_sn: { type: "string", description: "Order serial number." },
+          package_number: { type: "string", description: "Optional package_number when the order has multiple packages." },
+        },
+        required: ["order_sn"],
+      },
+    },
+    {
+      name: "get_tracking_number",
+      description: "Get the tracking number (and courier info when available) for a shipped order.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          order_sn: { type: "string", description: "Order serial number." },
+          package_number: { type: "string", description: "Optional package_number when the order has multiple packages." },
+          response_optional_fields: { type: "string", description: "Optional comma-separated list of extra fields (e.g. 'first_mile_tracking_number,last_mile_tracking_number,plp_number')." },
+        },
+        required: ["order_sn"],
+      },
+    },
+    {
+      name: "download_shipping_document",
+      description: "Request the shipping label / air waybill PDF for one or more orders. Returns a download URL or base64 document payload depending on channel. Call create_shipping_document first if your flow requires pre-generation.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          order_list: {
+            type: "array",
+            items: { type: "object" },
+            description: "Array of { order_sn, package_number?, shipping_document_type? } entries. shipping_document_type defaults to NORMAL_AIR_WAYBILL.",
+          },
+          shipping_document_type: { type: "string", description: "Default document type applied to entries without their own (e.g. NORMAL_AIR_WAYBILL, THERMAL_AIR_WAYBILL)." },
+        },
+        required: ["order_list"],
+      },
+    },
+    {
+      name: "accept_return_offer",
+      description: "Accept the buyer's return offer (proposed solution) for a return_sn, ending negotiation in the buyer's favor.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          return_sn: { type: "string", description: "Return serial number whose offer is being accepted." },
+        },
+        required: ["return_sn"],
+      },
+    },
+    {
+      name: "add_discount",
+      description: "Create a new shop-level discount (promotion) with a time window. Add items/variations to it afterwards via the Shopee discount/add_discount_item endpoint.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          discount_name: { type: "string", description: "Internal name of the discount promotion." },
+          start_time: { type: "number", description: "Unix seconds when the discount becomes active. Must be > now + 1 hour per Shopee rules." },
+          end_time: { type: "number", description: "Unix seconds when the discount ends. Must be > start_time and within the maximum promotion window (typically 180 days)." },
+        },
+        required: ["discount_name", "start_time", "end_time"],
+      },
+    },
+    {
+      name: "add_bundle_deal",
+      description: "Create a bundle-deal promotion (e.g. buy-N-for-X, buy-N-get-Y%-off, fixed-price bundle). Items are attached via add_bundle_deal_item (not exposed here).",
+      inputSchema: {
+        type: "object",
+        properties: {
+          rule_type: { type: "number", description: "Bundle rule type: 1 = fixed price, 2 = discount percentage, 3 = discount amount." },
+          discount_value: { type: "number", description: "Discount value — interpretation depends on rule_type (fixed price, percent off, or amount off)." },
+          fix_price: { type: "number", description: "Fixed bundle price when rule_type = 1." },
+          min_amount: { type: "number", description: "Minimum number of items required to trigger the bundle." },
+          start_time: { type: "number", description: "Unix seconds when the bundle deal becomes active." },
+          end_time: { type: "number", description: "Unix seconds when the bundle deal ends." },
+          name: { type: "string", description: "Bundle deal name shown internally." },
+          purchase_limit: { type: "number", description: "Per-buyer purchase limit (0 = unlimited)." },
+        },
+        required: ["rule_type", "start_time", "end_time", "name"],
+      },
+    },
+    {
+      name: "send_chat_message",
+      description: "Send a text or sticker message to a buyer in Shopee's seller chat. Requires the buyer's user_id (obtainable from order detail's buyer_user_id).",
+      inputSchema: {
+        type: "object",
+        properties: {
+          to_id: { type: "number", description: "Buyer user_id to message." },
+          message_type: { type: "string", enum: ["text", "sticker", "image", "item", "order"], description: "Message content type. Defaults to 'text'." },
+          content: { type: "object", description: "Message payload object. For text: { text: '...' }. For sticker: { sticker_id, sticker_package_id }. For item: { item_id }. For order: { order_sn }." },
+        },
+        required: ["to_id", "content"],
+      },
+    },
   ],
 }));
 
@@ -377,6 +517,78 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return { content: [{ type: "text", text: JSON.stringify(await shopeeRequest("POST", "/returns/confirm", undefined, body), null, 2) }] };
       }
 
+      case "add_item": {
+        const body = (a?.item ?? {}) as Record<string, unknown>;
+        return { content: [{ type: "text", text: JSON.stringify(await shopeeRequest("POST", "/product/add_item", undefined, body), null, 2) }] };
+      }
+
+      case "update_item": {
+        const patch = (a?.patch ?? {}) as Record<string, unknown>;
+        const body: Record<string, unknown> = { item_id: a?.item_id, ...patch };
+        return { content: [{ type: "text", text: JSON.stringify(await shopeeRequest("POST", "/product/update_item", undefined, body), null, 2) }] };
+      }
+
+      case "delete_item": {
+        const body = { item_id: a?.item_id };
+        return { content: [{ type: "text", text: JSON.stringify(await shopeeRequest("POST", "/product/delete_item", undefined, body), null, 2) }] };
+      }
+
+      case "get_shipping_parameter": {
+        const q: Record<string, unknown> = { order_sn: a?.order_sn };
+        if (a?.package_number !== undefined) q.package_number = a.package_number;
+        return { content: [{ type: "text", text: JSON.stringify(await shopeeRequest("GET", "/logistics/get_shipping_parameter", q), null, 2) }] };
+      }
+
+      case "get_tracking_number": {
+        const q: Record<string, unknown> = { order_sn: a?.order_sn };
+        if (a?.package_number !== undefined) q.package_number = a.package_number;
+        if (a?.response_optional_fields !== undefined) q.response_optional_fields = a.response_optional_fields;
+        return { content: [{ type: "text", text: JSON.stringify(await shopeeRequest("GET", "/logistics/get_tracking_number", q), null, 2) }] };
+      }
+
+      case "download_shipping_document": {
+        const body: Record<string, unknown> = { order_list: a?.order_list };
+        if (a?.shipping_document_type !== undefined) body.shipping_document_type = a.shipping_document_type;
+        return { content: [{ type: "text", text: JSON.stringify(await shopeeRequest("POST", "/logistics/download_shipping_document", undefined, body), null, 2) }] };
+      }
+
+      case "accept_return_offer": {
+        const body = { return_sn: a?.return_sn };
+        return { content: [{ type: "text", text: JSON.stringify(await shopeeRequest("POST", "/returns/accept_offer", undefined, body), null, 2) }] };
+      }
+
+      case "add_discount": {
+        const body = {
+          discount_name: a?.discount_name,
+          start_time: a?.start_time,
+          end_time: a?.end_time,
+        };
+        return { content: [{ type: "text", text: JSON.stringify(await shopeeRequest("POST", "/discount/add_discount", undefined, body), null, 2) }] };
+      }
+
+      case "add_bundle_deal": {
+        const body: Record<string, unknown> = {
+          rule_type: a?.rule_type,
+          start_time: a?.start_time,
+          end_time: a?.end_time,
+          name: a?.name,
+        };
+        if (a?.discount_value !== undefined) body.discount_value = a.discount_value;
+        if (a?.fix_price !== undefined) body.fix_price = a.fix_price;
+        if (a?.min_amount !== undefined) body.min_amount = a.min_amount;
+        if (a?.purchase_limit !== undefined) body.purchase_limit = a.purchase_limit;
+        return { content: [{ type: "text", text: JSON.stringify(await shopeeRequest("POST", "/bundle_deal/add_bundle_deal", undefined, body), null, 2) }] };
+      }
+
+      case "send_chat_message": {
+        const body: Record<string, unknown> = {
+          to_id: a?.to_id,
+          message_type: a?.message_type ?? "text",
+          content: a?.content,
+        };
+        return { content: [{ type: "text", text: JSON.stringify(await shopeeRequest("POST", "/sellerchat/send_message", undefined, body), null, 2) }] };
+      }
+
       default:
         return { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true };
     }
@@ -399,7 +611,7 @@ async function main() {
       if (!sid && isInitializeRequest(req.body)) {
         const t = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID(), onsessioninitialized: (id) => { transports.set(id, t); } });
         t.onclose = () => { if (t.sessionId) transports.delete(t.sessionId); };
-        const s = new Server({ name: "mcp-shopee", version: "0.1.0-alpha.1" }, { capabilities: { tools: {} } });
+        const s = new Server({ name: "mcp-shopee", version: "0.2.0-alpha.1" }, { capabilities: { tools: {} } });
         (server as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.forEach((v, k) => (s as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.set(k, v));
         (server as unknown as { _notificationHandlers?: Map<unknown, unknown> })._notificationHandlers?.forEach((v, k) => (s as unknown as { _notificationHandlers: Map<unknown, unknown> })._notificationHandlers.set(k, v));
         await s.connect(t);
