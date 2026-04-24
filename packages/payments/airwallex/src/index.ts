@@ -9,16 +9,25 @@
  * payouts and FX conversions. Together they bracket the cross-border flow both
  * ways.
  *
- * Tools (11):
+ * Tools (20):
  *   create_payment_intent    — create a pay-in payment intent (USD/EUR/GBP/etc)
  *   confirm_payment_intent   — confirm a payment intent with a payment method
+ *   capture_payment_intent   — capture a previously-authorized payment intent
  *   retrieve_payment_intent  — fetch a payment intent by id
  *   cancel_payment_intent    — cancel an unconfirmed or uncaptured intent
+ *   list_payment_intents     — list payment intents with filters (status, date range)
  *   create_refund            — refund a captured payment intent
+ *   retrieve_refund          — fetch a refund by id
  *   create_customer          — onboard a customer for saved payment methods
+ *   retrieve_customer        — fetch a customer by id
+ *   update_customer          — update customer fields (email, address, metadata)
  *   create_beneficiary       — onboard a transfer beneficiary (bank details)
+ *   retrieve_beneficiary     — fetch a beneficiary by id
+ *   list_beneficiaries       — list beneficiaries with filters
  *   create_transfer          — send a cross-border transfer to a beneficiary
  *   retrieve_transfer        — fetch a transfer by id
+ *   cancel_transfer          — cancel a transfer that has not yet settled
+ *   list_transfers           — list transfers with filters (status, date range)
  *   create_conversion        — execute an FX conversion between wallet currencies
  *   retrieve_balance         — fetch current wallet balance per currency
  *
@@ -86,6 +95,19 @@ async function getToken(): Promise<string> {
   return data.token;
 }
 
+function buildQuery(params?: Record<string, unknown>): string {
+  if (!params) return "";
+  const entries = Object.entries(params).filter(
+    ([, v]) => v !== undefined && v !== null && v !== "",
+  );
+  if (entries.length === 0) return "";
+  const qs = new URLSearchParams();
+  for (const [k, v] of entries) {
+    qs.append(k, String(v));
+  }
+  return `?${qs.toString()}`;
+}
+
 async function airwallexRequest(
   method: string,
   path: string,
@@ -107,7 +129,7 @@ async function airwallexRequest(
 }
 
 const server = new Server(
-  { name: "mcp-airwallex", version: "0.1.0" },
+  { name: "mcp-airwallex", version: "0.2.0" },
   { capabilities: { tools: {} } },
 );
 
@@ -194,6 +216,36 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
       },
     },
     {
+      name: "capture_payment_intent",
+      description:
+        "Capture a previously-authorized payment intent (two-step auth + capture flow). Use this after confirm_payment_intent on intents created with capture_method=manual. Amount may be less than authorized for partial capture.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "Payment intent id" },
+          request_id: { type: "string", description: "Idempotency key" },
+          amount: { type: "number", description: "Amount to capture in major units. Omit for full authorized amount." },
+        },
+        required: ["id", "request_id"],
+      },
+    },
+    {
+      name: "list_payment_intents",
+      description:
+        "List payment intents with optional filters (status, merchant_order_id, date range). Supports pagination via page_num / page_size.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          status: { type: "string", description: "Filter by status (REQUIRES_PAYMENT_METHOD, SUCCEEDED, CANCELLED, etc)" },
+          merchant_order_id: { type: "string", description: "Filter by merchant-side order reference" },
+          from_created_at: { type: "string", description: "Lower bound on creation time (ISO 8601)" },
+          to_created_at: { type: "string", description: "Upper bound on creation time (ISO 8601)" },
+          page_num: { type: "number", description: "Page index (0-based)" },
+          page_size: { type: "number", description: "Page size (default 20, max 200)" },
+        },
+      },
+    },
+    {
       name: "create_refund",
       description: "Refund a captured payment intent (full or partial). Returns the refund object with status.",
       inputSchema: {
@@ -206,6 +258,17 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
           metadata: { type: "object", description: "Free-form metadata" },
         },
         required: ["request_id", "payment_intent_id"],
+      },
+    },
+    {
+      name: "retrieve_refund",
+      description: "Retrieve a refund by id. Returns current status (RECEIVED, ACCEPTED, PROCESSING, SUCCEEDED, FAILED).",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "Refund id" },
+        },
+        required: ["id"],
       },
     },
     {
@@ -228,6 +291,36 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
           metadata: { type: "object", description: "Free-form metadata" },
         },
         required: ["request_id", "merchant_customer_id"],
+      },
+    },
+    {
+      name: "retrieve_customer",
+      description: "Retrieve a customer by id. Returns the customer profile plus metadata.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "Airwallex customer id" },
+        },
+        required: ["id"],
+      },
+    },
+    {
+      name: "update_customer",
+      description:
+        "Update fields on an existing customer (email, phone, address, metadata). Immutable fields like merchant_customer_id cannot be changed.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "Airwallex customer id" },
+          request_id: { type: "string", description: "Idempotency key" },
+          email: { type: "string", description: "Updated email" },
+          first_name: { type: "string" },
+          last_name: { type: "string" },
+          phone_number: { type: "string" },
+          address: { type: "object", description: "Updated address object" },
+          metadata: { type: "object", description: "Free-form metadata (replaces previous metadata)" },
+        },
+        required: ["id", "request_id"],
       },
     },
     {
@@ -257,6 +350,31 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
           },
         },
         required: ["request_id", "nickname", "entity_type", "beneficiary", "bank_details"],
+      },
+    },
+    {
+      name: "retrieve_beneficiary",
+      description: "Retrieve a beneficiary by id. Returns bank details, entity_type, and allowed payment_methods.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "Beneficiary id" },
+        },
+        required: ["id"],
+      },
+    },
+    {
+      name: "list_beneficiaries",
+      description: "List beneficiaries. Supports pagination and filters by entity_type, nickname and bank_country_code.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          entity_type: { type: "string", enum: ["PERSONAL", "COMPANY"], description: "Filter by entity type" },
+          nickname: { type: "string", description: "Filter by friendly label" },
+          bank_country_code: { type: "string", description: "Filter by destination bank country (ISO-2)" },
+          page_num: { type: "number", description: "Page index (0-based)" },
+          page_size: { type: "number", description: "Page size (default 20)" },
+        },
       },
     },
     {
@@ -294,6 +412,33 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
           id: { type: "string", description: "Transfer id" },
         },
         required: ["id"],
+      },
+    },
+    {
+      name: "cancel_transfer",
+      description:
+        "Cancel a transfer that has not yet settled. Only works while the transfer is in an early status (e.g. APPROVED, IN_PROGRESS before funds leave). Fails on DELIVERED transfers.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "Transfer id" },
+          request_id: { type: "string", description: "Idempotency key" },
+        },
+        required: ["id", "request_id"],
+      },
+    },
+    {
+      name: "list_transfers",
+      description: "List transfers with optional filters (status, date range). Supports pagination.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          status: { type: "string", description: "Filter by status (APPROVED, IN_PROGRESS, DELIVERED, CANCELLED, FAILED)" },
+          from_created_at: { type: "string", description: "Lower bound on creation time (ISO 8601)" },
+          to_created_at: { type: "string", description: "Upper bound on creation time (ISO 8601)" },
+          page_num: { type: "number", description: "Page index (0-based)" },
+          page_size: { type: "number", description: "Page size (default 20)" },
+        },
       },
     },
     {
@@ -391,6 +536,39 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           ],
         };
       }
+      case "capture_payment_intent": {
+        const a = args as Record<string, unknown>;
+        const id = String(a.id ?? "");
+        const { id: _omit, ...body } = a;
+        void _omit;
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(
+                await airwallexRequest("POST", `/pa/payment_intents/${id}/capture`, body),
+                null,
+                2,
+              ),
+            },
+          ],
+        };
+      }
+      case "list_payment_intents": {
+        const qs = buildQuery(args as Record<string, unknown> | undefined);
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(
+                await airwallexRequest("GET", `/pa/payment_intents${qs}`),
+                null,
+                2,
+              ),
+            },
+          ],
+        };
+      }
       case "create_refund":
         return {
           content: [
@@ -404,6 +582,21 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             },
           ],
         };
+      case "retrieve_refund": {
+        const id = String((args as { id: string }).id);
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(
+                await airwallexRequest("GET", `/pa/refunds/${id}`),
+                null,
+                2,
+              ),
+            },
+          ],
+        };
+      }
       case "create_customer":
         return {
           content: [
@@ -417,6 +610,39 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             },
           ],
         };
+      case "retrieve_customer": {
+        const id = String((args as { id: string }).id);
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(
+                await airwallexRequest("GET", `/pa/customers/${id}`),
+                null,
+                2,
+              ),
+            },
+          ],
+        };
+      }
+      case "update_customer": {
+        const a = args as Record<string, unknown>;
+        const id = String(a.id ?? "");
+        const { id: _omit, ...body } = a;
+        void _omit;
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(
+                await airwallexRequest("POST", `/pa/customers/${id}/update`, body),
+                null,
+                2,
+              ),
+            },
+          ],
+        };
+      }
       case "create_beneficiary":
         return {
           content: [
@@ -430,6 +656,36 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             },
           ],
         };
+      case "retrieve_beneficiary": {
+        const id = String((args as { id: string }).id);
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(
+                await airwallexRequest("GET", `/beneficiaries/${id}`),
+                null,
+                2,
+              ),
+            },
+          ],
+        };
+      }
+      case "list_beneficiaries": {
+        const qs = buildQuery(args as Record<string, unknown> | undefined);
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(
+                await airwallexRequest("GET", `/beneficiaries${qs}`),
+                null,
+                2,
+              ),
+            },
+          ],
+        };
+      }
       case "create_transfer":
         return {
           content: [
@@ -451,6 +707,39 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
               type: "text",
               text: JSON.stringify(
                 await airwallexRequest("GET", `/transfers/${id}`),
+                null,
+                2,
+              ),
+            },
+          ],
+        };
+      }
+      case "cancel_transfer": {
+        const a = args as Record<string, unknown>;
+        const id = String(a.id ?? "");
+        const { id: _omit, ...body } = a;
+        void _omit;
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(
+                await airwallexRequest("POST", `/transfers/${id}/cancel`, body),
+                null,
+                2,
+              ),
+            },
+          ],
+        };
+      }
+      case "list_transfers": {
+        const qs = buildQuery(args as Record<string, unknown> | undefined);
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(
+                await airwallexRequest("GET", `/transfers${qs}`),
                 null,
                 2,
               ),
@@ -511,7 +800,7 @@ async function main() {
       if (!sid && isInitializeRequest(req.body)) {
         const t = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID(), onsessioninitialized: (id) => { transports.set(id, t); } });
         t.onclose = () => { if (t.sessionId) transports.delete(t.sessionId); };
-        const s = new Server({ name: "mcp-airwallex", version: "0.1.0" }, { capabilities: { tools: {} } });
+        const s = new Server({ name: "mcp-airwallex", version: "0.2.0" }, { capabilities: { tools: {} } });
         (server as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.forEach((v, k) => (s as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.set(k, v));
         (server as unknown as { _notificationHandlers?: Map<unknown, unknown> })._notificationHandlers?.forEach((v, k) => (s as unknown as { _notificationHandlers: Map<unknown, unknown> })._notificationHandlers.set(k, v));
         await s.connect(t);
