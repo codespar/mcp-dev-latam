@@ -1,6 +1,6 @@
 {
   "name": "@codespar/mcp-correios",
-  "version": "0.1.2",
+  "version": "0.2.0-alpha.1",
   "description": "MCP server for Correios — package tracking, shipping rates, CEP lookup",
   "type": "module",
   "main": "./dist/index.js",
