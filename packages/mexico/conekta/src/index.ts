@@ -4,16 +4,12 @@
  * MCP Server for Conekta — Mexican payment gateway (cards, OXXO cash, SPEI).
  *
  * Tools:
- * - create_order: Create a new order
- * - get_order: Get order by ID
- * - list_orders: List orders with filters
- * - create_customer: Create a customer
- * - get_customer: Get customer by ID
- * - list_customers: List customers
- * - create_charge: Create a charge for an order
- * - refund_charge: Refund a charge
- * - list_payment_sources: List payment sources for a customer
- * - get_webhook_events: Get webhook events
+ * - create_order / get_order / list_orders / update_order / cancel_order
+ * - create_customer / get_customer / list_customers / update_customer / delete_customer
+ * - create_charge / refund_charge / capture_charge
+ * - list_payment_sources / create_payment_source / delete_payment_source
+ * - create_webhook / update_webhook / delete_webhook
+ * - get_webhook_events / get_webhook_event
  *
  * Environment:
  *   CONEKTA_API_KEY — API key for authentication
@@ -51,7 +47,7 @@ async function conektaRequest(method: string, path: string, body?: unknown): Pro
 }
 
 const server = new Server(
-  { name: "mcp-conekta", version: "0.1.0" },
+  { name: "mcp-conekta", version: "0.2.0" },
   { capabilities: { tools: {} } }
 );
 
@@ -211,13 +207,138 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     },
     {
       name: "get_webhook_events",
-      description: "Get webhook events",
+      description: "List webhook events (Conekta Events)",
       inputSchema: {
         type: "object",
         properties: {
           limit: { type: "number", description: "Results limit" },
           next: { type: "string", description: "Pagination cursor" },
         },
+      },
+    },
+    {
+      name: "get_webhook_event",
+      description: "Retrieve a single webhook event by ID",
+      inputSchema: {
+        type: "object",
+        properties: { eventId: { type: "string", description: "Event ID" } },
+        required: ["eventId"],
+      },
+    },
+    {
+      name: "update_customer",
+      description: "Update a customer",
+      inputSchema: {
+        type: "object",
+        properties: {
+          customerId: { type: "string", description: "Customer ID" },
+          name: { type: "string", description: "Customer name" },
+          email: { type: "string", description: "Customer email" },
+          phone: { type: "string", description: "Customer phone" },
+        },
+        required: ["customerId"],
+      },
+    },
+    {
+      name: "delete_customer",
+      description: "Delete a customer",
+      inputSchema: {
+        type: "object",
+        properties: { customerId: { type: "string", description: "Customer ID" } },
+        required: ["customerId"],
+      },
+    },
+    {
+      name: "create_payment_source",
+      description: "Create a payment source (card token) for a customer",
+      inputSchema: {
+        type: "object",
+        properties: {
+          customerId: { type: "string", description: "Customer ID" },
+          type: { type: "string", description: "Source type (e.g. card)" },
+          token_id: { type: "string", description: "Token ID from Conekta.js" },
+        },
+        required: ["customerId", "type", "token_id"],
+      },
+    },
+    {
+      name: "delete_payment_source",
+      description: "Delete a payment source from a customer",
+      inputSchema: {
+        type: "object",
+        properties: {
+          customerId: { type: "string", description: "Customer ID" },
+          paymentSourceId: { type: "string", description: "Payment source ID" },
+        },
+        required: ["customerId", "paymentSourceId"],
+      },
+    },
+    {
+      name: "update_order",
+      description: "Update an order (line_items, metadata, etc.)",
+      inputSchema: {
+        type: "object",
+        properties: {
+          orderId: { type: "string", description: "Order ID" },
+          line_items: { type: "array", description: "New line items", items: { type: "object" } },
+          metadata: { type: "object", description: "Metadata object" },
+          currency: { type: "string", description: "Currency code" },
+        },
+        required: ["orderId"],
+      },
+    },
+    {
+      name: "cancel_order",
+      description: "Cancel an order",
+      inputSchema: {
+        type: "object",
+        properties: { orderId: { type: "string", description: "Order ID" } },
+        required: ["orderId"],
+      },
+    },
+    {
+      name: "capture_charge",
+      description: "Capture a pre-authorized order (pre_authorized → paid)",
+      inputSchema: {
+        type: "object",
+        properties: { orderId: { type: "string", description: "Order ID" } },
+        required: ["orderId"],
+      },
+    },
+    {
+      name: "create_webhook",
+      description: "Create a webhook endpoint",
+      inputSchema: {
+        type: "object",
+        properties: {
+          url: { type: "string", description: "Webhook URL" },
+          production_enabled: { type: "boolean", description: "Enable in production" },
+          development_enabled: { type: "boolean", description: "Enable in development/sandbox" },
+        },
+        required: ["url"],
+      },
+    },
+    {
+      name: "update_webhook",
+      description: "Update a webhook endpoint",
+      inputSchema: {
+        type: "object",
+        properties: {
+          webhookId: { type: "string", description: "Webhook ID" },
+          url: { type: "string", description: "Webhook URL" },
+          production_enabled: { type: "boolean", description: "Enable in production" },
+          development_enabled: { type: "boolean", description: "Enable in development/sandbox" },
+        },
+        required: ["webhookId"],
+      },
+    },
+    {
+      name: "delete_webhook",
+      description: "Delete a webhook endpoint",
+      inputSchema: {
+        type: "object",
+        properties: { webhookId: { type: "string", description: "Webhook ID" } },
+        required: ["webhookId"],
       },
     },
   ],
@@ -278,6 +399,50 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
         if (args?.next) params.set("next", String(args.next));
         return { content: [{ type: "text", text: JSON.stringify(await conektaRequest("GET", `/events?${params}`), null, 2) }] };
       }
+      case "get_webhook_event":
+        return { content: [{ type: "text", text: JSON.stringify(await conektaRequest("GET", `/events/${args?.eventId}`), null, 2) }] };
+      case "update_customer": {
+        const body: any = {};
+        if (args?.name) body.name = args.name;
+        if (args?.email) body.email = args.email;
+        if (args?.phone) body.phone = args.phone;
+        return { content: [{ type: "text", text: JSON.stringify(await conektaRequest("PUT", `/customers/${args?.customerId}`, body), null, 2) }] };
+      }
+      case "delete_customer":
+        return { content: [{ type: "text", text: JSON.stringify(await conektaRequest("DELETE", `/customers/${args?.customerId}`), null, 2) }] };
+      case "create_payment_source":
+        return { content: [{ type: "text", text: JSON.stringify(await conektaRequest("POST", `/customers/${args?.customerId}/payment_sources`, {
+          type: args?.type,
+          token_id: args?.token_id,
+        }), null, 2) }] };
+      case "delete_payment_source":
+        return { content: [{ type: "text", text: JSON.stringify(await conektaRequest("DELETE", `/customers/${args?.customerId}/payment_sources/${args?.paymentSourceId}`), null, 2) }] };
+      case "update_order": {
+        const body: any = {};
+        if (args?.line_items) body.line_items = args.line_items;
+        if (args?.metadata) body.metadata = args.metadata;
+        if (args?.currency) body.currency = args.currency;
+        return { content: [{ type: "text", text: JSON.stringify(await conektaRequest("PUT", `/orders/${args?.orderId}`, body), null, 2) }] };
+      }
+      case "cancel_order":
+        return { content: [{ type: "text", text: JSON.stringify(await conektaRequest("POST", `/orders/${args?.orderId}/cancel`), null, 2) }] };
+      case "capture_charge":
+        return { content: [{ type: "text", text: JSON.stringify(await conektaRequest("POST", `/orders/${args?.orderId}/capture`), null, 2) }] };
+      case "create_webhook": {
+        const body: any = { url: args?.url };
+        if (args?.production_enabled !== undefined) body.production_enabled = args.production_enabled;
+        if (args?.development_enabled !== undefined) body.development_enabled = args.development_enabled;
+        return { content: [{ type: "text", text: JSON.stringify(await conektaRequest("POST", "/webhooks", body), null, 2) }] };
+      }
+      case "update_webhook": {
+        const body: any = {};
+        if (args?.url) body.url = args.url;
+        if (args?.production_enabled !== undefined) body.production_enabled = args.production_enabled;
+        if (args?.development_enabled !== undefined) body.development_enabled = args.development_enabled;
+        return { content: [{ type: "text", text: JSON.stringify(await conektaRequest("PUT", `/webhooks/${args?.webhookId}`, body), null, 2) }] };
+      }
+      case "delete_webhook":
+        return { content: [{ type: "text", text: JSON.stringify(await conektaRequest("DELETE", `/webhooks/${args?.webhookId}`), null, 2) }] };
       default:
         return { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true };
     }
@@ -300,7 +465,7 @@ async function main() {
       if (!sid && isInitializeRequest(req.body)) {
         const t = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID(), onsessioninitialized: (id) => { transports.set(id, t); } });
         t.onclose = () => { if (t.sessionId) transports.delete(t.sessionId); };
-        const s = new Server({ name: "mcp-conekta", version: "0.1.0" }, { capabilities: { tools: {} } }); (server as any)._requestHandlers.forEach((v: any, k: any) => (s as any)._requestHandlers.set(k, v)); (server as any)._notificationHandlers?.forEach((v: any, k: any) => (s as any)._notificationHandlers.set(k, v)); await s.connect(t);
+        const s = new Server({ name: "mcp-conekta", version: "0.2.0" }, { capabilities: { tools: {} } }); (server as any)._requestHandlers.forEach((v: any, k: any) => (s as any)._requestHandlers.set(k, v)); (server as any)._notificationHandlers?.forEach((v: any, k: any) => (s as any)._notificationHandlers.set(k, v)); await s.connect(t);
         await t.handleRequest(req, res, req.body); return;
       }
       res.status(400).json({ jsonrpc: "2.0", error: { code: -32000, message: "Bad Request" }, id: null });
