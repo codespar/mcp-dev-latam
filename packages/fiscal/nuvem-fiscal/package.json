@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-nuvem-fiscal",
-  "version": "0.1.2",
-  "description": "MCP server for Nuvem Fiscal — NF-e, NFS-e, NFC-e, CNPJ, CEP",
+  "version": "0.2.0",
+  "description": "MCP server for Nuvem Fiscal — NF-e, NFS-e, NFC-e, CT-e, MDF-e, CCe, lotes, empresas, certificados, CNPJ, CEP",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

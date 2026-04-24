@@ -3,22 +3,31 @@
 /**
  * MCP Server for Nuvem Fiscal — Brazilian fiscal document platform.
  *
- * Tools:
+ * Tools (24 total):
  * - create_nfe: Create a NF-e (nota fiscal eletrônica)
  * - get_nfe: Get NF-e details by ID
  * - cancel_nfe: Cancel a NF-e
+ * - get_nfe_events: Get events for a NF-e
+ * - send_correction_letter_nfe: Send NF-e carta de correção (CCe)
+ * - get_nfe_batch: Get NF-e batch (lote) status by ID
  * - create_nfse: Create a NFS-e (nota fiscal de serviço)
  * - get_nfse: Get NFS-e details by ID
  * - cancel_nfse: Cancel a NFS-e
  * - create_nfce: Create a NFC-e (nota fiscal de consumidor)
- * - consult_cnpj: Consult company data by CNPJ
- * - consult_cep: Consult address by CEP
- * - register_company: Register a company
+ * - cancel_nfce: Cancel a NFC-e
  * - create_cte: Create a CT-e (conhecimento de transporte eletrônico)
  * - get_cte: Get CT-e details by ID
  * - cancel_cte: Cancel a CT-e
+ * - send_correction_letter_cte: Send CT-e carta de correção
  * - create_mdfe: Create a MDF-e (manifesto de documentos fiscais)
- * - get_nfe_events: Get events for a NF-e
+ * - get_mdfe: Get MDF-e details by ID
+ * - cancel_mdfe: Cancel a MDF-e
+ * - close_mdfe: Close (encerrar) a MDF-e
+ * - consult_cnpj: Consult company data by CNPJ
+ * - consult_cep: Consult address by CEP
+ * - register_company: Register a company
+ * - list_empresas: List registered companies
+ * - upload_certificate: Upload A1 digital certificate for a company
  *
  * Environment:
  *   NUVEM_FISCAL_CLIENT_ID — OAuth2 client ID
@@ -98,7 +107,7 @@ async function nuvemFiscalRequest(method: string, path: string, body?: unknown):
 }
 
 const server = new Server(
-  { name: "mcp-nuvem-fiscal", version: "0.1.0" },
+  { name: "mcp-nuvem-fiscal", version: "0.2.0" },
   { capabilities: { tools: {} } }
 );
 
@@ -299,6 +308,117 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         required: ["id"],
       },
     },
+    {
+      name: "cancel_nfce",
+      description: "Cancel a NFC-e (nota fiscal de consumidor eletrônica)",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "NFC-e ID" },
+          justificativa: { type: "string", description: "Cancellation reason (min 15 chars)" },
+        },
+        required: ["id", "justificativa"],
+      },
+    },
+    {
+      name: "send_correction_letter_nfe",
+      description: "Send a carta de correção eletrônica (CCe) for a NF-e. Used to correct minor errors without cancelling.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "NF-e ID" },
+          correcao: { type: "string", description: "Correction text (min 15 chars, max 1000)" },
+          sequencia: { type: "number", description: "Sequence number (1-20), defaults to 1" },
+        },
+        required: ["id", "correcao"],
+      },
+    },
+    {
+      name: "send_correction_letter_cte",
+      description: "Send a carta de correção for a CT-e. Used to correct minor errors without cancelling.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "CT-e ID" },
+          correcoes: { type: "array", description: "Array of corrections (grupoAlterado, campoAlterado, valorAlterado, nroItemAlterado)" },
+          sequencia: { type: "number", description: "Sequence number (1-20), defaults to 1" },
+        },
+        required: ["id", "correcoes"],
+      },
+    },
+    {
+      name: "get_nfe_batch",
+      description: "Get NF-e batch (lote) status by batch ID. Use for batch emissions.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "Batch (lote) ID" },
+        },
+        required: ["id"],
+      },
+    },
+    {
+      name: "get_mdfe",
+      description: "Get MDF-e details by ID",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "MDF-e ID" },
+        },
+        required: ["id"],
+      },
+    },
+    {
+      name: "cancel_mdfe",
+      description: "Cancel a MDF-e (manifesto)",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "MDF-e ID" },
+          justificativa: { type: "string", description: "Cancellation reason (min 15 chars)" },
+        },
+        required: ["id", "justificativa"],
+      },
+    },
+    {
+      name: "close_mdfe",
+      description: "Close (encerrar) a MDF-e at route end. Required after delivery completion.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "MDF-e ID" },
+          uf: { type: "string", description: "UF code where manifesto is being closed (e.g. 'SP')" },
+          municipio: { type: "string", description: "IBGE code of closing municipality" },
+          dataEncerramento: { type: "string", description: "Closing date (ISO 8601)" },
+        },
+        required: ["id", "uf", "municipio"],
+      },
+    },
+    {
+      name: "list_empresas",
+      description: "List all companies (empresas) registered in the account.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          top: { type: "number", description: "Maximum number of records to return" },
+          skip: { type: "number", description: "Number of records to skip (pagination)" },
+          cpf_cnpj: { type: "string", description: "Filter by CPF or CNPJ" },
+        },
+      },
+    },
+    {
+      name: "upload_certificate",
+      description: "Upload or update an A1 digital certificate (.pfx, base64) for an empresa. Required to emit fiscal documents.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          cpf_cnpj: { type: "string", description: "Company CPF or CNPJ (identifier)" },
+          certificado: { type: "string", description: "Certificate .pfx file encoded as base64" },
+          senha: { type: "string", description: "Certificate password" },
+        },
+        required: ["cpf_cnpj", "certificado", "senha"],
+      },
+    },
   ],
 }));
 
@@ -341,6 +461,30 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return { content: [{ type: "text", text: JSON.stringify(await nuvemFiscalRequest("POST", "/mdfe", args), null, 2) }] };
       case "get_nfe_events":
         return { content: [{ type: "text", text: JSON.stringify(await nuvemFiscalRequest("GET", `/nfe/${args?.id}/eventos`), null, 2) }] };
+      case "cancel_nfce":
+        return { content: [{ type: "text", text: JSON.stringify(await nuvemFiscalRequest("POST", `/nfce/${args?.id}/cancelamento`, { justificativa: args?.justificativa }), null, 2) }] };
+      case "send_correction_letter_nfe":
+        return { content: [{ type: "text", text: JSON.stringify(await nuvemFiscalRequest("POST", `/nfe/${args?.id}/carta-correcao`, { correcao: args?.correcao, sequencia: args?.sequencia ?? 1 }), null, 2) }] };
+      case "send_correction_letter_cte":
+        return { content: [{ type: "text", text: JSON.stringify(await nuvemFiscalRequest("POST", `/cte/${args?.id}/carta-correcao`, { correcoes: args?.correcoes, sequencia: args?.sequencia ?? 1 }), null, 2) }] };
+      case "get_nfe_batch":
+        return { content: [{ type: "text", text: JSON.stringify(await nuvemFiscalRequest("GET", `/nfe/lotes/${args?.id}`), null, 2) }] };
+      case "get_mdfe":
+        return { content: [{ type: "text", text: JSON.stringify(await nuvemFiscalRequest("GET", `/mdfe/${args?.id}`), null, 2) }] };
+      case "cancel_mdfe":
+        return { content: [{ type: "text", text: JSON.stringify(await nuvemFiscalRequest("POST", `/mdfe/${args?.id}/cancelamento`, { justificativa: args?.justificativa }), null, 2) }] };
+      case "close_mdfe":
+        return { content: [{ type: "text", text: JSON.stringify(await nuvemFiscalRequest("POST", `/mdfe/${args?.id}/encerramento`, { uf: args?.uf, municipio: args?.municipio, dataEncerramento: args?.dataEncerramento }), null, 2) }] };
+      case "list_empresas": {
+        const q = new URLSearchParams();
+        if (args?.top !== undefined) q.set("$top", String(args.top));
+        if (args?.skip !== undefined) q.set("$skip", String(args.skip));
+        if (args?.cpf_cnpj) q.set("cpf_cnpj", String(args.cpf_cnpj));
+        const qs = q.toString();
+        return { content: [{ type: "text", text: JSON.stringify(await nuvemFiscalRequest("GET", `/empresas${qs ? `?${qs}` : ""}`), null, 2) }] };
+      }
+      case "upload_certificate":
+        return { content: [{ type: "text", text: JSON.stringify(await nuvemFiscalRequest("PUT", `/empresas/${args?.cpf_cnpj}/certificado`, { certificado: args?.certificado, senha: args?.senha }), null, 2) }] };
       default:
         return { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true };
     }
@@ -363,7 +507,7 @@ async function main() {
       if (!sid && isInitializeRequest(req.body)) {
         const t = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID(), onsessioninitialized: (id) => { transports.set(id, t); } });
         t.onclose = () => { if (t.sessionId) transports.delete(t.sessionId); };
-        const s = new Server({ name: "mcp-nuvem-fiscal", version: "0.1.0" }, { capabilities: { tools: {} } }); (server as any)._requestHandlers.forEach((v: any, k: any) => (s as any)._requestHandlers.set(k, v)); (server as any)._notificationHandlers?.forEach((v: any, k: any) => (s as any)._notificationHandlers.set(k, v)); await s.connect(t);
+        const s = new Server({ name: "mcp-nuvem-fiscal", version: "0.2.0" }, { capabilities: { tools: {} } }); (server as any)._requestHandlers.forEach((v: any, k: any) => (s as any)._requestHandlers.set(k, v)); (server as any)._notificationHandlers?.forEach((v: any, k: any) => (s as any)._notificationHandlers.set(k, v)); await s.connect(t);
         await t.handleRequest(req, res, req.body); return;
       }
       res.status(400).json({ jsonrpc: "2.0", error: { code: -32000, message: "Bad Request" }, id: null });
