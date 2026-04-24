@@ -1,0 +1,58 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.codespar/mcp-shopee",
+  "description": "MCP server for Shopee — major LatAm ecommerce marketplace. Shopee Partner API v2 for merchant integrations (orders, products, shipping, returns).",
+  "repository": {
+    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "source": "github",
+    "subfolder": "packages/ecommerce/shopee"
+  },
+  "version": "0.1.0-alpha.1",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@codespar/mcp-shopee",
+      "version": "0.1.0-alpha.1",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "SHOPEE_PARTNER_ID",
+          "description": "Shopee Open Platform partner_id (integer) assigned when the app is registered.",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "SHOPEE_PARTNER_KEY",
+          "description": "Shopee partner_key used as the secret for HMAC-SHA256 request signing.",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": true
+        },
+        {
+          "name": "SHOPEE_ACCESS_TOKEN",
+          "description": "Merchant access_token obtained via the shop authorization OAuth flow (expires every 4 hours; refresh via refresh_token).",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": true
+        },
+        {
+          "name": "SHOPEE_SHOP_ID",
+          "description": "Shop identifier (integer) returned after merchant authorization.",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "SHOPEE_ENV",
+          "description": "Environment: 'sandbox' uses partner.test-stable.shopeemobile.com, 'production' (default) uses partner.shopeemobile.com.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        }
+      ]
+    }
+  ]
+}
