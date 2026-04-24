@@ -11,17 +11,30 @@
  * matters to merchants — Pix + boleto (Cobrança / SICOB) + extrato — Caixa
  * follows the BACEN Pix v2 standard shared by every tier-1 bank.
  *
- * Tools (10):
- *   get_oauth_token   — mint/return a cached OAuth bearer (exposed for inspection)
- *   send_pix          — initiate an outbound Pix payment
- *   create_pix_qr     — create a dynamic Pix charge + QR (cob / cobv)
- *   get_pix           — retrieve a Pix by endToEndId
- *   resolve_dict_key  — resolve a DICT key (CPF, CNPJ, email, phone, EVP) to account data
- *   refund_pix        — refund / devolução of a received Pix
- *   create_boleto     — issue a boleto via Caixa Cobrança (SICOB)
- *   get_boleto        — retrieve a boleto by id / nosso_numero
- *   cancel_boleto     — cancel (baixa) a boleto
- *   get_statement     — account statement transactions
+ * Tools (23):
+ *   get_oauth_token       — mint/return a cached OAuth bearer (exposed for inspection)
+ *   send_pix              — initiate an outbound Pix payment
+ *   create_pix_qr         — create a dynamic Pix charge + QR (cob)
+ *   get_pix_charge        — retrieve a Pix immediate charge (cob) by txid
+ *   update_pix_charge     — update a Pix immediate charge (cob) by txid (PATCH)
+ *   list_pix_charges      — list Pix immediate charges (cob) by date range / status
+ *   create_pix_due_charge — create a Pix due-date charge (cobv) with payer data
+ *   get_pix_due_charge    — retrieve a Pix due-date charge (cobv) by txid
+ *   list_pix_received     — list received Pix transactions by date range
+ *   get_pix               — retrieve a Pix by endToEndId
+ *   resolve_dict_key      — resolve a DICT key (CPF, CNPJ, email, phone, EVP) to account data
+ *   register_dict_key     — register a DICT key owned by the merchant
+ *   delete_dict_key       — delete (unregister) a DICT key owned by the merchant
+ *   refund_pix            — refund / devolução of a received Pix
+ *   create_boleto         — issue a boleto via Caixa Cobrança (SICOB)
+ *   get_boleto            — retrieve a boleto by id / nosso_numero
+ *   cancel_boleto         — cancel (baixa) a boleto
+ *   download_boleto_pdf   — fetch the rendered boleto PDF URL / bytes
+ *   get_account_balance   — current balance and available limits for a merchant account
+ *   get_statement         — account statement transactions
+ *   transfer_ted          — outbound TED to an external bank account
+ *   consult_fgts          — FGTS balance / extrato consulta (worker/employer view)
+ *   pay_tribute           — pay a federal tribute (DARF / GPS / GRU) via Caixa arrecadação
  *
  * Authentication
  *   OAuth 2.0 client_credentials + mandatory mTLS. BACEN requires mTLS for
@@ -29,7 +42,7 @@
  *   This server loads the client cert + key from disk (paths via env) and
  *   routes all HTTPS requests through a Node https.Agent that presents them.
  *
- * Version: 0.1.0-alpha.1
+ * Version: 0.2.0-alpha.1
  *   developers.caixa is contract-gated and Caixa's onboarding is additionally
  *   bureaucratic (state-owned — vendor registration + credenciamento required
  *   on top of the commercial merchant contract). Full OpenAPI specs are only
@@ -189,7 +202,7 @@ async function caixaRequest(method: string, path: string, body?: unknown): Promi
 }
 
 const server = new Server(
-  { name: "mcp-caixa", version: "0.1.0-alpha.1" },
+  { name: "mcp-caixa", version: "0.2.0-alpha.1" },
   { capabilities: { tools: {} } }
 );
 
@@ -360,6 +373,232 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         required: ["account", "from", "to"],
       },
     },
+    {
+      name: "get_pix_charge",
+      description: "Retrieve a Pix immediate charge (cob) by its BCB txid. Returns status, QR payload, and associated received Pix (if paid).",
+      inputSchema: {
+        type: "object",
+        properties: {
+          txid: { type: "string", description: "BCB txid (26-35 alphanumeric chars)" },
+        },
+        required: ["txid"],
+      },
+    },
+    {
+      name: "update_pix_charge",
+      description: "Update (PATCH) a Pix immediate charge (cob) — e.g. change amount before payment, adjust expiration, or mark as REMOVIDA_PELO_USUARIO_RECEBEDOR.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          txid: { type: "string", description: "BCB txid of the charge to update" },
+          amount: { type: "string", description: "New amount in BRL major units (optional)" },
+          status: { type: "string", description: "New status: ATIVA | REMOVIDA_PELO_USUARIO_RECEBEDOR" },
+          expires_in: { type: "number", description: "New QR lifetime in seconds" },
+          description: { type: "string", description: "Payer-visible description" },
+        },
+        required: ["txid"],
+      },
+    },
+    {
+      name: "list_pix_charges",
+      description: "List Pix immediate charges (cob) filtered by date range and optional status / CPF / CNPJ. Paginated per BACEN Pix v2.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          from: { type: "string", description: "Start date-time ISO-8601 (e.g. 2025-01-01T00:00:00Z)" },
+          to: { type: "string", description: "End date-time ISO-8601" },
+          status: { type: "string", description: "Filter by status: ATIVA | CONCLUIDA | REMOVIDA_PELO_USUARIO_RECEBEDOR | REMOVIDA_PELO_PSP" },
+          cpf: { type: "string", description: "Filter by payer CPF (digits only)" },
+          cnpj: { type: "string", description: "Filter by payer CNPJ (digits only)" },
+          page: { type: "number", description: "Page number (0-indexed per BACEN)" },
+          page_size: { type: "number", description: "Items per page" },
+        },
+        required: ["from", "to"],
+      },
+    },
+    {
+      name: "create_pix_due_charge",
+      description: "Create a Pix due-date charge (cobv) with mandatory payer data and due date. Supports fine, interest, discount, and abatement fields.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          txid: { type: "string", description: "Merchant-provided BCB txid (26-35 alphanumeric)" },
+          amount: { type: "string", description: "Original amount in BRL major units" },
+          due_date: { type: "string", description: "Due date ISO-8601 (YYYY-MM-DD)" },
+          validity_after_due: { type: "number", description: "Days the charge remains payable after due date" },
+          payer: {
+            type: "object",
+            description: "Payer (devedor) — required by BACEN for cobv",
+            properties: {
+              document: { type: "string", description: "CPF or CNPJ digits only" },
+              name: { type: "string" },
+              email: { type: "string" },
+              address: {
+                type: "object",
+                properties: {
+                  street: { type: "string" },
+                  city: { type: "string" },
+                  state: { type: "string", description: "2-letter UF code" },
+                  postal_code: { type: "string", description: "CEP digits only" },
+                },
+              },
+            },
+            required: ["document", "name"],
+          },
+          fine: { type: "object", description: "Multa: { modalidade: 1|2, valorPerc: string }" },
+          interest: { type: "object", description: "Juros: { modalidade: 1..7, valorPerc: string }" },
+          discount: { type: "object", description: "Desconto: { modalidade, descontoDataFixa: [...] }" },
+          description: { type: "string", description: "Payer-visible description" },
+        },
+        required: ["txid", "amount", "due_date", "payer"],
+      },
+    },
+    {
+      name: "get_pix_due_charge",
+      description: "Retrieve a Pix due-date charge (cobv) by its BCB txid.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          txid: { type: "string", description: "BCB txid" },
+        },
+        required: ["txid"],
+      },
+    },
+    {
+      name: "list_pix_received",
+      description: "List received Pix transactions (pix recebidos) by date range. Useful for reconciliation against cob/cobv charges.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          from: { type: "string", description: "Start date-time ISO-8601" },
+          to: { type: "string", description: "End date-time ISO-8601" },
+          txid: { type: "string", description: "Optional txid filter" },
+          cpf: { type: "string", description: "Optional payer CPF filter" },
+          cnpj: { type: "string", description: "Optional payer CNPJ filter" },
+          page: { type: "number", description: "Page number (0-indexed per BACEN)" },
+          page_size: { type: "number", description: "Items per page" },
+        },
+        required: ["from", "to"],
+      },
+    },
+    {
+      name: "register_dict_key",
+      description: "Register a DICT key (CPF, CNPJ, email, phone, or EVP) to an account owned by the merchant. Subject to BACEN portability flow for keys claimed elsewhere.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          key: { type: "string", description: "DICT key value. Omit / use EVP to request a random UUID key." },
+          key_type: { type: "string", description: "Key type: CPF | CNPJ | EMAIL | PHONE | EVP" },
+          account: {
+            type: "object",
+            description: "Account the key should resolve to",
+            properties: {
+              bank_ispb: { type: "string", description: "8-digit ISPB (Caixa = 00360305)" },
+              branch: { type: "string", description: "Agência digits" },
+              account_number: { type: "string", description: "Account digits" },
+              account_type: { type: "string", description: "CACC (corrente) | SVGS (poupança) | SLRY (salário) | TRAN (pagamento)" },
+              owner_document: { type: "string", description: "CPF or CNPJ of the account owner" },
+              owner_name: { type: "string" },
+            },
+            required: ["bank_ispb", "branch", "account_number", "account_type", "owner_document", "owner_name"],
+          },
+        },
+        required: ["key_type", "account"],
+      },
+    },
+    {
+      name: "delete_dict_key",
+      description: "Delete (unregister) a DICT key owned by the merchant. The key must belong to a Caixa account under the merchant's contract.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          key: { type: "string", description: "DICT key to delete" },
+        },
+        required: ["key"],
+      },
+    },
+    {
+      name: "download_boleto_pdf",
+      description: "Fetch the rendered boleto PDF for an issued boleto. Returns the PDF URL (or base64 bytes) so it can be attached to an invoice or email.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "Boleto id or nosso_numero" },
+        },
+        required: ["id"],
+      },
+    },
+    {
+      name: "get_account_balance",
+      description: "Return the current balance for a Caixa merchant account, including available, blocked, and overdraft limit if present.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          account: { type: "string", description: "Agência-conta identifier of the merchant account" },
+        },
+        required: ["account"],
+      },
+    },
+    {
+      name: "transfer_ted",
+      description: "Initiate an outbound TED transfer from a Caixa merchant account to an external bank account. Settles same-day within BACEN TED windows.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          amount: { type: "string", description: "Amount in BRL major units" },
+          payer_account: { type: "string", description: "Source Caixa account (agência-conta)" },
+          beneficiary: {
+            type: "object",
+            description: "TED beneficiary data",
+            properties: {
+              name: { type: "string" },
+              document: { type: "string", description: "CPF or CNPJ digits only" },
+              bank_ispb: { type: "string", description: "8-digit ISPB of destination bank" },
+              bank_code: { type: "string", description: "3-digit COMPE code (optional; ISPB preferred)" },
+              branch: { type: "string" },
+              account: { type: "string" },
+              account_type: { type: "string", description: "CC | PP | SAL (default CC)" },
+            },
+            required: ["name", "document", "bank_ispb", "branch", "account"],
+          },
+          purpose: { type: "string", description: "Finalidade TED code (e.g. 1=Crédito em Conta)" },
+          description: { type: "string", description: "Free-text description (max 140 chars)" },
+          idempotency_key: { type: "string", description: "Merchant-side idempotency key (UUID recommended)" },
+        },
+        required: ["amount", "payer_account", "beneficiary", "idempotency_key"],
+      },
+    },
+    {
+      name: "consult_fgts",
+      description: "Query FGTS balance / extrato. Caixa is the sole operator of FGTS (Fundo de Garantia do Tempo de Serviço) and exposes worker-side and employer-side queries through dedicated product contracts.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          worker_document: { type: "string", description: "CPF of the worker (digits only)" },
+          pis_pasep: { type: "string", description: "NIS / PIS / PASEP number (optional, improves lookup)" },
+          employer_cnpj: { type: "string", description: "Employer CNPJ — required for employer-side consults" },
+          from: { type: "string", description: "Start competency YYYY-MM for extrato (optional)" },
+          to: { type: "string", description: "End competency YYYY-MM for extrato (optional)" },
+        },
+        required: ["worker_document"],
+      },
+    },
+    {
+      name: "pay_tribute",
+      description: "Pay a federal tribute (DARF, GPS, GRU) or other guia de arrecadação via Caixa. Input is the full 44/47-digit barcode or linha digitável plus debit account. Requires arrecadação contract.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          barcode: { type: "string", description: "44-digit barcode OR 47/48-digit linha digitável (digits only)" },
+          kind: { type: "string", description: "Tribute kind hint: DARF | GPS | GRU | FGTS_GRRF | OUTROS" },
+          payer_account: { type: "string", description: "Caixa account to debit (agência-conta)" },
+          due_date: { type: "string", description: "Original due date ISO-8601 (YYYY-MM-DD) — used when barcode does not carry it" },
+          amount: { type: "string", description: "Amount to pay in BRL major units (required when barcode has 0000000 amount)" },
+          idempotency_key: { type: "string", description: "Merchant-side idempotency key (UUID recommended)" },
+        },
+        required: ["barcode", "payer_account", "idempotency_key"],
+      },
+    },
   ],
 }));
 
@@ -423,6 +662,111 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         // TODO(verify): path. Commonly /extrato/v1/contas/{account}/transacoes.
         return { content: [{ type: "text", text: JSON.stringify(await caixaRequest("GET", `/extrato/v1/contas/${account}/transacoes?${params}`), null, 2) }] };
       }
+      case "get_pix_charge": {
+        // TODO(verify): BACEN Pix v2 standard path is GET /cob/{txid}; Caixa
+        // commonly exposes it under /pix/v2/cob for onboarded merchants.
+        const txid = encodeURIComponent(String(a.txid ?? ""));
+        return { content: [{ type: "text", text: JSON.stringify(await caixaRequest("GET", `/pix/v2/cob/${txid}`), null, 2) }] };
+      }
+      case "update_pix_charge": {
+        // TODO(verify): BACEN Pix v2 standard path is PATCH /cob/{txid}.
+        const txid = encodeURIComponent(String(a.txid ?? ""));
+        const body: Record<string, unknown> = {};
+        if (a.amount !== undefined) body.valor = { original: a.amount };
+        if (a.status !== undefined) body.status = a.status;
+        if (a.expires_in !== undefined) body.calendario = { expiracao: a.expires_in };
+        if (a.description !== undefined) body.solicitacaoPagador = a.description;
+        return { content: [{ type: "text", text: JSON.stringify(await caixaRequest("PATCH", `/pix/v2/cob/${txid}`, body), null, 2) }] };
+      }
+      case "list_pix_charges": {
+        // TODO(verify): BACEN Pix v2 standard path is GET /cob with
+        // inicio/fim query params (ISO-8601 date-times).
+        const params = new URLSearchParams();
+        params.set("inicio", String(a.from ?? ""));
+        params.set("fim", String(a.to ?? ""));
+        if (a.status !== undefined) params.set("status", String(a.status));
+        if (a.cpf !== undefined) params.set("cpf", String(a.cpf));
+        if (a.cnpj !== undefined) params.set("cnpj", String(a.cnpj));
+        if (a.page !== undefined) params.set("paginacao.paginaAtual", String(a.page));
+        if (a.page_size !== undefined) params.set("paginacao.itensPorPagina", String(a.page_size));
+        return { content: [{ type: "text", text: JSON.stringify(await caixaRequest("GET", `/pix/v2/cob?${params}`), null, 2) }] };
+      }
+      case "create_pix_due_charge": {
+        // TODO(verify): BACEN Pix v2 standard path is PUT /cobv/{txid}.
+        const txid = encodeURIComponent(String(a.txid ?? ""));
+        const { txid: _t, ...rest } = a;
+        void _t;
+        return { content: [{ type: "text", text: JSON.stringify(await caixaRequest("PUT", `/pix/v2/cobv/${txid}`, rest), null, 2) }] };
+      }
+      case "get_pix_due_charge": {
+        // TODO(verify): BACEN Pix v2 standard path is GET /cobv/{txid}.
+        const txid = encodeURIComponent(String(a.txid ?? ""));
+        return { content: [{ type: "text", text: JSON.stringify(await caixaRequest("GET", `/pix/v2/cobv/${txid}`), null, 2) }] };
+      }
+      case "list_pix_received": {
+        // TODO(verify): BACEN Pix v2 standard path is GET /pix with
+        // inicio/fim query params.
+        const params = new URLSearchParams();
+        params.set("inicio", String(a.from ?? ""));
+        params.set("fim", String(a.to ?? ""));
+        if (a.txid !== undefined) params.set("txid", String(a.txid));
+        if (a.cpf !== undefined) params.set("cpf", String(a.cpf));
+        if (a.cnpj !== undefined) params.set("cnpj", String(a.cnpj));
+        if (a.page !== undefined) params.set("paginacao.paginaAtual", String(a.page));
+        if (a.page_size !== undefined) params.set("paginacao.itensPorPagina", String(a.page_size));
+        return { content: [{ type: "text", text: JSON.stringify(await caixaRequest("GET", `/pix/v2/pix?${params}`), null, 2) }] };
+      }
+      case "register_dict_key": {
+        // TODO(verify): DICT write paths are PSP-scoped; Caixa exposes them
+        // under /pix/v2/dict for onboarded merchants. BACEN CID flow may
+        // require additional headers (`x-pi-cid`, consent ID) in production.
+        return { content: [{ type: "text", text: JSON.stringify(await caixaRequest("POST", "/pix/v2/dict", a), null, 2) }] };
+      }
+      case "delete_dict_key": {
+        // TODO(verify): DELETE /pix/v2/dict/{key} — only callable for keys
+        // owned by the merchant's Caixa account.
+        const key = encodeURIComponent(String(a.key ?? ""));
+        return { content: [{ type: "text", text: JSON.stringify(await caixaRequest("DELETE", `/pix/v2/dict/${key}`), null, 2) }] };
+      }
+      case "download_boleto_pdf": {
+        // TODO(verify): SICOB commonly exposes the rendered PDF under
+        // /cobranca/v2/boletos/{id}/pdf. Some Caixa contracts return a
+        // signed URL; others stream application/pdf bytes.
+        const id = encodeURIComponent(String(a.id ?? ""));
+        return { content: [{ type: "text", text: JSON.stringify(await caixaRequest("GET", `/cobranca/v2/boletos/${id}/pdf`), null, 2) }] };
+      }
+      case "get_account_balance": {
+        // TODO(verify): Commonly /extrato/v1/contas/{account}/saldo.
+        const account = encodeURIComponent(String(a.account ?? ""));
+        return { content: [{ type: "text", text: JSON.stringify(await caixaRequest("GET", `/extrato/v1/contas/${account}/saldo`), null, 2) }] };
+      }
+      case "transfer_ted": {
+        // TODO(verify): TED outbound sits under /transferencias/v1/ted for
+        // onboarded merchants; Caixa also exposes an inter-conta endpoint
+        // under /transferencias/v1/internas for same-bank moves.
+        return { content: [{ type: "text", text: JSON.stringify(await caixaRequest("POST", "/transferencias/v1/ted", a), null, 2) }] };
+      }
+      case "consult_fgts": {
+        // TODO(verify): FGTS worker query is commonly /fgts/v1/trabalhadores/{cpf}
+        // and employer query is /fgts/v1/empregadores/{cnpj}/extrato. Contract
+        // gating differs — worker-side FGTS requires a citizen-authorization
+        // flow that is out of scope for this server.
+        const cpf = encodeURIComponent(String(a.worker_document ?? ""));
+        const params = new URLSearchParams();
+        if (a.pis_pasep !== undefined) params.set("nis", String(a.pis_pasep));
+        if (a.employer_cnpj !== undefined) params.set("cnpjEmpregador", String(a.employer_cnpj));
+        if (a.from !== undefined) params.set("competenciaInicio", String(a.from));
+        if (a.to !== undefined) params.set("competenciaFim", String(a.to));
+        const qs = params.toString() ? `?${params}` : "";
+        return { content: [{ type: "text", text: JSON.stringify(await caixaRequest("GET", `/fgts/v1/trabalhadores/${cpf}${qs}`), null, 2) }] };
+      }
+      case "pay_tribute": {
+        // TODO(verify): Arrecadação (DARF/GPS/GRU) payment commonly sits
+        // under /arrecadacao/v1/pagamentos; input is the full barcode or
+        // linha digitável. Requires a separate arrecadação contract on top
+        // of the baseline merchant contract.
+        return { content: [{ type: "text", text: JSON.stringify(await caixaRequest("POST", "/arrecadacao/v1/pagamentos", a), null, 2) }] };
+      }
       default:
         return { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true };
     }
@@ -445,7 +789,7 @@ async function main() {
       if (!sid && isInitializeRequest(req.body)) {
         const t = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID(), onsessioninitialized: (id) => { transports.set(id, t); } });
         t.onclose = () => { if (t.sessionId) transports.delete(t.sessionId); };
-        const s = new Server({ name: "mcp-caixa", version: "0.1.0-alpha.1" }, { capabilities: { tools: {} } });
+        const s = new Server({ name: "mcp-caixa", version: "0.2.0-alpha.1" }, { capabilities: { tools: {} } });
         (server as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.forEach((v, k) => (s as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.set(k, v));
         (server as unknown as { _notificationHandlers?: Map<unknown, unknown> })._notificationHandlers?.forEach((v, k) => (s as unknown as { _notificationHandlers: Map<unknown, unknown> })._notificationHandlers.set(k, v));
         await s.connect(t);
