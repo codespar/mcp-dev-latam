@@ -1,6 +1,6 @@
 {
   "name": "@codespar/mcp-wompi",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "MCP server for Wompi — Colombian payment gateway (by Bancolombia)",
   "type": "module",
   "main": "dist/index.js",
