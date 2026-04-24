@@ -9,19 +9,30 @@
  * Conekta in this catalog: native subscriptions (plans + per-customer
  * subscriptions) and marketplace payouts.
  *
- * Tools (12):
+ * Tools (23):
  *   create_charge        — charge a buyer (card, bank_account/SPEI, store/OXXO)
  *   get_charge           — retrieve a charge
  *   capture_charge       — capture a previously authorized charge (delayed capture)
  *   refund_charge        — refund a captured charge (full or partial)
  *   create_customer      — create a customer record (optional wallet account)
  *   get_customer         — retrieve a customer
+ *   update_customer      — update a stored customer
+ *   delete_customer      — delete a customer
  *   list_customers       — list customers with optional filters
  *   create_card          — tokenize a card at merchant or customer level
+ *   get_card             — retrieve a tokenized card
+ *   list_cards           — list tokenized cards (merchant or per-customer)
  *   delete_card          — delete a tokenized card
+ *   create_bank_account  — store a customer bank account (CLABE)
+ *   delete_bank_account  — delete a stored customer bank account
  *   create_plan          — create a subscription plan (recurring schedule)
  *   create_subscription  — subscribe a customer to a plan using a stored card
+ *   cancel_subscription  — cancel a customer's subscription
  *   create_payout        — pay out MXN to a bank account (marketplace / seller)
+ *   list_payouts         — list payouts (merchant or per-customer)
+ *   create_webhook       — register a webhook endpoint for event callbacks
+ *   list_webhooks        — list configured webhooks
+ *   delete_webhook       — delete a webhook subscription
  *
  * Authentication
  *   HTTP Basic. Username = OPENPAY_PRIVATE_KEY, password = empty string.
@@ -82,7 +93,7 @@ async function openpayRequest(method: string, path: string, body?: unknown): Pro
 }
 
 const server = new Server(
-  { name: "mcp-openpay", version: "0.1.0" },
+  { name: "mcp-openpay", version: "0.2.0" },
   { capabilities: { tools: {} } }
 );
 
@@ -320,6 +331,159 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         required: ["method", "amount"],
       },
     },
+    {
+      name: "update_customer",
+      description: "Update a stored customer (PUT /customers/{id}). Only the fields provided are updated; omit fields you don't want to change.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "Openpay customer id." },
+          name: { type: "string" },
+          last_name: { type: "string" },
+          email: { type: "string" },
+          phone_number: { type: "string" },
+          external_id: { type: "string" },
+          address: {
+            type: "object",
+            properties: {
+              line1: { type: "string" },
+              line2: { type: "string" },
+              line3: { type: "string" },
+              postal_code: { type: "string" },
+              state: { type: "string" },
+              city: { type: "string" },
+              country_code: { type: "string" },
+            },
+          },
+        },
+        required: ["id"],
+      },
+    },
+    {
+      name: "delete_customer",
+      description: "Delete a customer (DELETE /customers/{id}). Irreversible — removes the customer and associated stored tokens.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "Openpay customer id to delete." },
+        },
+        required: ["id"],
+      },
+    },
+    {
+      name: "get_card",
+      description: "Retrieve a tokenized card. Pass customer_id to fetch at customer scope (GET /customers/{customer_id}/cards/{id}); omit for merchant scope (GET /cards/{id}).",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "Openpay card id." },
+          customer_id: { type: "string", description: "Optional. Customer scope if the card was customer-scoped." },
+        },
+        required: ["id"],
+      },
+    },
+    {
+      name: "list_cards",
+      description: "List tokenized cards. Pass customer_id to list per-customer (GET /customers/{customer_id}/cards); omit for merchant-level cards (GET /cards).",
+      inputSchema: {
+        type: "object",
+        properties: {
+          customer_id: { type: "string", description: "Optional. Scope to this customer." },
+          creation: { type: "string", description: "Filter by creation date (YYYY-MM-DD)." },
+          "creation[gte]": { type: "string", description: "Created on or after (YYYY-MM-DD)." },
+          "creation[lte]": { type: "string", description: "Created on or before (YYYY-MM-DD)." },
+          offset: { type: "number", description: "Pagination offset." },
+          limit: { type: "number", description: "Page size (max 100)." },
+        },
+      },
+    },
+    {
+      name: "create_bank_account",
+      description: "Store a customer bank account (POST /customers/{customer_id}/bankaccounts). Required before you can run destination_id-based payouts to that customer's account.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          customer_id: { type: "string", description: "Openpay customer id." },
+          clabe: { type: "string", description: "CLABE (18-digit Mexican bank account)." },
+          alias: { type: "string", description: "Friendly alias for the account." },
+          holder_name: { type: "string", description: "Account holder name." },
+        },
+        required: ["customer_id", "clabe", "holder_name"],
+      },
+    },
+    {
+      name: "delete_bank_account",
+      description: "Delete a stored customer bank account (DELETE /customers/{customer_id}/bankaccounts/{id}).",
+      inputSchema: {
+        type: "object",
+        properties: {
+          customer_id: { type: "string", description: "Openpay customer id." },
+          id: { type: "string", description: "Openpay bank account id." },
+        },
+        required: ["customer_id", "id"],
+      },
+    },
+    {
+      name: "cancel_subscription",
+      description: "Cancel a customer's subscription (DELETE /customers/{customer_id}/subscriptions/{id}). Cancellation takes effect at the end of the current paid period.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          customer_id: { type: "string", description: "Openpay customer id." },
+          id: { type: "string", description: "Openpay subscription id." },
+        },
+        required: ["customer_id", "id"],
+      },
+    },
+    {
+      name: "list_payouts",
+      description: "List payouts. Pass customer_id to scope to a customer (GET /customers/{customer_id}/payouts); omit for merchant-scope payouts (GET /payouts).",
+      inputSchema: {
+        type: "object",
+        properties: {
+          customer_id: { type: "string", description: "Optional. Scope to this customer." },
+          creation: { type: "string", description: "Filter by creation date (YYYY-MM-DD)." },
+          "creation[gte]": { type: "string", description: "Created on or after (YYYY-MM-DD)." },
+          "creation[lte]": { type: "string", description: "Created on or before (YYYY-MM-DD)." },
+          offset: { type: "number", description: "Pagination offset." },
+          limit: { type: "number", description: "Page size (max 100)." },
+        },
+      },
+    },
+    {
+      name: "create_webhook",
+      description: "Register a webhook endpoint (POST /webhooks). Openpay posts event notifications to url and can optionally send HTTP Basic credentials.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          url: { type: "string", description: "HTTPS endpoint that receives event POSTs." },
+          user: { type: "string", description: "Optional HTTP Basic username Openpay should send with each notification." },
+          password: { type: "string", description: "Optional HTTP Basic password Openpay should send with each notification." },
+          event_types: {
+            type: "array",
+            items: { type: "string" },
+            description: "Event subscriptions, e.g. ['charge.succeeded','charge.failed','subscription.charge.failed','payout.created','chargeback.created'].",
+          },
+        },
+        required: ["url", "event_types"],
+      },
+    },
+    {
+      name: "list_webhooks",
+      description: "List configured webhook subscriptions (GET /webhooks).",
+      inputSchema: { type: "object", properties: {} },
+    },
+    {
+      name: "delete_webhook",
+      description: "Delete a webhook subscription (DELETE /webhooks/{id}).",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "Openpay webhook id." },
+        },
+        required: ["id"],
+      },
+    },
   ],
 }));
 
@@ -389,6 +553,59 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const path = customer_id ? `/customers/${customer_id}/payouts` : `/payouts`;
         return { content: [{ type: "text", text: JSON.stringify(await openpayRequest("POST", path, rest), null, 2) }] };
       }
+      case "update_customer": {
+        const { id, ...rest } = a;
+        return { content: [{ type: "text", text: JSON.stringify(await openpayRequest("PUT", `/customers/${String(id ?? "")}`, rest), null, 2) }] };
+      }
+      case "delete_customer": {
+        const id = String(a.id ?? "");
+        return { content: [{ type: "text", text: JSON.stringify(await openpayRequest("DELETE", `/customers/${id}`), null, 2) }] };
+      }
+      case "get_card": {
+        const id = String(a.id ?? "");
+        const path = a.customer_id ? `/customers/${a.customer_id}/cards/${id}` : `/cards/${id}`;
+        return { content: [{ type: "text", text: JSON.stringify(await openpayRequest("GET", path), null, 2) }] };
+      }
+      case "list_cards": {
+        const { customer_id, ...rest } = a;
+        const params = new URLSearchParams();
+        for (const [k, v] of Object.entries(rest)) {
+          if (v !== undefined && v !== null && v !== "") params.set(k, String(v));
+        }
+        const qs = params.toString();
+        const base = customer_id ? `/customers/${customer_id}/cards` : `/cards`;
+        return { content: [{ type: "text", text: JSON.stringify(await openpayRequest("GET", `${base}${qs ? `?${qs}` : ""}`), null, 2) }] };
+      }
+      case "create_bank_account": {
+        const { customer_id, ...rest } = a;
+        return { content: [{ type: "text", text: JSON.stringify(await openpayRequest("POST", `/customers/${customer_id}/bankaccounts`, rest), null, 2) }] };
+      }
+      case "delete_bank_account": {
+        const id = String(a.id ?? "");
+        return { content: [{ type: "text", text: JSON.stringify(await openpayRequest("DELETE", `/customers/${a.customer_id}/bankaccounts/${id}`), null, 2) }] };
+      }
+      case "cancel_subscription": {
+        const id = String(a.id ?? "");
+        return { content: [{ type: "text", text: JSON.stringify(await openpayRequest("DELETE", `/customers/${a.customer_id}/subscriptions/${id}`), null, 2) }] };
+      }
+      case "list_payouts": {
+        const { customer_id, ...rest } = a;
+        const params = new URLSearchParams();
+        for (const [k, v] of Object.entries(rest)) {
+          if (v !== undefined && v !== null && v !== "") params.set(k, String(v));
+        }
+        const qs = params.toString();
+        const base = customer_id ? `/customers/${customer_id}/payouts` : `/payouts`;
+        return { content: [{ type: "text", text: JSON.stringify(await openpayRequest("GET", `${base}${qs ? `?${qs}` : ""}`), null, 2) }] };
+      }
+      case "create_webhook":
+        return { content: [{ type: "text", text: JSON.stringify(await openpayRequest("POST", "/webhooks", a), null, 2) }] };
+      case "list_webhooks":
+        return { content: [{ type: "text", text: JSON.stringify(await openpayRequest("GET", "/webhooks"), null, 2) }] };
+      case "delete_webhook": {
+        const id = String(a.id ?? "");
+        return { content: [{ type: "text", text: JSON.stringify(await openpayRequest("DELETE", `/webhooks/${id}`), null, 2) }] };
+      }
       default:
         return { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true };
     }
@@ -411,7 +628,7 @@ async function main() {
       if (!sid && isInitializeRequest(req.body)) {
         const t = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID(), onsessioninitialized: (id) => { transports.set(id, t); } });
         t.onclose = () => { if (t.sessionId) transports.delete(t.sessionId); };
-        const s = new Server({ name: "mcp-openpay", version: "0.1.0" }, { capabilities: { tools: {} } });
+        const s = new Server({ name: "mcp-openpay", version: "0.2.0" }, { capabilities: { tools: {} } });
         (server as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.forEach((v, k) => (s as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.set(k, v));
         (server as unknown as { _notificationHandlers?: Map<unknown, unknown> })._notificationHandlers?.forEach((v, k) => (s as unknown as { _notificationHandlers: Map<unknown, unknown> })._notificationHandlers.set(k, v));
         await s.connect(t);
