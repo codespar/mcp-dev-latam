@@ -1,0 +1,58 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.codespar/mcp-santander",
+  "description": "MCP server for Santander Brasil — 3rd largest private bank in Brazil. Pix, Cobrança (boleto), Arrecadação, and Extrato via Santander's trust-open Developer Portal APIs (OAuth2 + mTLS).",
+  "repository": {
+    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "source": "github",
+    "subfolder": "packages/banking/santander"
+  },
+  "version": "0.1.0-alpha.1",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@codespar/mcp-santander",
+      "version": "0.1.0-alpha.1",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "SANTANDER_CLIENT_ID",
+          "description": "Santander OAuth client_id issued via the Developer Portal (developer.santander.com.br) after contract onboarding.",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "SANTANDER_CLIENT_SECRET",
+          "description": "Santander OAuth client_secret.",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": true
+        },
+        {
+          "name": "SANTANDER_CERT_PATH",
+          "description": "Absolute path to the mTLS client certificate (.crt or .pem). BACEN mandates mTLS for Pix v2, and Santander's trust-open gateway enforces it across product families.",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "SANTANDER_KEY_PATH",
+          "description": "Absolute path to the mTLS private key (.key or .pem).",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": true
+        },
+        {
+          "name": "SANTANDER_ENV",
+          "description": "Environment: 'sandbox' or 'production'. Defaults to 'sandbox'.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        }
+      ]
+    }
+  ]
+}
