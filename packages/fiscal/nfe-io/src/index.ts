@@ -10,6 +10,7 @@
  *   create_nfe        Issue an NF-e (product invoice)
  *   get_nfe           Get one NF-e by id
  *   cancel_nfe        Cancel an NF-e
+ *   correct_nfe       Send a correction letter (Carta de Correção) for an NF-e
  *
  * Tools (Tier 2 — operational helpers):
  *   list_nfse         List NFS-e with pagination + status filter
@@ -18,6 +19,17 @@
  *   consult_cnpj      Look up Brazilian company data by CNPJ
  *   consult_cep       Resolve a Brazilian postal code to an address
  *   get_nfe_pdf       Download the DANFE PDF URL for an NF-e
+ *   get_nfe_xml       Download the authorized XML URL for an NF-e
+ *   get_nfse_pdf      Download the PDF URL for an NFS-e
+ *   get_nfse_xml      Download the XML URL for an NFS-e
+ *
+ * Tools (Tier 3 — account mgmt + integrations):
+ *   list_companies    List companies on the NFe.io account
+ *   get_company       Get one company by id
+ *   create_company    Provision a new company on NFe.io
+ *   list_webhooks     List webhook endpoints for a company
+ *   create_webhook    Register a webhook endpoint for invoice events
+ *   delete_webhook    Remove a webhook endpoint
  *
  * Authentication:
  *   NFEIO_API_KEY — single API key, sent as `Authorization: <key>`. NFe.io
@@ -116,6 +128,49 @@ const DEMO_RESPONSES: Record<string, unknown> = {
     city: "São Paulo",
     state: "SP",
   },
+  correct_nfe: {
+    id: "nfe_demo_001",
+    status: "Authorized",
+    correctionLetterSequence: 1,
+    correction: "Razão social do destinatário ajustada.",
+  },
+  get_nfe_xml: { xmlUrl: "https://api.nfse.io/demo/nfe.xml" },
+  get_nfse_pdf: { pdfUrl: "https://api.nfe.io/demo/nfse.pdf" },
+  get_nfse_xml: { xmlUrl: "https://api.nfe.io/demo/nfse.xml" },
+  list_companies: {
+    totalResults: 1,
+    companies: [
+      { id: "company_demo_001", name: "Demo Comércio LTDA", federalTaxNumber: "12345678000190" },
+    ],
+  },
+  get_company: {
+    id: "company_demo_001",
+    name: "Demo Comércio LTDA",
+    federalTaxNumber: "12345678000190",
+    municipalTaxNumber: "123456",
+  },
+  create_company: {
+    id: "company_demo_002",
+    name: "Nova Empresa LTDA",
+    federalTaxNumber: "98765432000110",
+    status: "Active",
+  },
+  list_webhooks: {
+    totalResults: 1,
+    hooks: [
+      {
+        id: "hook_demo_001",
+        url: "https://example.com/nfeio",
+        events: ["ServiceInvoiceIssued", "ProductInvoiceAuthorized"],
+      },
+    ],
+  },
+  create_webhook: {
+    id: "hook_demo_002",
+    url: "https://example.com/nfeio",
+    events: ["ServiceInvoiceIssued"],
+  },
+  delete_webhook: { id: "hook_demo_002", deleted: true },
 };
 
 /**
@@ -387,6 +442,158 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         required: ["cep"],
       },
     },
+    {
+      name: "correct_nfe",
+      description:
+        "Issue a Carta de Correção (CC-e) for an authorized NF-e. Use for minor fixes that don't change value, parties, dates, or tax data.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          company_id: { type: "string", description: "Company id (falls back to env)" },
+          id: { type: "string", description: "Product invoice id" },
+          correction: {
+            type: "string",
+            description: "Correction text (min 15 chars per SEFAZ rules)",
+          },
+        },
+        required: ["id", "correction"],
+      },
+    },
+    {
+      name: "get_nfe_xml",
+      description:
+        "Return the authorized XML URL for an NF-e. Requires the invoice to be in status Authorized.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          company_id: { type: "string", description: "Company id (falls back to env)" },
+          id: { type: "string", description: "Product invoice id" },
+        },
+        required: ["id"],
+      },
+    },
+    {
+      name: "get_nfse_pdf",
+      description: "Return the PDF URL for an issued NFS-e.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          company_id: { type: "string", description: "Company id (falls back to env)" },
+          id: { type: "string", description: "Service invoice id" },
+        },
+        required: ["id"],
+      },
+    },
+    {
+      name: "get_nfse_xml",
+      description: "Return the XML URL for an issued NFS-e.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          company_id: { type: "string", description: "Company id (falls back to env)" },
+          id: { type: "string", description: "Service invoice id" },
+        },
+        required: ["id"],
+      },
+    },
+    {
+      name: "list_companies",
+      description: "List companies registered on the NFe.io account.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          pageCount: { type: "number", description: "Results per page (default 50)" },
+          pageIndex: { type: "number", description: "Page index (0-based)" },
+        },
+      },
+    },
+    {
+      name: "get_company",
+      description: "Fetch a single company by id or CNPJ.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          company_id: {
+            type: "string",
+            description: "Company id or CNPJ (falls back to NFEIO_COMPANY_ID)",
+          },
+        },
+      },
+    },
+    {
+      name: "create_company",
+      description:
+        "Provision a new company on NFe.io. Requires federalTaxNumber (CNPJ), name, address, and fiscal certificates/config as enabled on the account.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          name: { type: "string", description: "Razão social" },
+          tradeName: { type: "string", description: "Nome fantasia" },
+          federalTaxNumber: { type: "string", description: "CNPJ (numbers only)" },
+          municipalTaxNumber: {
+            type: "string",
+            description: "Inscrição municipal (required for NFS-e issuance)",
+          },
+          stateTaxNumber: {
+            type: "string",
+            description: "Inscrição estadual (required for NF-e issuance)",
+          },
+          email: { type: "string", description: "Primary company email" },
+          address: {
+            type: "object",
+            description:
+              "Address. Shape: { postalCode, street, number, additionalInformation?, district, city: { code, name }, state }",
+          },
+          regime: {
+            type: "string",
+            description:
+              "Tax regime: SimplesNacional | MicroempreendedorIndividual | LucroPresumido | LucroReal",
+          },
+        },
+        required: ["name", "federalTaxNumber"],
+      },
+    },
+    {
+      name: "list_webhooks",
+      description: "List webhook endpoints registered for a company (invoice event callbacks).",
+      inputSchema: {
+        type: "object",
+        properties: {
+          company_id: { type: "string", description: "Company id (falls back to env)" },
+        },
+      },
+    },
+    {
+      name: "create_webhook",
+      description:
+        "Register a webhook endpoint. NFe.io POSTs JSON payloads to `url` when the subscribed events fire.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          company_id: { type: "string", description: "Company id (falls back to env)" },
+          url: { type: "string", description: "Public HTTPS endpoint to receive callbacks" },
+          events: {
+            type: "array",
+            description:
+              "Event names (e.g. ServiceInvoiceIssued, ServiceInvoiceCancelled, ProductInvoiceAuthorized, ProductInvoiceCancelled)",
+          },
+          description: { type: "string", description: "Optional human-readable label" },
+        },
+        required: ["url", "events"],
+      },
+    },
+    {
+      name: "delete_webhook",
+      description: "Remove a webhook endpoint by id.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          company_id: { type: "string", description: "Company id (falls back to env)" },
+          id: { type: "string", description: "Webhook id" },
+        },
+        required: ["id"],
+      },
+    },
   ],
 }));
 
@@ -500,6 +707,81 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         result = await nfeioRequest(QUERY_BASE, "GET", `/v1/addresses/${a.cep}`);
         break;
       }
+      case "correct_nfe": {
+        const cid = companyIdOrThrow(a.company_id);
+        result = await nfeioRequest(
+          NFE_BASE,
+          "POST",
+          `/v2/companies/${cid}/productinvoices/${a.id}/correctionletters`,
+          { correction: a.correction },
+        );
+        break;
+      }
+      case "get_nfe_xml": {
+        const cid = companyIdOrThrow(a.company_id);
+        result = await nfeioRequest(
+          NFE_BASE,
+          "GET",
+          `/v2/companies/${cid}/productinvoices/${a.id}/xml`,
+        );
+        break;
+      }
+      case "get_nfse_pdf": {
+        const cid = companyIdOrThrow(a.company_id);
+        result = await nfeioRequest(
+          NFSE_BASE,
+          "GET",
+          `/v1/companies/${cid}/serviceinvoices/${a.id}/pdf`,
+        );
+        break;
+      }
+      case "get_nfse_xml": {
+        const cid = companyIdOrThrow(a.company_id);
+        result = await nfeioRequest(
+          NFSE_BASE,
+          "GET",
+          `/v1/companies/${cid}/serviceinvoices/${a.id}/xml`,
+        );
+        break;
+      }
+      case "list_companies": {
+        const params = new URLSearchParams();
+        if (typeof a.pageCount === "number") params.set("pageCount", String(a.pageCount));
+        if (typeof a.pageIndex === "number") params.set("pageIndex", String(a.pageIndex));
+        const qs = params.toString();
+        result = await nfeioRequest(NFSE_BASE, "GET", `/v1/companies${qs ? `?${qs}` : ""}`);
+        break;
+      }
+      case "get_company": {
+        const cid = companyIdOrThrow(a.company_id);
+        result = await nfeioRequest(NFSE_BASE, "GET", `/v1/companies/${cid}`);
+        break;
+      }
+      case "create_company": {
+        const { company_id: _c, ...body } = a;
+        result = await nfeioRequest(NFSE_BASE, "POST", `/v1/companies`, body);
+        break;
+      }
+      case "list_webhooks": {
+        const cid = companyIdOrThrow(a.company_id);
+        result = await nfeioRequest(NFSE_BASE, "GET", `/v1/companies/${cid}/hooks`);
+        break;
+      }
+      case "create_webhook": {
+        const cid = companyIdOrThrow(a.company_id);
+        const { company_id: _c, ...body } = a;
+        result = await nfeioRequest(NFSE_BASE, "POST", `/v1/companies/${cid}/hooks`, body);
+        break;
+      }
+      case "delete_webhook": {
+        const cid = companyIdOrThrow(a.company_id);
+        result = await nfeioRequest(
+          NFSE_BASE,
+          "DELETE",
+          `/v1/companies/${cid}/hooks/${a.id}`,
+        );
+        break;
+      }
       default:
         return {
           content: [{ type: "text", text: `Unknown tool: ${name}` }],
@@ -549,7 +831,7 @@ async function main() {
           if (t.sessionId) transports.delete(t.sessionId);
         };
         const s = new Server(
-          { name: "mcp-nfe-io", version: "0.1.0" },
+          { name: "mcp-nfe-io", version: "0.2.0" },
           { capabilities: { tools: {} } },
         );
         (server as any)._requestHandlers.forEach((v: any, k: any) =>
