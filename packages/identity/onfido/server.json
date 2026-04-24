@@ -1,18 +1,18 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.codespar/mcp-onfido",
-  "description": "MCP server for Onfido — global identity verification and KYC (applicants, documents, live photos, checks, reports)",
+  "description": "MCP server for Onfido — global identity verification and KYC (applicants, documents, live photos, checks, reports, workflow runs, SDK tokens)",
   "repository": {
     "url": "https://github.com/codespar/mcp-dev-brasil",
     "source": "github",
     "subfolder": "packages/identity/onfido"
   },
-  "version": "0.1.0",
+  "version": "0.2.0",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "@codespar/mcp-onfido",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "transport": {
         "type": "stdio"
       },

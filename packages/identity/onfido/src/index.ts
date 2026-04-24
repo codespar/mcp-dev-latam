@@ -8,18 +8,27 @@
  * KYC flow: applicant record → document upload → live photo → check (runs
  * the verification reports) → retrieve per-report results.
  *
- * Tools (11):
+ * Tools (20):
  *   create_applicant        — create the person record
  *   retrieve_applicant      — fetch an applicant by id
  *   update_applicant        — update applicant fields
+ *   delete_applicant        — soft-delete an applicant
  *   upload_document         — upload an ID document image (multipart)
  *   retrieve_document       — fetch a document by id
+ *   list_documents          — list documents for an applicant
+ *   download_document       — download raw document bytes (base64)
  *   upload_live_photo       — upload a selfie / live photo (multipart)
  *   retrieve_live_photo     — fetch a live photo by id
+ *   list_live_photos        — list live photos for an applicant
  *   create_check            — run verification (document, facial_similarity_photo, watchlist, etc)
  *   retrieve_check          — poll a check; includes per-report status
+ *   resume_check            — resume a paused check
  *   list_checks             — list checks for an applicant
  *   retrieve_report         — fetch an individual report (one component of a check)
+ *   list_reports            — list reports under a given check
+ *   create_workflow_run     — start an Onfido Studio workflow run (the newer orchestrated product)
+ *   retrieve_workflow_run   — poll a workflow run for progress / outcome
+ *   generate_sdk_token      — mint a short-lived token for the Onfido Web / Mobile SDKs
  *
  * Authentication
  *   Authorization: Token token=<ONFIDO_API_TOKEN>    (Onfido's unusual non-Bearer format)
@@ -54,7 +63,7 @@ function regionHost(r: string): string {
 }
 const BASE_URL = `${regionHost(REGION)}/v3.6`;
 
-type RequestOpts = { multipart?: boolean };
+type RequestOpts = { multipart?: boolean; raw?: boolean };
 
 async function onfidoRequest(
   method: string,
@@ -99,12 +108,20 @@ async function onfidoRequest(
     const err = await res.text();
     throw new Error(`Onfido API ${res.status}: ${err}`);
   }
+  if (opts.raw) {
+    const buf = Buffer.from(await res.arrayBuffer());
+    return {
+      content_type: res.headers.get("content-type") || "application/octet-stream",
+      content_length: buf.length,
+      file_base64: buf.toString("base64"),
+    };
+  }
   const text = await res.text();
   return text ? JSON.parse(text) : {};
 }
 
 const server = new Server(
-  { name: "mcp-onfido", version: "0.1.0" },
+  { name: "mcp-onfido", version: "0.2.0" },
   { capabilities: { tools: {} } }
 );
 
@@ -293,6 +310,114 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         required: ["report_id"],
       },
     },
+    {
+      name: "delete_applicant",
+      description: "Soft-delete an applicant. Onfido retains the record for 30 days before permanent deletion; during that window it can be restored via the dashboard.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          applicant_id: { type: "string", description: "Onfido applicant UUID" },
+        },
+        required: ["applicant_id"],
+      },
+    },
+    {
+      name: "list_documents",
+      description: "List all documents uploaded for a given applicant.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          applicant_id: { type: "string", description: "Onfido applicant UUID" },
+        },
+        required: ["applicant_id"],
+      },
+    },
+    {
+      name: "download_document",
+      description: "Download the raw binary of an uploaded document. Returns the bytes as base64 plus content_type. Useful for re-viewing or re-processing after upload.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          document_id: { type: "string", description: "Onfido document UUID" },
+        },
+        required: ["document_id"],
+      },
+    },
+    {
+      name: "list_live_photos",
+      description: "List all live photos (selfies) uploaded for a given applicant.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          applicant_id: { type: "string", description: "Onfido applicant UUID" },
+        },
+        required: ["applicant_id"],
+      },
+    },
+    {
+      name: "resume_check",
+      description: "Resume a check that was paused (typically awaiting_applicant or paused states). No-op on checks that are already running / complete.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          check_id: { type: "string", description: "Onfido check UUID" },
+        },
+        required: ["check_id"],
+      },
+    },
+    {
+      name: "list_reports",
+      description: "List the reports contained within a given check.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          check_id: { type: "string", description: "Onfido check UUID to list reports for" },
+        },
+        required: ["check_id"],
+      },
+    },
+    {
+      name: "create_workflow_run",
+      description: "Start an Onfido Studio workflow run. Studio is Onfido's newer product: instead of manually orchestrating checks/reports, you configure a workflow in the dashboard and trigger it here. The run drives the applicant through document capture, facial similarity, watchlist, etc automatically.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          workflow_id: { type: "string", description: "UUID of the workflow defined in Onfido Studio" },
+          applicant_id: { type: "string", description: "Onfido applicant UUID to run the workflow against" },
+          custom_data: { type: "object", description: "Optional arbitrary key/value data surfaced to the workflow and reports" },
+          tags: { type: "array", items: { type: "string" }, description: "Merchant-side tags attached to the run" },
+          link: {
+            type: "object",
+            description: "Optional configuration for the applicant-facing URL (completed_redirect_url, expired_redirect_url, language, etc).",
+          },
+        },
+        required: ["workflow_id", "applicant_id"],
+      },
+    },
+    {
+      name: "retrieve_workflow_run",
+      description: "Retrieve a workflow run by id. Returns status ('awaiting_input' | 'processing' | 'approved' | 'declined' | 'review' | 'abandoned' | 'error'), output data, link and sdk_token (if applicable).",
+      inputSchema: {
+        type: "object",
+        properties: {
+          workflow_run_id: { type: "string", description: "Onfido workflow run UUID" },
+        },
+        required: ["workflow_run_id"],
+      },
+    },
+    {
+      name: "generate_sdk_token",
+      description: "Mint a short-lived SDK token for embedding the Onfido Web / iOS / Android SDKs in your frontend. The token is scoped to a single applicant and is how capture flows (document photo, selfie, video) run in-browser/in-app without exposing your API token.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          applicant_id: { type: "string", description: "Onfido applicant UUID this token authorizes" },
+          application_id: { type: "string", description: "iOS/Android bundle identifier — required for mobile SDKs" },
+          referrer: { type: "string", description: "Allowed referrer pattern for Web SDK (e.g. 'https://*.example.com/*')" },
+        },
+        required: ["applicant_id"],
+      },
+    },
   ],
 }));
 
@@ -328,6 +453,30 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
       case "retrieve_report":
         return { content: [{ type: "text", text: JSON.stringify(await onfidoRequest("GET", `/reports/${a.report_id}`), null, 2) }] };
+      case "delete_applicant":
+        return { content: [{ type: "text", text: JSON.stringify(await onfidoRequest("DELETE", `/applicants/${a.applicant_id}`), null, 2) }] };
+      case "list_documents": {
+        const q = encodeURIComponent(String(a.applicant_id ?? ""));
+        return { content: [{ type: "text", text: JSON.stringify(await onfidoRequest("GET", `/documents?applicant_id=${q}`), null, 2) }] };
+      }
+      case "download_document":
+        return { content: [{ type: "text", text: JSON.stringify(await onfidoRequest("GET", `/documents/${a.document_id}/download`, undefined, { raw: true }), null, 2) }] };
+      case "list_live_photos": {
+        const q = encodeURIComponent(String(a.applicant_id ?? ""));
+        return { content: [{ type: "text", text: JSON.stringify(await onfidoRequest("GET", `/live_photos?applicant_id=${q}`), null, 2) }] };
+      }
+      case "resume_check":
+        return { content: [{ type: "text", text: JSON.stringify(await onfidoRequest("POST", `/checks/${a.check_id}/resume`), null, 2) }] };
+      case "list_reports": {
+        const q = encodeURIComponent(String(a.check_id ?? ""));
+        return { content: [{ type: "text", text: JSON.stringify(await onfidoRequest("GET", `/reports?check_id=${q}`), null, 2) }] };
+      }
+      case "create_workflow_run":
+        return { content: [{ type: "text", text: JSON.stringify(await onfidoRequest("POST", "/workflow_runs/", a), null, 2) }] };
+      case "retrieve_workflow_run":
+        return { content: [{ type: "text", text: JSON.stringify(await onfidoRequest("GET", `/workflow_runs/${a.workflow_run_id}`), null, 2) }] };
+      case "generate_sdk_token":
+        return { content: [{ type: "text", text: JSON.stringify(await onfidoRequest("POST", "/sdk_token", a), null, 2) }] };
       default:
         return { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true };
     }
@@ -350,7 +499,7 @@ async function main() {
       if (!sid && isInitializeRequest(req.body)) {
         const t = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID(), onsessioninitialized: (id) => { transports.set(id, t); } });
         t.onclose = () => { if (t.sessionId) transports.delete(t.sessionId); };
-        const s = new Server({ name: "mcp-onfido", version: "0.1.0" }, { capabilities: { tools: {} } });
+        const s = new Server({ name: "mcp-onfido", version: "0.2.0" }, { capabilities: { tools: {} } });
         (server as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.forEach((v, k) => (s as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.set(k, v));
         (server as unknown as { _notificationHandlers?: Map<unknown, unknown> })._notificationHandlers?.forEach((v, k) => (s as unknown as { _notificationHandlers: Map<unknown, unknown> })._notificationHandlers.set(k, v));
         await s.connect(t);

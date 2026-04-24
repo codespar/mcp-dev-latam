@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-onfido",
-  "version": "0.1.0",
-  "description": "MCP server for Onfido — global identity verification and KYC (applicants, documents, live photos, checks, reports)",
+  "version": "0.2.0",
+  "description": "MCP server for Onfido — global identity verification and KYC (applicants, documents, live photos, checks, reports, workflow runs, SDK tokens)",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {
