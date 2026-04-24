@@ -1,0 +1,33 @@
+{
+  "name": "@codespar/mcp-transbank",
+  "version": "0.1.0",
+  "description": "MCP server for Transbank — Chile's dominant card acquirer (Webpay Plus + Webpay OneClick Mall)",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "mcp-transbank": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "typescript": "^5.8.0"
+  },
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "transbank",
+    "webpay",
+    "oneclick",
+    "payments",
+    "chile",
+    "latam",
+    "acquirer"
+  ],
+  "mcpName": "io.github.codespar/mcp-transbank"
+}
