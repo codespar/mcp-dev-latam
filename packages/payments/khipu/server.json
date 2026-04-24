@@ -1,0 +1,51 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.codespar/mcp-khipu",
+  "description": "MCP server for Khipu — Chilean instant bank-transfer payments (complement to Transbank card acquiring)",
+  "repository": {
+    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "source": "github",
+    "subfolder": "packages/payments/khipu"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@codespar/mcp-khipu",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "KHIPU_API_KEY",
+          "description": "Khipu v3 API key (sent as x-api-key header). Obtain from Khipu merchant panel → Developers.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": true
+        },
+        {
+          "name": "KHIPU_RECEIVER_ID",
+          "description": "Khipu receiver id (merchant id). Required only for legacy v2 HTTP Basic auth; not needed when KHIPU_API_KEY is set.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "KHIPU_SECRET",
+          "description": "Khipu receiver secret. Required only for legacy v2 HTTP Basic auth; not needed when KHIPU_API_KEY is set.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": true
+        },
+        {
+          "name": "KHIPU_BASE_URL",
+          "description": "Khipu API base URL. Defaults to https://payment-api.khipu.com/v3.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        }
+      ]
+    }
+  ]
+}

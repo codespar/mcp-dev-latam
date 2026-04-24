@@ -1,0 +1,33 @@
+{
+  "name": "@codespar/mcp-khipu",
+  "version": "0.1.0",
+  "description": "MCP server for Khipu — Chilean instant bank-transfer payments (complement to Transbank card acquiring)",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "mcp-khipu": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "typescript": "^5.8.0"
+  },
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "khipu",
+    "payments",
+    "bank-transfer",
+    "chile",
+    "psp",
+    "instant-payments",
+    "transferencia"
+  ],
+  "mcpName": "io.github.codespar/mcp-khipu"
+}
