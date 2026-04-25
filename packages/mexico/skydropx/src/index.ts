@@ -15,6 +15,19 @@
  * - create_address: Create an address
  * - get_address: Get address by ID
  * - cancel_shipment: Cancel a shipment
+ * - validate_address: Validate an address
+ * - list_addresses: List saved addresses
+ * - list_parcels: List saved parcel presets
+ * - get_label: Get a label by ID
+ * - list_labels: List labels
+ * - create_pickup: Schedule a carrier pickup
+ * - list_pickups: List pickups
+ * - cancel_pickup: Cancel a pickup
+ * - get_tracker: Get tracker by ID
+ * - list_trackers: List trackers
+ * - create_webhook: Register a webhook
+ * - list_webhooks: List webhooks
+ * - delete_webhook: Delete a webhook
  *
  * Environment:
  *   SKYDROPX_API_TOKEN — API token for authentication
@@ -49,7 +62,7 @@ async function skyRequest(method: string, path: string, body?: unknown): Promise
 }
 
 const server = new Server(
-  { name: "mcp-skydropx", version: "0.1.0" },
+  { name: "mcp-skydropx", version: "0.2.0" },
   { capabilities: { tools: {} } }
 );
 
@@ -208,6 +221,146 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         required: ["shipmentId"],
       },
     },
+    {
+      name: "validate_address",
+      description: "Validate an address (zip, city, province, country)",
+      inputSchema: {
+        type: "object",
+        properties: {
+          street1: { type: "string", description: "Street address" },
+          city: { type: "string", description: "City" },
+          province: { type: "string", description: "State/province" },
+          zip: { type: "string", description: "Postal code" },
+          country: { type: "string", description: "Country code (MX)" },
+        },
+        required: ["zip", "country"],
+      },
+    },
+    {
+      name: "list_addresses",
+      description: "List saved addresses",
+      inputSchema: {
+        type: "object",
+        properties: {
+          page: { type: "number", description: "Page number" },
+          per_page: { type: "number", description: "Results per page" },
+        },
+      },
+    },
+    {
+      name: "list_parcels",
+      description: "List saved parcel presets",
+      inputSchema: {
+        type: "object",
+        properties: {
+          page: { type: "number", description: "Page number" },
+          per_page: { type: "number", description: "Results per page" },
+        },
+      },
+    },
+    {
+      name: "get_label",
+      description: "Get a label by ID",
+      inputSchema: {
+        type: "object",
+        properties: { labelId: { type: "string", description: "Label ID" } },
+        required: ["labelId"],
+      },
+    },
+    {
+      name: "list_labels",
+      description: "List labels",
+      inputSchema: {
+        type: "object",
+        properties: {
+          page: { type: "number", description: "Page number" },
+          per_page: { type: "number", description: "Results per page" },
+        },
+      },
+    },
+    {
+      name: "create_pickup",
+      description: "Schedule a carrier pickup",
+      inputSchema: {
+        type: "object",
+        properties: {
+          carrier: { type: "string", description: "Carrier slug (e.g. estafeta, dhl, fedex)" },
+          address_id: { type: "string", description: "Pickup address ID" },
+          shipments: { type: "array", description: "Shipment IDs to include in pickup", items: { type: "string" } },
+          pickup_date: { type: "string", description: "Pickup date (YYYY-MM-DD)" },
+          ready_time: { type: "string", description: "Ready time (HH:MM)" },
+          close_time: { type: "string", description: "Close time (HH:MM)" },
+          instructions: { type: "string", description: "Special instructions" },
+        },
+        required: ["carrier", "address_id", "pickup_date"],
+      },
+    },
+    {
+      name: "list_pickups",
+      description: "List scheduled pickups",
+      inputSchema: {
+        type: "object",
+        properties: {
+          page: { type: "number", description: "Page number" },
+          per_page: { type: "number", description: "Results per page" },
+        },
+      },
+    },
+    {
+      name: "cancel_pickup",
+      description: "Cancel a scheduled pickup",
+      inputSchema: {
+        type: "object",
+        properties: { pickupId: { type: "string", description: "Pickup ID" } },
+        required: ["pickupId"],
+      },
+    },
+    {
+      name: "get_tracker",
+      description: "Get tracker (events) by tracker ID",
+      inputSchema: {
+        type: "object",
+        properties: { trackerId: { type: "string", description: "Tracker ID" } },
+        required: ["trackerId"],
+      },
+    },
+    {
+      name: "list_trackers",
+      description: "List trackers",
+      inputSchema: {
+        type: "object",
+        properties: {
+          page: { type: "number", description: "Page number" },
+          per_page: { type: "number", description: "Results per page" },
+        },
+      },
+    },
+    {
+      name: "create_webhook",
+      description: "Register a webhook to receive shipment/tracker events",
+      inputSchema: {
+        type: "object",
+        properties: {
+          url: { type: "string", description: "Webhook URL" },
+          events: { type: "array", description: "Event types to subscribe to", items: { type: "string" } },
+        },
+        required: ["url"],
+      },
+    },
+    {
+      name: "list_webhooks",
+      description: "List registered webhooks",
+      inputSchema: { type: "object", properties: {} },
+    },
+    {
+      name: "delete_webhook",
+      description: "Delete a registered webhook",
+      inputSchema: {
+        type: "object",
+        properties: { webhookId: { type: "string", description: "Webhook ID" } },
+        required: ["webhookId"],
+      },
+    },
   ],
 }));
 
@@ -262,6 +415,69 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
         return { content: [{ type: "text", text: JSON.stringify(await skyRequest("GET", `/addresses/${args?.addressId}`), null, 2) }] };
       case "cancel_shipment":
         return { content: [{ type: "text", text: JSON.stringify(await skyRequest("DELETE", `/shipments/${args?.shipmentId}`), null, 2) }] };
+      case "validate_address":
+        return { content: [{ type: "text", text: JSON.stringify(await skyRequest("POST", "/addresses/validate", {
+          street1: args?.street1,
+          city: args?.city,
+          province: args?.province,
+          zip: args?.zip,
+          country: args?.country,
+        }), null, 2) }] };
+      case "list_addresses": {
+        const params = new URLSearchParams();
+        if (args?.page) params.set("page", String(args.page));
+        if (args?.per_page) params.set("per_page", String(args.per_page));
+        return { content: [{ type: "text", text: JSON.stringify(await skyRequest("GET", `/addresses?${params}`), null, 2) }] };
+      }
+      case "list_parcels": {
+        const params = new URLSearchParams();
+        if (args?.page) params.set("page", String(args.page));
+        if (args?.per_page) params.set("per_page", String(args.per_page));
+        return { content: [{ type: "text", text: JSON.stringify(await skyRequest("GET", `/parcels?${params}`), null, 2) }] };
+      }
+      case "get_label":
+        return { content: [{ type: "text", text: JSON.stringify(await skyRequest("GET", `/labels/${args?.labelId}`), null, 2) }] };
+      case "list_labels": {
+        const params = new URLSearchParams();
+        if (args?.page) params.set("page", String(args.page));
+        if (args?.per_page) params.set("per_page", String(args.per_page));
+        return { content: [{ type: "text", text: JSON.stringify(await skyRequest("GET", `/labels?${params}`), null, 2) }] };
+      }
+      case "create_pickup":
+        return { content: [{ type: "text", text: JSON.stringify(await skyRequest("POST", "/pickups", {
+          carrier: args?.carrier,
+          address_id: args?.address_id,
+          shipments: args?.shipments,
+          pickup_date: args?.pickup_date,
+          ready_time: args?.ready_time,
+          close_time: args?.close_time,
+          instructions: args?.instructions,
+        }), null, 2) }] };
+      case "list_pickups": {
+        const params = new URLSearchParams();
+        if (args?.page) params.set("page", String(args.page));
+        if (args?.per_page) params.set("per_page", String(args.per_page));
+        return { content: [{ type: "text", text: JSON.stringify(await skyRequest("GET", `/pickups?${params}`), null, 2) }] };
+      }
+      case "cancel_pickup":
+        return { content: [{ type: "text", text: JSON.stringify(await skyRequest("DELETE", `/pickups/${args?.pickupId}`), null, 2) }] };
+      case "get_tracker":
+        return { content: [{ type: "text", text: JSON.stringify(await skyRequest("GET", `/trackers/${args?.trackerId}`), null, 2) }] };
+      case "list_trackers": {
+        const params = new URLSearchParams();
+        if (args?.page) params.set("page", String(args.page));
+        if (args?.per_page) params.set("per_page", String(args.per_page));
+        return { content: [{ type: "text", text: JSON.stringify(await skyRequest("GET", `/trackers?${params}`), null, 2) }] };
+      }
+      case "create_webhook":
+        return { content: [{ type: "text", text: JSON.stringify(await skyRequest("POST", "/webhooks", {
+          url: args?.url,
+          events: args?.events,
+        }), null, 2) }] };
+      case "list_webhooks":
+        return { content: [{ type: "text", text: JSON.stringify(await skyRequest("GET", "/webhooks"), null, 2) }] };
+      case "delete_webhook":
+        return { content: [{ type: "text", text: JSON.stringify(await skyRequest("DELETE", `/webhooks/${args?.webhookId}`), null, 2) }] };
       default:
         return { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true };
     }
@@ -284,7 +500,7 @@ async function main() {
       if (!sid && isInitializeRequest(req.body)) {
         const t = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID(), onsessioninitialized: (id) => { transports.set(id, t); } });
         t.onclose = () => { if (t.sessionId) transports.delete(t.sessionId); };
-        const s = new Server({ name: "mcp-skydropx", version: "0.1.0" }, { capabilities: { tools: {} } }); (server as any)._requestHandlers.forEach((v: any, k: any) => (s as any)._requestHandlers.set(k, v)); (server as any)._notificationHandlers?.forEach((v: any, k: any) => (s as any)._notificationHandlers.set(k, v)); await s.connect(t);
+        const s = new Server({ name: "mcp-skydropx", version: "0.2.0" }, { capabilities: { tools: {} } }); (server as any)._requestHandlers.forEach((v: any, k: any) => (s as any)._requestHandlers.set(k, v)); (server as any)._notificationHandlers?.forEach((v: any, k: any) => (s as any)._notificationHandlers.set(k, v)); await s.connect(t);
         await t.handleRequest(req, res, req.body); return;
       }
       res.status(400).json({ jsonrpc: "2.0", error: { code: -32000, message: "Bad Request" }, id: null });
