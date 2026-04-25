@@ -3,15 +3,27 @@
 /**
  * MCP Server for AFIP — Argentine tax authority, electronic invoicing (Factura Electrónica).
  *
- * Tools:
- * - create_invoice: Create an electronic invoice (Factura Electrónica)
- * - get_invoice: Get invoice details by type and number
- * - get_last_invoice_number: Get last authorized invoice number for a POS
+ * Tools (WSFE / WS_SR_PADRON):
+ * - create_invoice: Create an electronic invoice (FECAESolicitar — single)
+ * - create_invoice_batch: Create up to 250 invoices in a single CAE request (FECAESolicitar — batch)
+ * - create_credit_note: Issue a credit note (Nota de Crédito A/B/C)
+ * - create_debit_note: Issue a debit note (Nota de Débito A/B/C)
+ * - cancel_invoice: Cancel/void an authorized invoice where applicable (FECancel)
+ * - get_invoice: Get invoice details (FECompConsultar)
+ * - get_invoice_total_x_request: Max records per request (FECompTotXRequest)
+ * - get_last_invoice_number: Last authorized invoice number (FECompUltimoAutorizado)
  * - get_cae_status: Check CAE authorization status
- * - list_invoice_types: List available invoice types (A, B, C, etc.)
- * - list_tax_types: List available tax types (IVA, percepciones, etc.)
- * - get_server_status: Check AFIP web-service availability
+ * - list_invoice_types: Invoice types (FEParamGetTiposCbte)
+ * - list_concept_types: Concept types (FEParamGetTiposConcepto)
+ * - list_doc_types: Document types (FEParamGetTiposDoc)
+ * - list_iva_types: IVA aliquots (FEParamGetTiposIva)
+ * - list_currency_types: Currencies (FEParamGetTiposMonedas)
+ * - list_tax_types: Tax types (FEParamGetTiposTributos)
+ * - get_currency_rate: FX rate for a currency (FEParamGetCotizacion)
+ * - get_server_status: AFIP web-service availability
  * - get_authorized_points_of_sale: List authorized puntos de venta
+ * - lookup_taxpayer: Padrón lookup by CUIT (A4/A5/A13)
+ * - get_registration_certificate: Constancia de inscripción for a CUIT
  *
  * Environment:
  *   AFIP_CERT_PATH — Path to AFIP certificate (.crt)
@@ -57,7 +69,7 @@ async function afipRequest(method: string, path: string, body?: unknown): Promis
 }
 
 const server = new Server(
-  { name: "mcp-afip", version: "0.1.0" },
+  { name: "mcp-afip", version: "0.2.0-alpha.1" },
   { capabilities: { tools: {} } }
 );
 
@@ -154,6 +166,168 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
       description: "List authorized puntos de venta for the CUIT",
       inputSchema: { type: "object", properties: {} },
     },
+    {
+      name: "create_invoice_batch",
+      description: "Create a batch of invoices in a single CAE request (FECAESolicitar, up to 250)",
+      inputSchema: {
+        type: "object",
+        properties: {
+          point_of_sale: { type: "number", description: "Punto de venta number" },
+          invoice_type: { type: "number", description: "Invoice type code (1=A, 6=B, 11=C, etc.)" },
+          invoices: {
+            type: "array",
+            description: "Invoice records (max 250 per request)",
+            items: {
+              type: "object",
+              properties: {
+                concept: { type: "number", description: "Concept (1=Products, 2=Services, 3=Both)" },
+                doc_type: { type: "number", description: "Document type" },
+                doc_number: { type: "number", description: "Document number" },
+                invoice_number: { type: "number", description: "CbteDesde/CbteHasta number" },
+                amount_total: { type: "number", description: "Total amount" },
+                amount_net: { type: "number", description: "Net taxable amount" },
+                amount_iva: { type: "number", description: "IVA amount" },
+                currency: { type: "string", description: "Currency code (PES=ARS, DOL=USD)" },
+              },
+              required: ["concept", "doc_type", "doc_number", "invoice_number", "amount_total"],
+            },
+          },
+        },
+        required: ["point_of_sale", "invoice_type", "invoices"],
+      },
+    },
+    {
+      name: "create_credit_note",
+      description: "Issue a credit note (Nota de Crédito A/B/C: types 3, 8, 13) referencing an original invoice",
+      inputSchema: {
+        type: "object",
+        properties: {
+          point_of_sale: { type: "number", description: "Punto de venta number" },
+          note_type: { type: "number", description: "Credit note type (3=A, 8=B, 13=C)" },
+          concept: { type: "number", description: "Concept (1=Products, 2=Services, 3=Both)" },
+          doc_type: { type: "number", description: "Customer document type" },
+          doc_number: { type: "number", description: "Customer document number" },
+          amount_total: { type: "number", description: "Total amount" },
+          amount_net: { type: "number", description: "Net taxable amount" },
+          amount_iva: { type: "number", description: "IVA amount" },
+          currency: { type: "string", description: "Currency code" },
+          related_invoice: {
+            type: "object",
+            description: "Original invoice reference (CbtesAsoc)",
+            properties: {
+              invoice_type: { type: "number", description: "Original invoice type" },
+              point_of_sale: { type: "number", description: "Original punto de venta" },
+              invoice_number: { type: "number", description: "Original invoice number" },
+            },
+            required: ["invoice_type", "point_of_sale", "invoice_number"],
+          },
+        },
+        required: ["point_of_sale", "note_type", "concept", "doc_type", "doc_number", "amount_total", "related_invoice"],
+      },
+    },
+    {
+      name: "create_debit_note",
+      description: "Issue a debit note (Nota de Débito A/B/C: types 2, 7, 12) referencing an original invoice",
+      inputSchema: {
+        type: "object",
+        properties: {
+          point_of_sale: { type: "number", description: "Punto de venta number" },
+          note_type: { type: "number", description: "Debit note type (2=A, 7=B, 12=C)" },
+          concept: { type: "number", description: "Concept (1=Products, 2=Services, 3=Both)" },
+          doc_type: { type: "number", description: "Customer document type" },
+          doc_number: { type: "number", description: "Customer document number" },
+          amount_total: { type: "number", description: "Total amount" },
+          amount_net: { type: "number", description: "Net taxable amount" },
+          amount_iva: { type: "number", description: "IVA amount" },
+          currency: { type: "string", description: "Currency code" },
+          related_invoice: {
+            type: "object",
+            description: "Original invoice reference (CbtesAsoc)",
+            properties: {
+              invoice_type: { type: "number", description: "Original invoice type" },
+              point_of_sale: { type: "number", description: "Original punto de venta" },
+              invoice_number: { type: "number", description: "Original invoice number" },
+            },
+            required: ["invoice_type", "point_of_sale", "invoice_number"],
+          },
+        },
+        required: ["point_of_sale", "note_type", "concept", "doc_type", "doc_number", "amount_total", "related_invoice"],
+      },
+    },
+    {
+      name: "cancel_invoice",
+      description: "Cancel/void an authorized invoice (FECancel — limited to certain types/conditions)",
+      inputSchema: {
+        type: "object",
+        properties: {
+          point_of_sale: { type: "number", description: "Punto de venta number" },
+          invoice_type: { type: "number", description: "Invoice type code" },
+          invoice_number: { type: "number", description: "Invoice number" },
+          reason: { type: "string", description: "Optional cancellation reason" },
+        },
+        required: ["point_of_sale", "invoice_type", "invoice_number"],
+      },
+    },
+    {
+      name: "get_invoice_total_x_request",
+      description: "Max number of records allowed per FECAESolicitar request (FECompTotXRequest)",
+      inputSchema: { type: "object", properties: {} },
+    },
+    {
+      name: "list_concept_types",
+      description: "List available concept types (FEParamGetTiposConcepto: 1=Products, 2=Services, 3=Both)",
+      inputSchema: { type: "object", properties: {} },
+    },
+    {
+      name: "list_doc_types",
+      description: "List document/identifier types (FEParamGetTiposDoc: 80=CUIT, 86=CUIL, 96=DNI, 99=Consumer Final)",
+      inputSchema: { type: "object", properties: {} },
+    },
+    {
+      name: "list_iva_types",
+      description: "List IVA tax aliquots (FEParamGetTiposIva: 21%, 10.5%, 27%, 0%, etc.)",
+      inputSchema: { type: "object", properties: {} },
+    },
+    {
+      name: "list_currency_types",
+      description: "List supported currencies (FEParamGetTiposMonedas)",
+      inputSchema: { type: "object", properties: {} },
+    },
+    {
+      name: "get_currency_rate",
+      description: "Get FX rate (cotización) for a currency vs ARS (FEParamGetCotizacion)",
+      inputSchema: {
+        type: "object",
+        properties: {
+          currency: { type: "string", description: "Currency code (e.g. DOL for USD)" },
+          date: { type: "string", description: "Optional date YYYYMMDD; defaults to last business day" },
+        },
+        required: ["currency"],
+      },
+    },
+    {
+      name: "lookup_taxpayer",
+      description: "Padrón lookup by CUIT (WS_SR_PADRON A4/A5/A13 — fiscal status, name, address)",
+      inputSchema: {
+        type: "object",
+        properties: {
+          cuit: { type: "string", description: "CUIT/CUIL to query (11 digits)" },
+          scope: { type: "string", description: "Padrón scope: A4, A5, or A13 (default A5)" },
+        },
+        required: ["cuit"],
+      },
+    },
+    {
+      name: "get_registration_certificate",
+      description: "Get constancia de inscripción (registration certificate) for a CUIT",
+      inputSchema: {
+        type: "object",
+        properties: {
+          cuit: { type: "string", description: "CUIT/CUIL (11 digits)" },
+        },
+        required: ["cuit"],
+      },
+    },
   ],
 }));
 
@@ -191,6 +365,73 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
         return { content: [{ type: "text", text: JSON.stringify(await afipRequest("GET", "/wsfe/status"), null, 2) }] };
       case "get_authorized_points_of_sale":
         return { content: [{ type: "text", text: JSON.stringify(await afipRequest("GET", "/wsfe/points-of-sale"), null, 2) }] };
+      case "create_invoice_batch": {
+        const payload: any = {
+          point_of_sale: args?.point_of_sale,
+          invoice_type: args?.invoice_type,
+          invoices: args?.invoices,
+        };
+        return { content: [{ type: "text", text: JSON.stringify(await afipRequest("POST", "/wsfe/invoices/batch", payload), null, 2) }] };
+      }
+      case "create_credit_note": {
+        const payload: any = {
+          point_of_sale: args?.point_of_sale,
+          note_type: args?.note_type,
+          concept: args?.concept,
+          doc_type: args?.doc_type,
+          doc_number: args?.doc_number,
+          amount_total: args?.amount_total,
+          related_invoice: args?.related_invoice,
+        };
+        if (args?.amount_net) payload.amount_net = args.amount_net;
+        if (args?.amount_iva) payload.amount_iva = args.amount_iva;
+        if (args?.currency) payload.currency = args.currency;
+        return { content: [{ type: "text", text: JSON.stringify(await afipRequest("POST", "/wsfe/credit-notes", payload), null, 2) }] };
+      }
+      case "create_debit_note": {
+        const payload: any = {
+          point_of_sale: args?.point_of_sale,
+          note_type: args?.note_type,
+          concept: args?.concept,
+          doc_type: args?.doc_type,
+          doc_number: args?.doc_number,
+          amount_total: args?.amount_total,
+          related_invoice: args?.related_invoice,
+        };
+        if (args?.amount_net) payload.amount_net = args.amount_net;
+        if (args?.amount_iva) payload.amount_iva = args.amount_iva;
+        if (args?.currency) payload.currency = args.currency;
+        return { content: [{ type: "text", text: JSON.stringify(await afipRequest("POST", "/wsfe/debit-notes", payload), null, 2) }] };
+      }
+      case "cancel_invoice": {
+        const payload: any = {
+          point_of_sale: args?.point_of_sale,
+          invoice_type: args?.invoice_type,
+          invoice_number: args?.invoice_number,
+        };
+        if (args?.reason) payload.reason = args.reason;
+        return { content: [{ type: "text", text: JSON.stringify(await afipRequest("POST", "/wsfe/cancel", payload), null, 2) }] };
+      }
+      case "get_invoice_total_x_request":
+        return { content: [{ type: "text", text: JSON.stringify(await afipRequest("GET", "/wsfe/total-x-request"), null, 2) }] };
+      case "list_concept_types":
+        return { content: [{ type: "text", text: JSON.stringify(await afipRequest("GET", "/wsfe/concept-types"), null, 2) }] };
+      case "list_doc_types":
+        return { content: [{ type: "text", text: JSON.stringify(await afipRequest("GET", "/wsfe/doc-types"), null, 2) }] };
+      case "list_iva_types":
+        return { content: [{ type: "text", text: JSON.stringify(await afipRequest("GET", "/wsfe/iva-types"), null, 2) }] };
+      case "list_currency_types":
+        return { content: [{ type: "text", text: JSON.stringify(await afipRequest("GET", "/wsfe/currency-types"), null, 2) }] };
+      case "get_currency_rate": {
+        const qs = args?.date ? `?date=${encodeURIComponent(String(args.date))}` : "";
+        return { content: [{ type: "text", text: JSON.stringify(await afipRequest("GET", `/wsfe/currency-rate/${encodeURIComponent(String(args?.currency))}${qs}`), null, 2) }] };
+      }
+      case "lookup_taxpayer": {
+        const scope = (args?.scope as string) || "A5";
+        return { content: [{ type: "text", text: JSON.stringify(await afipRequest("GET", `/padron/${encodeURIComponent(scope)}/${encodeURIComponent(String(args?.cuit))}`), null, 2) }] };
+      }
+      case "get_registration_certificate":
+        return { content: [{ type: "text", text: JSON.stringify(await afipRequest("GET", `/padron/constancia/${encodeURIComponent(String(args?.cuit))}`), null, 2) }] };
       default:
         return { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true };
     }
@@ -213,7 +454,7 @@ async function main() {
       if (!sid && isInitializeRequest(req.body)) {
         const t = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID(), onsessioninitialized: (id) => { transports.set(id, t); } });
         t.onclose = () => { if (t.sessionId) transports.delete(t.sessionId); };
-        const s = new Server({ name: "mcp-afip", version: "0.1.0" }, { capabilities: { tools: {} } }); (server as any)._requestHandlers.forEach((v: any, k: any) => (s as any)._requestHandlers.set(k, v)); (server as any)._notificationHandlers?.forEach((v: any, k: any) => (s as any)._notificationHandlers.set(k, v)); await s.connect(t);
+        const s = new Server({ name: "mcp-afip", version: "0.2.0-alpha.1" }, { capabilities: { tools: {} } }); (server as any)._requestHandlers.forEach((v: any, k: any) => (s as any)._requestHandlers.set(k, v)); (server as any)._notificationHandlers?.forEach((v: any, k: any) => (s as any)._notificationHandlers.set(k, v)); await s.connect(t);
         await t.handleRequest(req, res, req.body); return;
       }
       res.status(400).json({ jsonrpc: "2.0", error: { code: -32000, message: "Bad Request" }, id: null });
