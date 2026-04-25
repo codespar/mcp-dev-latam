@@ -15,21 +15,30 @@ Fourth entry in CodeSpar's `identity` category. Where it fits alongside the othe
 
 Pick Persona when you want to ship fast, iterate on the flow without a vendor ticket, and wire verification into your own product surfaces.
 
-## Tools
+## Tools (20)
 
 | Tool | Purpose |
-|------|---------|
-| `create_inquiry` | Start a verification session off an inquiry template |
-| `retrieve_inquiry` | Poll status + embedded verifications |
-| `list_inquiries` | Filter by reference-id / status / account |
-| `approve_inquiry` | Record final approve decision on Persona |
-| `decline_inquiry` | Record final decline decision on Persona |
-| `redact_inquiry` | GDPR redaction (DELETE) |
-| `create_account` | Create a persistent end-user account |
-| `retrieve_account` | Fetch an account by id |
-| `list_reports` | List standalone verification reports |
-| `retrieve_report` | Fetch a single report's full detail |
-| `create_case` | Open an investigation case |
+|---|---|
+| `create_inquiry` | Create a Persona inquiry — a verification session bound to an inquiry template you configured in the Person... |
+| `retrieve_inquiry` | Retrieve an inquiry by id. |
+| `list_inquiries` | List inquiries, filterable by reference-id (your internal user id) or status. |
+| `approve_inquiry` | Mark an inquiry as approved. |
+| `decline_inquiry` | Mark an inquiry as declined. |
+| `redact_inquiry` | Redact an inquiry (GDPR right-to-erasure). |
+| `create_account` | Create a persistent Persona account — a long-lived end-user record that multiple inquiries can attach to. |
+| `retrieve_account` | Retrieve a Persona account by id, including summary PII and linked inquiries / verifications. |
+| `list_reports` | List reports — individual verification artifacts (e.g. |
+| `retrieve_report` | Retrieve a single report by id — returns the full verification detail (matches, scores, raw source data). |
+| `create_case` | Open a case — a workspace for an ongoing investigation tied to one or more inquiries / accounts. |
+| `resume_inquiry` | Resume a paused inquiry — returns a fresh one-time session token / link so the end user can continue a flow... |
+| `update_account` | Patch attributes on an existing Persona account (e.g. |
+| `list_accounts` | List Persona accounts, filterable by reference-id (your internal user id) or email. |
+| `run_report` | Create and run a standalone Persona report — not tied to an inquiry flow. |
+| `retrieve_case` | Retrieve a case by id — full detail including status, assignee, linked objects, attached fields, and tags. |
+| `list_cases` | List investigation cases, filterable by status, assignee, or priority. |
+| `add_case_tag` | Add a tag to a case. |
+| `list_templates` | List inquiry templates configured in your Persona dashboard — returns each template's id (itmpl_...), name,... |
+| `list_webhooks` | List configured webhook subscriptions (Persona calls them 'Webhook subscriptions'). |
 
 ## Flow
 

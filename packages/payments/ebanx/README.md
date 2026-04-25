@@ -51,10 +51,10 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (18)
 
-| Tool | Description |
-|------|-------------|
+| Tool | Purpose |
+|---|---|
 | `create_payment` | Create a payment in EBANX (boleto, credit card, PIX, etc.) |
 | `get_payment` | Get payment details by hash |
 | `list_payments` | List payments by date range |
@@ -62,6 +62,17 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 | `create_payout` | Create a payout to a bank account |
 | `exchange_rate` | Get current exchange rate for a currency pair |
 | `get_banks` | List available banks for a country |
+| `query_payment_by_merchant_code` | Get payment details by merchant_payment_code (alternative to hash) |
+| `capture_payment` | Capture a previously authorized credit card payment (full or partial). |
+| `cancel_payment` | Cancel/void a pending payment by hash (e.g. |
+| `create_mass_payout` | Create a mass payout — multiple payouts in a single batch request. |
+| `get_payout` | Query a payout by external_reference or payout id. |
+| `simulate_payment` | Simulate the response of a payment in sandbox without persisting it (useful for integration testing). |
+| `list_payment_methods` | List available payment methods for a country (which payment_type_codes are supported). |
+| `create_card_token` | Tokenize a credit/debit card for reuse without re-collecting card data. |
+| `delete_card_token` | Delete a previously stored card token. |
+| `validate_document` | Validate a LATAM tax document (CPF/CNPJ for BR, RFC for MX, DNI for AR/PE) using checksum/format rules. |
+| `verify_notification` | Verify an EBANX webhook notification HMAC signature against the integration key. |
 
 ## Authentication
 

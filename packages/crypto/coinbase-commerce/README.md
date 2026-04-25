@@ -15,19 +15,28 @@ Coinbase Commerce is the **merchant-accept** side of crypto. Your store prices a
 
 Use Coinbase Commerce when an agent needs to **bill a buyer in crypto** — hosted charge page, reusable checkout, or directed invoice.
 
-## Tools
+## Tools (18)
 
 | Tool | Purpose |
-|------|---------|
-| `create_charge` | Create a one-time crypto charge priced in fiat |
-| `retrieve_charge` | Look up a charge by id or short code |
-| `list_charges` | List charges (paginated) |
-| `cancel_charge` | Cancel an unpaid charge |
-| `resolve_charge` | Manually mark a charge as paid |
-| `create_checkout` | Create a reusable hosted checkout (product page) |
-| `retrieve_checkout` | Look up a checkout by id |
-| `list_events` | List lifecycle events (same payload as webhooks) |
-| `create_invoice` | Create an invoice directed at a named recipient |
+|---|---|
+| `create_charge` | Create a crypto charge — a one-time merchant invoice priced in local fiat that a buyer can settle in BTC, E... |
+| `retrieve_charge` | Retrieve a charge by its Coinbase Commerce id OR its short code (the 8-character code embedded in the hoste... |
+| `list_charges` | List charges, newest first. |
+| `cancel_charge` | Cancel a charge that has not yet been paid. |
+| `resolve_charge` | Manually resolve a charge as paid. |
+| `create_checkout` | Create a reusable hosted checkout — think product-page-style link that can be paid multiple times. |
+| `retrieve_checkout` | Retrieve a checkout by id. |
+| `list_checkouts` | List reusable hosted checkouts, newest first. |
+| `update_checkout` | Update an existing reusable checkout. |
+| `delete_checkout` | Delete a reusable checkout. |
+| `list_events` | List events — the lifecycle signals (charge:created, charge:confirmed, charge:failed, charge:delayed, charg... |
+| `retrieve_event` | Retrieve a single event by id. |
+| `create_invoice` | Create an invoice — a directed bill sent to a specific named recipient. |
+| `retrieve_invoice` | Retrieve an invoice by code. |
+| `list_invoices` | List invoices, newest first. |
+| `void_invoice` | Void an unpaid invoice. |
+| `list_exchange_rates` | Fetch current Coinbase exchange rates for a base asset (e.g. |
+| `verify_webhook_signature` | Local helper — verify a Coinbase Commerce webhook payload using HMAC-SHA256. |
 
 ## Install
 

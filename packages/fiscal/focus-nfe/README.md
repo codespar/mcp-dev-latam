@@ -51,18 +51,29 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (19)
 
-| Tool | Description |
-|------|-------------|
+| Tool | Purpose |
+|---|---|
 | `create_nfe` | Create and emit an NFe (nota fiscal eletronica) |
 | `get_nfe` | Get NFe details and status by reference |
-| `cancel_nfe` | Cancel an authorized NFe |
+| `cancel_nfe` | Cancel an authorized NFe (within 24h of emission) |
+| `get_nfe_pdf` | Get NFe PDF (DANFE) download URL |
+| `send_correction_letter` | Send a correction letter (Carta de Correcao / CCe) for an authorized NFe |
 | `create_nfse` | Create and emit an NFSe (nota fiscal de servico) |
 | `get_nfse` | Get NFSe details and status by reference |
 | `cancel_nfse` | Cancel an authorized NFSe |
-| `get_nfe_pdf` | Get NFe PDF (DANFE) download URL |
 | `create_nfce` | Create and emit an NFCe (nota fiscal do consumidor eletronica) |
+| `get_nfce` | Get NFCe details and status by reference |
+| `cancel_nfce` | Cancel an authorized NFCe |
+| `create_cte` | Create and emit a CTe (conhecimento de transporte eletronico) for cargo transport |
+| `get_cte` | Get CTe details and status by reference |
+| `cancel_cte` | Cancel an authorized CTe |
+| `create_mdfe` | Create and emit an MDFe (manifesto eletronico de documentos fiscais) for cargo transport manifest |
+| `close_mdfe` | Close/finalize an MDFe (encerramento) after trip completion |
+| `register_webhook` | Register a webhook trigger (gatilho) that notifies your URL when fiscal document events occur |
+| `list_webhooks` | List all registered webhooks (gatilhos) |
+| `delete_webhook` | Delete a registered webhook by ID |
 
 ## Authentication
 

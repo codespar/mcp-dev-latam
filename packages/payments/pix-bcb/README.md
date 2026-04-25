@@ -55,18 +55,28 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (18)
 
-| Tool | Description |
-|------|-------------|
+| Tool | Purpose |
+|---|---|
 | `create_cob` | Create an immediate Pix charge (cobranca imediata) |
 | `get_cob` | Get immediate charge details by txid |
 | `list_cobs` | List immediate charges with date range and filters |
+| `update_cob` | Revise an existing immediate charge (PATCH /cob/{txid}). |
 | `create_cobv` | Create a due-date Pix charge (cobranca com vencimento) |
+| `list_cobv` | List due-date charges (cobv) within a date range |
+| `update_cobv` | Revise an existing due-date charge (PATCH /cobv/{txid}) |
 | `get_pix` | Get a received Pix payment by e2eid (endToEndId) |
 | `list_pix_received` | List received Pix payments within a date range |
+| `create_devolucao` | Request a refund (devolução) for a received Pix (PUT /pix/{e2eid}/devolucao/{id}) |
+| `get_devolucao` | Get refund details by e2eid + refund id (GET /pix/{e2eid}/devolucao/{id}) |
 | `create_pix_key` | Register a Pix key in DICT (requires PSP support) |
 | `get_pix_key` | Look up a Pix key in DICT |
+| `list_pix_keys` | List all Pix keys owned by the authenticated account at this PSP |
+| `request_key_portability` | Request portability of a Pix key from another PSP into this PSP (DICT portability flow) |
+| `resolve_key_claim` | Resolve a pending DICT key claim (confirm or cancel) — POST /dict/keys/claims/{id}/resolve |
+| `set_webhook` | Configure a webhook URL for a given Pix key (PUT /webhook/{chave}). |
+| `delete_webhook` | Remove the webhook configured for a Pix key (DELETE /webhook/{chave}) |
 
 ## Authentication
 

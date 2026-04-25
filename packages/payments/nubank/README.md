@@ -1,5 +1,8 @@
 # MCP Nubank
 
+
+> **Alpha release** — published under the `alpha` npm dist-tag. Endpoint paths follow public docs and BACEN/provider conventions but have not been fully live-validated. Pin exact versions during `0.x.x-alpha`. Install with `npm install <pkg>@alpha`.
+
 MCP server for **Nubank** — Brazil's largest digital bank, using the Open Finance Brasil standard.
 
 ## Quick Start
@@ -27,20 +30,32 @@ npx tsx packages/payments/nubank/src/index.ts --http
 | `MCP_HTTP` | No | Set to `"true"` to enable HTTP transport |
 | `MCP_PORT` | No | HTTP port (default: 3000) |
 
-## Tools
+## Tools (22)
 
-| Tool | Description |
-|------|-------------|
+| Tool | Purpose |
+|---|---|
 | `get_accounts` | List all accounts (checking, savings) |
-| `get_balance` | Get account balance by account ID |
-| `get_transactions` | List transactions with filters (date range, type) |
-| `get_credit_card_bill` | Get credit card bill (by month, status) |
+| `get_balance` | Get account balance |
+| `get_transactions` | List transactions with filters |
+| `get_credit_card_bill` | Get credit card bill details |
 | `get_investments` | List investments and yields |
-| `initiate_pix` | Initiate a PIX transfer (amount, key, key type) |
+| `initiate_pix` | Initiate a PIX transfer |
 | `get_pix_keys` | List registered PIX keys |
 | `get_statement` | Get account statement for a period |
-| `get_profile` | Get authenticated user profile |
+| `get_profile` | Get authenticated user profile information |
 | `list_cards` | List debit and credit cards |
+| `get_pix_transfer` | Get status and details of a specific PIX transfer |
+| `schedule_pix` | Schedule a future-dated PIX transfer |
+| `cancel_scheduled_pix` | Cancel a previously scheduled PIX transfer |
+| `create_pix_key` | Register a new PIX key for the authenticated account |
+| `delete_pix_key` | Remove a registered PIX key |
+| `get_card_details` | Get details for a single debit or credit card |
+| `block_card` | Block a card (reports lost/stolen or temporarily disables it) |
+| `unblock_card` | Unblock a previously blocked card (only valid for temporary blocks) |
+| `get_credit_card_transactions` | List transactions for a given credit card bill |
+| `pay_credit_card_bill` | Pay a credit card bill from a linked account |
+| `get_boleto` | Retrieve boleto details by barcode or digitable line |
+| `pay_boleto` | Pay a boleto from a linked account |
 
 ## Auth
 

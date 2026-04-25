@@ -51,10 +51,10 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (27)
 
-| Tool | Description |
-|------|-------------|
+| Tool | Purpose |
+|---|---|
 | `send_text` | Send a text message via WhatsApp |
 | `send_image` | Send an image message via WhatsApp |
 | `send_document` | Send a document via WhatsApp |
@@ -65,6 +65,23 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 | `get_messages` | Get messages for a phone number |
 | `send_button_list` | Send a button list message via WhatsApp |
 | `get_status` | Get WhatsApp instance connection status |
+| `create_group` | Create a WhatsApp group |
+| `get_group_metadata` | Get group metadata and participants |
+| `add_group_participant` | Add a participant to a WhatsApp group |
+| `remove_group_participant` | Remove a participant from a WhatsApp group |
+| `send_location` | Send a location message via WhatsApp |
+| `send_contact` | Send a contact card via WhatsApp |
+| `add_label` | Assign a label/tag to a chat |
+| `get_labels` | List all available labels/tags |
+| `read_message` | Mark messages as read |
+| `delete_message` | Delete a message |
+| `get_contact_metadata` | Get metadata (name, WhatsApp display name, profile picture, status) for a single contact |
+| `add_contacts` | Add one or more contacts to the WhatsApp address book. |
+| `list_chats` | List all WhatsApp chats with pagination |
+| `mark_chat_as_read` | Mark an entire chat as read or unread |
+| `list_groups` | List all WhatsApp groups with pagination |
+| `send_option_list` | Send an interactive option list (WhatsApp native list). |
+| `send_button_actions` | Send interactive action buttons (CALL, URL, REPLY). |
 
 ## Authentication
 

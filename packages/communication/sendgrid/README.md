@@ -9,21 +9,30 @@ SendGrid is Twilio-owned (acquired 2019). Together with [`@codespar/mcp-twilio`]
 
 Agents building commerce notification flows — order confirmations, shipping updates, abandoned-cart nudges, promos — can now cover every channel through two packages.
 
-## Tools
+## Tools (20)
 
 | Tool | Purpose |
-|------|---------|
-| `send_mail` | `POST /mail/send` — personalizations, content, attachments, scheduling |
-| `send_template` | `POST /mail/send` using a dynamic template (`d-...`) — convenience wrapper |
-| `add_contact` | `PUT /marketing/contacts` — upsert contacts (async job), assign to lists |
-| `list_contacts` | `GET /marketing/contacts` — sample of contacts |
-| `delete_contact` | `DELETE /marketing/contacts?ids=...` — delete by id or wipe all |
-| `search_contacts` | `POST /marketing/contacts/search` — SGQL (SendGrid SQL-like) query |
-| `list_templates` | `GET /templates` — dynamic (default) or legacy transactional templates |
-| `create_template` | `POST /templates` — create a transactional template |
-| `list_suppressions` | `GET /asm/groups/{group_id}/suppressions` — suppressed emails for a group |
-| `add_suppression` | `POST /asm/groups/{group_id}/suppressions` — add suppressions |
-| `get_stats` | `GET /stats` — sent / delivered / opens / clicks aggregated by day/week/month |
+|---|---|
+| `send_mail` | Send an email via POST /mail/send. |
+| `send_template` | Convenience wrapper for POST /mail/send with a dynamic template. |
+| `add_contact` | Upsert contacts in Marketing Campaigns via PUT /marketing/contacts. |
+| `list_contacts` | List Marketing Campaigns contacts via GET /marketing/contacts. |
+| `delete_contact` | Delete contacts by id via DELETE /marketing/contacts?ids=.... |
+| `search_contacts` | Search contacts with an SGQL query via POST /marketing/contacts/search. |
+| `get_contact` | Retrieve a single Marketing Campaigns contact by id via GET /marketing/contacts/{id}. |
+| `list_lists` | List all Marketing Campaigns contact lists via GET /marketing/lists. |
+| `create_list` | Create a Marketing Campaigns contact list via POST /marketing/lists. |
+| `delete_list` | Delete a Marketing Campaigns contact list via DELETE /marketing/lists/{id}. |
+| `list_templates` | List transactional templates via GET /templates. |
+| `create_template` | Create a transactional template via POST /templates. |
+| `list_suppressions` | List all suppressed recipients for an unsubscribe group via GET /asm/groups/{group_id}/suppressions. |
+| `add_suppression` | Add recipients to a suppression group via POST /asm/groups/{group_id}/suppressions. |
+| `list_unsubscribe_groups` | List all unsubscribe groups on the account via GET /asm/groups. |
+| `get_bounces` | Retrieve bounced recipients via GET /suppression/bounces. |
+| `delete_bounce` | Remove a bounced address from the bounce suppression list via DELETE /suppression/bounces/{email}. |
+| `cancel_scheduled_send` | Cancel or pause a scheduled send by batch_id via POST /user/scheduled_sends. |
+| `get_event_webhook_settings` | Retrieve the Event Webhook configuration via GET /user/webhooks/event/settings. |
+| `get_stats` | Global email stats via GET /stats. |
 
 ## Install
 

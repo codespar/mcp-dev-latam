@@ -4,23 +4,33 @@ MCP server for [ClearSale](https://clearsale.com.br) — Brazilian fraud prevent
 
 ClearSale pioneered fraud analytics in Brazil (founded 2001, São Paulo) and remains the default antifraud layer for most major BR ecommerce. This is the first entry in the CodeSpar `fraud` category — no other server in the catalog does fraud scoring. Future entries (Konduto, Legiti, Sift, Cybersource) will follow the same analyze → decide → feedback shape.
 
-## Tools
+## Tools (18)
 
 | Tool | Purpose |
-|------|---------|
-| `send_order_for_analysis` | Submit an order for fraud analysis; returns score + decision |
-| `get_order_analysis` | Retrieve the current decision state for an order |
-| `update_order_status` | Feed merchant's final decision back (APROVADO / CANCELADO / DEVOLVIDO) |
-| `list_orders` | List orders with filters (date range, status, pagination) |
-| `create_chargeback_notification` | Report a confirmed chargeback to tune the ML model |
-| `get_order_score` | Fraud score only (numeric 0-100) |
-| `create_device_fingerprint_session` | Start a device fingerprint session for client JS capture |
-| `get_device_fingerprint` | Retrieve captured device characteristics |
+|---|---|
+| `send_order_for_analysis` | Submit an order to ClearSale for fraud analysis. |
+| `get_order_analysis` | Retrieve the current analysis state of an order previously sent to ClearSale. |
+| `update_order_status` | Notify ClearSale of the merchant's final decision on an order (APROVADO / CANCELADO / DEVOLVIDO). |
+| `list_orders` | List orders submitted to ClearSale with optional filters. |
+| `create_chargeback_notification` | Report a confirmed chargeback back to ClearSale. |
+| `get_order_score` | Fetch only the fraud score (numeric 0-100) for an order. |
+| `create_device_fingerprint_session` | Start a device fingerprint session. |
+| `get_device_fingerprint` | Retrieve captured device characteristics for a fingerprint session (OS, browser, timezone, canvas/WebGL has... |
+| `resolve_manual_review` | Manually resolve an order currently in EM_ANALISE by approving or declining it. |
+| `get_score_by_document` | Look up the risk score and historical signals associated with a Brazilian document (CPF or CNPJ). |
+| `get_score_by_contact` | Look up the risk score for a contact identifier (email or phone). |
+| `validate_document` | KYC: validate a CPF or CNPJ against Receita Federal. |
+| `validate_address` | KYC: validate a Brazilian postal address against the Correios database. |
+| `track_behavior_event` | Log a behavior signal (page view, login, signup, custom event) tied to a fingerprint session. |
+| `issue_challenge` | Issue an authentication challenge (OTP via SMS/email or KBA question) to a buyer. |
+| `validate_challenge_response` | Verify a buyer's response to a challenge issued via issue_challenge. |
+| `create_case` | Open a fraud investigation case (e.g. |
+| `update_case` | Update an existing fraud investigation case — change status, add notes, reassign, or attach more orders. |
 
 ## Install
 
 ```bash
-npm install @codespar/mcp-clearsale
+npm install @codespar/mcp-clearsale@alpha
 ```
 
 ## Environment

@@ -9,34 +9,34 @@ Two products are covered:
 - **Webpay Plus** — one-shot redirect payments (`buy_order` + `amount`, user is redirected to Webpay to pay).
 - **Webpay OneClick Mall** — tokenized recurring / card-on-file payments that can split across multiple merchant codes (the "mall" model).
 
-## Tools
-
-### Webpay Plus (single payments)
+## Tools (19)
 
 | Tool | Purpose |
-|------|---------|
-| `webpay_create_transaction` | Start a transaction, returns token + redirect URL |
-| `webpay_commit_transaction` | Commit after user returns to merchant site |
-| `webpay_get_transaction_status` | Look up status by token |
-| `webpay_refund_transaction` | Full or partial refund |
-| `webpay_increase_amount` | Capture a partial / deferred authorization |
-
-### Webpay OneClick Mall (recurring / stored cards)
-
-| Tool | Purpose |
-|------|---------|
-| `oneclick_create_inscription` | Start card-enrollment flow |
-| `oneclick_finish_inscription` | Finalize enrollment, returns `tbk_user` |
-| `oneclick_delete_inscription` | Revoke a stored card |
-| `oneclick_authorize` | Charge stored card across mall sellers |
-| `oneclick_capture` | Capture a previously authorized charge |
-| `oneclick_refund` | Refund a mall charge |
-| `oneclick_status` | Look up OneClick transaction status |
+|---|---|
+| `webpay_create_transaction` | Create a Webpay Plus transaction. |
+| `webpay_commit_transaction` | Commit a Webpay Plus transaction after the user has returned from the Webpay flow. |
+| `webpay_get_transaction_status` | Get the current status of a Webpay Plus transaction by token. |
+| `webpay_refund_transaction` | Refund a committed Webpay Plus transaction. |
+| `webpay_increase_amount` | Capture a previously authorized Webpay Plus transaction (partial-capture / deferred-capture flow). |
+| `webpay_capture_transaction` | Deferred-capture for a previously authorized Webpay Plus transaction. |
+| `webpay_mall_create_transaction` | Create a Webpay Mall transaction — one parent buy_order split across several seller commerce codes. |
+| `webpay_mall_commit_transaction` | Commit a Webpay Mall transaction after the user has returned. |
+| `webpay_mall_get_transaction_status` | Get the status of a Webpay Mall transaction by token (includes per-child details). |
+| `webpay_mall_refund_transaction` | Refund one child seller of a Webpay Mall transaction. |
+| `webpay_mall_capture_transaction` | Deferred-capture for one child seller inside a Webpay Mall transaction. |
+| `oneclick_create_inscription` | Start a OneClick Mall card-enrollment flow. |
+| `oneclick_finish_inscription` | Finalize a OneClick Mall enrollment after the user has returned. |
+| `oneclick_delete_inscription` | Delete (revoke) a stored OneClick Mall card for a user. |
+| `oneclick_authorize` | Charge a stored OneClick Mall card across one or more mall merchant codes. |
+| `oneclick_capture` | Capture a previously authorized OneClick Mall charge (deferred-capture flow). |
+| `oneclick_refund` | Refund a OneClick Mall charge. |
+| `oneclick_status` | Get the status of a OneClick Mall transaction by parent buy_order. |
+| `oneclick_get_transaction_by_buy_order` | Look up a OneClick Mall transaction by parent buy_order. |
 
 ## Install
 
 ```bash
-npm install @codespar/mcp-transbank
+npm install @codespar/mcp-transbank@alpha
 ```
 
 ## Environment

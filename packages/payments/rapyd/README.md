@@ -9,22 +9,32 @@ Rapyd is the global counterpart to [dLocal](https://github.com/codespar/mcp-dev-
 
 Use dLocal when LatAm depth is the requirement. Use Rapyd when global reach, cash pickup, or wallet infrastructure is the requirement.
 
-## Tools
+## Tools (22)
 
 | Tool | Purpose |
-|------|---------|
-| `create_checkout_page` | Hosted checkout page covering all local methods for a country + currency |
-| `create_payment` | Direct server-to-server payment with a specified payment_method |
-| `get_payment` | Retrieve payment status |
-| `cancel_payment` | Cancel an uncaptured/pending payment |
-| `create_refund` | Refund a completed payment (full or partial) |
-| `create_payout` | Disburse via bank transfer, wallet top-up, or cash pickup |
-| `get_payout` | Retrieve payout status |
-| `confirm_payout` | Second step of Rapyd's two-step payout approval |
-| `list_payment_methods_by_country` | Discover local inbound methods for a country |
-| `list_payout_methods_by_country` | Discover payout method types for a beneficiary country |
-| `create_wallet` | Create a Rapyd managed wallet (ewallet) for an end user |
-| `transfer_between_wallets` | Move funds between two Rapyd ewallets |
+|---|---|
+| `create_checkout_page` | Create a Rapyd hosted checkout page. |
+| `create_payment` | Create a direct payment with a fully-specified payment_method. |
+| `get_payment` | Retrieve a payment by Rapyd payment id (payment_xxx). |
+| `cancel_payment` | Cancel a payment that has not yet been captured/completed. |
+| `create_refund` | Refund a completed payment. |
+| `create_payout` | Create a payout (disbursement) to a beneficiary. |
+| `get_payout` | Retrieve a payout by Rapyd payout id (payout_xxx). |
+| `confirm_payout` | Second step of Rapyd's two-step payout approval. |
+| `list_payment_methods_by_country` | List all inbound (collect) payment methods Rapyd supports for a given country + currency. |
+| `list_payout_methods_by_country` | List all outbound (disburse) payout method types Rapyd supports for a given beneficiary country. |
+| `create_wallet` | Create a Rapyd managed wallet (user) for an end user. |
+| `list_payments` | List payments with optional filters. |
+| `update_payment` | Update metadata / descriptor / receipt details on an existing payment. |
+| `create_payment_method` | Save a reusable payment method (card token, bank account, wallet) against a Rapyd customer. |
+| `delete_payment_method` | Remove a saved payment method from a Rapyd customer. |
+| `list_payouts` | List payouts (disbursements) with optional filters. |
+| `cancel_payout` | Cancel a payout that is still in 'Created' state (before confirm_payout releases funds). |
+| `get_wallet` | Retrieve a Rapyd ewallet (user) by id. |
+| `update_wallet` | Update profile fields on a Rapyd ewallet (user). |
+| `list_wallets` | List Rapyd ewallets under the merchant account. |
+| `wallet_contact_verify` | Submit a verification token (usually received via SMS/email) to verify a wallet contact's identity. |
+| `transfer_between_wallets` | Move funds between two Rapyd ewallets (source_ewallet → destination_ewallet). |
 
 ## Install
 

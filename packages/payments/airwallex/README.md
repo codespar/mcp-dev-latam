@@ -4,21 +4,30 @@ MCP server for [Airwallex](https://www.airwallex.com) — embedded finance for c
 
 EBANX lets global platforms collect FROM LatAm and settle to USD. Airwallex is the inverse: LatAm sellers collect FROM abroad (USD, EUR, GBP) into global accounts, convert FX, and pay beneficiaries out across 150+ countries. Together the two servers bracket the cross-border flow both ways.
 
-## Tools
+## Tools (20)
 
 | Tool | Purpose |
-|------|---------|
-| `create_payment_intent` | Create a pay-in intent (collect USD/EUR/GBP from a buyer) |
-| `confirm_payment_intent` | Confirm a payment intent with a payment method |
-| `retrieve_payment_intent` | Fetch a payment intent by id |
-| `cancel_payment_intent` | Cancel an unconfirmed or uncaptured intent |
-| `create_refund` | Refund a captured payment intent (full or partial) |
-| `create_customer` | Onboard a customer for saved payment methods |
-| `create_beneficiary` | Register a payout beneficiary with bank details |
-| `create_transfer` | Send a cross-border transfer to a beneficiary |
-| `retrieve_transfer` | Fetch a transfer by id |
-| `create_conversion` | Execute an FX conversion between wallet currencies |
-| `retrieve_balance` | Fetch current wallet balance per currency |
+|---|---|
+| `create_payment_intent` | Create an Airwallex payment intent (pay-in). |
+| `confirm_payment_intent` | Confirm a previously-created payment intent with a payment method. |
+| `retrieve_payment_intent` | Retrieve a payment intent by id. |
+| `cancel_payment_intent` | Cancel a payment intent that has not yet been captured. |
+| `capture_payment_intent` | Capture a previously-authorized payment intent (two-step auth + capture flow). |
+| `list_payment_intents` | List payment intents with optional filters (status, merchant_order_id, date range). |
+| `create_refund` | Refund a captured payment intent (full or partial). |
+| `retrieve_refund` | Retrieve a refund by id. |
+| `create_customer` | Create an Airwallex customer for saved payment methods and recurring charges. |
+| `retrieve_customer` | Retrieve a customer by id. |
+| `update_customer` | Update fields on an existing customer (email, phone, address, metadata). |
+| `create_beneficiary` | Create a transfer beneficiary (recipient) with bank details. |
+| `retrieve_beneficiary` | Retrieve a beneficiary by id. |
+| `list_beneficiaries` | List beneficiaries. |
+| `create_transfer` | Send a cross-border transfer to a pre-created beneficiary. |
+| `retrieve_transfer` | Retrieve a transfer by id. |
+| `cancel_transfer` | Cancel a transfer that has not yet settled. |
+| `list_transfers` | List transfers with optional filters (status, date range). |
+| `create_conversion` | Execute an FX conversion between wallet currencies (e.g. |
+| `retrieve_balance` | Retrieve the current wallet balance for every currency the account holds. |
 
 ## Install
 

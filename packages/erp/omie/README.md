@@ -51,67 +51,40 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (30)
 
-### Customers, Products, Companies
-
-| Tool | Description |
-|------|-------------|
+| Tool | Purpose |
+|---|---|
 | `list_customers` | List customers from Omie ERP |
 | `create_customer` | Create a customer in Omie ERP |
 | `list_products` | List products from Omie ERP |
 | `create_product` | Create a product in Omie ERP |
+| `create_order` | Create a sales order in Omie ERP |
+| `list_orders` | List sales orders from Omie ERP |
+| `list_invoices` | List invoices (NF) from Omie ERP |
+| `get_financial` | List accounts receivable from Omie ERP |
+| `create_invoice` | Consult a specific NF by ID in Omie ERP |
 | `get_company_info` | List companies registered in Omie ERP |
-
-### Sales Orders & Invoices
-
-| Tool | Description |
-|------|-------------|
-| `create_order` | Create a sales order |
-| `list_orders` | List sales orders |
-| `get_sales_order` | Consult a specific sales order by ID or integration code |
-| `update_sales_order` | Alter an existing sales order |
-| `invoice_sales_order` | Generate an invoice (NF) from a sales order |
-| `list_invoices` | List invoices (NF) |
-| `create_invoice` | Consult a specific NF by ID |
-
-### Services & Purchasing
-
-| Tool | Description |
-|------|-------------|
-| `create_service_order` | Create a service order (OS) |
-| `list_service_orders` | List service orders |
-| `create_purchase_order` | Create a purchase order |
-| `list_purchase_orders` | List purchase orders |
-
-### Financial (AR / AP / Banking)
-
-| Tool | Description |
-|------|-------------|
-| `get_financial` | List accounts receivable |
-| `create_account_payable` | Create an accounts payable entry |
-| `list_accounts_payable` | List accounts payable titles |
-| `pay_account_payable` | Settle / record payment on an AP title |
-| `list_financial_movements` | List unified financial movements (AP + AR + CC) |
-| `get_bank_accounts` | List registered bank accounts |
-| `get_bank_statement` | Bank statement (extrato) for a period |
-| `create_cash_entry` | Create a bank account ledger entry (lançamento) |
-| `list_dre` | List DRE (income statement) accounts |
-
-### Auxiliary Registers
-
-| Tool | Description |
-|------|-------------|
-| `list_categories` | List chart of accounts categories |
-| `list_departments` | List departments (cost centers) |
-| `list_projects` | List projects |
-
-### Inventory
-
-| Tool | Description |
-|------|-------------|
-| `create_stock_adjustment` | Create an inventory adjustment (entry/exit/balance) |
-| `get_stock_position` | Get current stock position / balance |
+| `create_service_order` | Create a service order (OS) in Omie ERP |
+| `list_service_orders` | List service orders (OS) from Omie ERP |
+| `create_purchase_order` | Create a purchase order in Omie ERP |
+| `list_purchase_orders` | List purchase orders from Omie ERP |
+| `get_bank_accounts` | List registered bank accounts in Omie ERP |
+| `create_account_payable` | Create an accounts payable (AP) entry in Omie ERP |
+| `list_accounts_payable` | List accounts payable (AP) titles in Omie ERP |
+| `pay_account_payable` | Settle / record payment (baixa) for an AP title in Omie ERP |
+| `list_dre` | List DRE (income statement) chart of accounts in Omie ERP |
+| `get_bank_statement` | Retrieve bank account statement (extrato) for a period from Omie ERP |
+| `list_categories` | List chart of accounts categories in Omie ERP |
+| `list_departments` | List departments (cost centers) in Omie ERP |
+| `list_projects` | List projects in Omie ERP |
+| `create_cash_entry` | Create a bank account ledger entry (lançamento de conta corrente) in Omie ERP |
+| `list_financial_movements` | List unified financial movements (AP + AR + CC) in Omie ERP |
+| `create_stock_adjustment` | Create an inventory adjustment (entry/exit/balance) in Omie ERP |
+| `get_stock_position` | Get current stock position / balance in Omie ERP |
+| `update_sales_order` | Alter an existing sales order in Omie ERP |
+| `get_sales_order` | Consult a specific sales order by ID or integration code in Omie ERP |
+| `invoice_sales_order` | Generate an invoice (NF) from an existing sales order in Omie ERP |
 
 ## Authentication
 

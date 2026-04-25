@@ -63,20 +63,32 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (22)
 
-| Tool | Description |
-|------|-------------|
-| `create_pix_charge_static` | Static Pix QR code (reusable, tied to a merchant Pix key) |
-| `create_pix_charge_dynamic` | Dynamic Pix QR code (single-use, expiring) |
-| `get_pix_charge` | Retrieve a Pix charge by txid |
-| `create_pix_payment` | Initiate an outbound Pix transfer |
-| `get_pix_payment` | Retrieve an outbound Pix payment by endToEndId |
-| `refund_pix_payment` | Refund (devolução) a Pix payment |
-| `list_pix_payments` | List Pix payments with filters (start, end, status) |
-| `resolve_pix_key` | DICT lookup — resolve a Pix key to account info |
-| `list_dict_keys` | List DICT keys registered to merchant accounts |
-| `create_pix_automatico` | Register a recurring Pix Automático agreement (BCB 2025) |
+| Tool | Purpose |
+|---|---|
+| `create_pix_charge_static` | Create a static Pix charge (reusable QR code tied to a merchant Pix key). |
+| `create_pix_charge_dynamic` | Create a dynamic Pix charge (single-use QR with expiration). |
+| `get_pix_charge` | Retrieve a Pix charge (static or dynamic) by txid. |
+| `list_pix_charges` | List immediate Pix charges (BCB /cob) with date and status filters. |
+| `update_pix_charge` | Update an immediate Pix charge (BCB PATCH /cob/{txid}). |
+| `create_pix_charge_due` | Create a due-dated Pix charge (BCB /cobv — Pix com Vencimento). |
+| `get_pix_charge_due` | Retrieve a due-dated Pix charge (BCB GET /cobv/{txid}). |
+| `create_pix_payment` | Initiate an outbound Pix transfer (ordem de pagamento). |
+| `get_pix_payment` | Retrieve an outbound Pix payment by endToEndId. |
+| `refund_pix_payment` | Refund (devolução) a Pix payment. |
+| `list_pix_payments` | List outbound Pix payments with optional filters. |
+| `list_pix_received` | List inbound Pix (Pix recebidos) credited to merchant accounts in a date range. |
+| `resolve_pix_key` | Resolve a Pix DICT key to the account holder's identity and ISPB/branch/account. |
+| `list_dict_keys` | List DICT keys registered to the merchant's accounts on Matera. |
+| `register_dict_key` | Register (claim) a DICT key for a merchant account on Matera. |
+| `delete_dict_key` | Delete a DICT key the merchant owns. |
+| `create_pix_automatico` | Register a Pix Automático recurrence (BCB 2025 recurring Pix product, /rec). |
+| `get_pix_automatico` | Retrieve a Pix Automático recurrence by idRec. |
+| `cancel_pix_automatico` | Cancel an active Pix Automático recurrence. |
+| `get_account_balance` | Get the current balance of a Matera-managed account. |
+| `get_account_statement` | Get the statement (extrato) of a Matera-managed account in a date range. |
+| `internal_transfer` | Book a transfer between two accounts both held on Matera (TED-interno / transferência interna). |
 
 ## Authentication
 

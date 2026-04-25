@@ -4,23 +4,32 @@ MCP server for [NuPay](https://docs.nupaybusiness.com.br) — Nubank's merchant 
 
 NuPay is Nubank's answer to PayPal / Shop Pay for Brazil: a wallet-backed checkout that leverages Nubank's 100M+ BR customer distribution. Agents create a payment, the shopper confirms inside the Nubank app (push + biometric) or via Pix, and funds settle to the merchant. Pre-authorized flows (CIBA / OTP) unlock recurrence and true one-click for repeat buyers.
 
-## Tools
+## Tools (22)
 
 | Tool | Purpose |
 |---|---|
-| `create_payment` | Create a NuPay or Pix checkout payment |
-| `get_payment_status` | Fetch payment status |
-| `cancel_payment` | Cancel an unsettled payment |
-| `create_refund` | Full or partial refund (idempotent) |
-| `get_refund` | Retrieve refund status |
-| `create_recipient` | Register a regulatory final beneficiary |
-| `get_recipient` | Retrieve a recipient |
-| `query_payment_conditions` | List installment/payment options for an amount |
-| `create_preauth_payment` | Create a payment using a pre-authorized Bearer token (recurrence) |
-| `backchannel_start` | Start CIBA / OTP shopper authorization |
-| `backchannel_complete` | Complete OTP and exchange for tokens |
-| `backchannel_resend_otp` | Resend the OTP |
-| `exchange_token` | OAuth2 `/v1/token` — authorization_code or refresh_token grant |
+| `create_payment` | Create a NuPay checkout payment. |
+| `get_payment` | Retrieve full payment details (amount, shopper, items, current status, timestamps) by pspReferenceId. |
+| `get_payment_status` | Retrieve a payment's status by pspReferenceId. |
+| `list_payments_by_date` | List payments created within a date range. |
+| `cancel_payment` | Cancel a payment that has not yet been captured/settled. |
+| `create_refund` | Refund a settled payment (full or partial). |
+| `get_refund` | Retrieve refund status by pspReferenceId + refundId. |
+| `list_refunds` | List all refunds issued against a given payment. |
+| `create_recipient` | Register a final beneficiary (required for regulatory split payments). |
+| `get_recipient` | Retrieve a registered recipient by referenceId. |
+| `update_recipient` | Update a registered final beneficiary (name, document, country, type). |
+| `delete_recipient` | Remove a registered recipient. |
+| `list_recipients` | List registered recipients (final beneficiaries) for the merchant. |
+| `list_settlements` | List settlement reports (payouts to the merchant bank account) within a date range. |
+| `get_settlement` | Retrieve a single settlement (payout batch) including the list of underlying transactions. |
+| `query_payment_conditions` | Query available installment/payment conditions for a given amount and (optionally) shopper CPF. |
+| `create_preauth_payment` | Create a NuPay payment using a pre-authorized Bearer access_token (pre-auth / recurrence flow). |
+| `backchannel_start` | Start a CIBA / OTP pre-authorization for a shopper. |
+| `backchannel_complete` | Complete a CIBA/OTP flow by submitting the OTP the shopper received. |
+| `backchannel_resend_otp` | Resend the OTP to the shopper for an in-flight authorization ticket. |
+| `exchange_token` | Exchange an authorization_code or refresh_token at POST /v1/token. |
+| `revoke_token` | Revoke an issued access_token or refresh_token at POST /v1/token/revoke. |
 
 ## Install
 

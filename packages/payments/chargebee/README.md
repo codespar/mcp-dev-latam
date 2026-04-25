@@ -57,47 +57,25 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (15)
 
-### Subscriptions
-
-| Tool | Description |
-|------|-------------|
-| `create_subscription` | Create a subscription (new or existing customer) |
-| `retrieve_subscription` | Get a subscription by ID |
-| `update_subscription` | Update plan, quantity, coupons, addons, billing cycles |
-| `cancel_subscription` | Cancel immediately or at end of term |
-| `reactivate_subscription` | Reactivate a cancelled/paused subscription |
-| `list_subscriptions` | List with Chargebee filter syntax |
-
-### Customers
-
-| Tool | Description |
-|------|-------------|
-| `create_customer` | Create a customer |
-| `retrieve_customer` | Get a customer by ID |
-| `update_customer` | Update customer fields |
-| `list_customers` | List with filters |
-
-### Invoices
-
-| Tool | Description |
-|------|-------------|
-| `retrieve_invoice` | Get an invoice by ID |
-| `list_invoices` | Filter by customer_id, subscription_id, status |
-
-### Payment sources
-
-| Tool | Description |
-|------|-------------|
-| `create_payment_source_using_token` | Attach a gateway token to a customer |
-| `delete_payment_source` | Remove a payment source |
-
-### Events
-
-| Tool | Description |
-|------|-------------|
-| `list_events` | List webhook events (audit / backfill) |
+| Tool | Purpose |
+|---|---|
+| `create_subscription` | Create a new subscription in Chargebee. |
+| `retrieve_subscription` | Retrieve a subscription by ID |
+| `update_subscription` | Update a subscription. |
+| `cancel_subscription` | Cancel a subscription. |
+| `reactivate_subscription` | Reactivate a cancelled or paused subscription |
+| `list_subscriptions` | List subscriptions. |
+| `create_customer` | Create a customer in Chargebee. |
+| `retrieve_customer` | Retrieve a customer by ID |
+| `update_customer` | Update a customer. |
+| `list_customers` | List customers. |
+| `retrieve_invoice` | Retrieve an invoice by ID |
+| `list_invoices` | List invoices with optional filters |
+| `create_payment_source_using_token` | Attach a payment source to a customer using a gateway token (e.g. |
+| `delete_payment_source` | Delete a payment source |
+| `list_events` | List webhook events. |
 
 ## Authentication
 

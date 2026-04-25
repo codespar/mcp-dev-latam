@@ -1,5 +1,8 @@
 # @codespar/mcp-correios
 
+
+> **Alpha release** — published under the `alpha` npm dist-tag. Endpoint paths follow public docs and BACEN/provider conventions but have not been fully live-validated. Pin exact versions during `0.x.x-alpha`. Install with `npm install <pkg>@alpha`.
+
 > MCP server for **Correios** — Brazilian postal service tracking, rates, and shipping
 
 [![npm](https://img.shields.io/npm/v/@codespar/mcp-correios)](https://www.npmjs.com/package/@codespar/mcp-correios)
@@ -51,16 +54,31 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (21)
 
-| Tool | Description |
-|------|-------------|
+| Tool | Purpose |
+|---|---|
 | `track_package` | Track a package by Correios tracking code |
+| `track_bulk` | Track multiple Correios packages in a single call (up to 50 codes) |
 | `calculate_shipping` | Calculate shipping rates between two CEPs |
 | `get_delivery_time` | Get estimated delivery time between two CEPs |
 | `list_services` | List available Correios shipping services |
 | `find_cep` | Look up address by CEP via Correios |
+| `find_cep_bulk` | Batch address lookup for up to 20 CEPs in a single call |
+| `list_cep_ranges` | List CEP ranges (faixas de CEP) served by a given shipping service |
+| `get_delivery_modality` | Get delivery modality (forma de entrega) for a CEP and service — whether delivery is domicile, agency picku... |
 | `create_prepost` | Create a pre-posting order for shipping |
+| `get_prepost` | Get a pre-posting order by ID |
+| `list_preposts` | List pre-posting orders with optional filters (date range, status) |
+| `cancel_prepost` | Cancel a pre-posting order |
+| `buy_label_range` | Request a range of SIGEP tracking labels (etiquetas) for a service |
+| `post_objects` | Close and post a list of pre-posted objects (fechar postagem SIGEP) — creates a PLP |
+| `list_postal_codes` | Search addresses by street name or location (returns matching CEPs) |
+| `create_collection` | Schedule a package collection (pickup) from an address |
+| `get_collection` | Get collection request details by ID |
+| `cancel_collection` | Cancel a scheduled collection request |
+| `create_reverse` | Create a reverse logistics (return) order |
+| `get_reverse` | Get reverse logistics order details by ID |
 
 ## Authentication
 

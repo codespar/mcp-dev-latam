@@ -4,20 +4,30 @@ MCP server for [Culqi](https://culqi.com) — Peru's default PSP.
 
 Culqi is the Stripe of Peru: the standard rail for Peruvian D2C brands and SaaS. It ships CulqiOnline (hosted checkout), CulqiLink (payment links), and CulqiFull (subscriptions). Adding Culqi brings Peru into the CodeSpar catalog alongside Mexico, Brazil, Colombia, Argentina, and Chile.
 
-## Tools
+## Tools (20)
 
 | Tool | Purpose |
-|------|---------|
-| `create_token` | Tokenize a card (POST /tokens) — usually client-side, server-side for testing |
-| `create_charge` | Charge a card or token (POST /charges) in PEN or USD |
-| `get_charge` | Retrieve a charge by id |
-| `refund_charge` | Refund a captured charge (full or partial) |
-| `create_customer` | Create a customer record |
-| `create_card` | Attach a tokenized card to a customer for reuse |
-| `create_plan` | Create a subscription plan |
-| `create_subscription` | Subscribe a customer's card to a plan (CulqiFull) |
-| `cancel_subscription` | Cancel an active subscription |
-| `list_events` | List webhook events with filters (type, date range) |
+|---|---|
+| `create_token` | Tokenize a card (POST /tokens). |
+| `create_charge` | Create a charge (POST /charges). |
+| `get_charge` | Retrieve a charge by Culqi id. |
+| `list_charges` | List charges (GET /charges) with optional filters. |
+| `capture_charge` | Capture a previously-authorized charge (POST /charges/{id}/capture). |
+| `refund_charge` | Refund a captured charge (POST /refunds). |
+| `get_refund` | Retrieve a refund by id (GET /refunds/{id}). |
+| `create_customer` | Create a customer record (POST /customers). |
+| `get_customer` | Retrieve a customer by Culqi id (GET /customers/{id}). |
+| `list_customers` | List customers (GET /customers) with optional filters passed as query params: first_name, last_name, email,... |
+| `create_card` | Attach a tokenized card to a customer for reuse (POST /cards). |
+| `delete_card` | Detach a saved card from its customer (DELETE /cards/{id}). |
+| `create_order` | Create an order (POST /orders) for non-card payment methods — Yape, PagoEfectivo (Cash), bank transfer. |
+| `confirm_order` | Confirm an unpaid order (POST /orders/{id}/confirm). |
+| `list_orders` | List orders (GET /orders) with optional filters passed as query params: order_number, state (created, paid,... |
+| `create_plan` | Create a subscription plan (POST /plans). |
+| `create_subscription` | Subscribe a customer's saved card to a plan (POST /subscriptions). |
+| `cancel_subscription` | Cancel an active subscription (DELETE /subscriptions/{id}). |
+| `list_events` | List webhook events (GET /events) with optional filters. |
+| `get_event` | Retrieve a single webhook event by id (GET /events/{id}). |
 
 ## Install
 

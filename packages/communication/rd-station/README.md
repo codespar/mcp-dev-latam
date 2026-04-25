@@ -49,18 +49,28 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (18)
 
-| Tool | Description |
-|------|-------------|
+| Tool | Purpose |
+|---|---|
 | `create_contact` | Create a contact in RD Station CRM |
 | `update_contact` | Update a contact by UUID |
+| `upsert_contact` | Upsert (create or update) a contact identified by email (Marketing API) |
 | `get_contact` | Get contact details by UUID or email |
 | `list_contacts` | List contacts with pagination |
+| `delete_contact` | Delete a contact by UUID |
 | `create_event` | Create a conversion event for a contact |
 | `list_funnels` | List all sales funnels |
 | `get_funnel` | Get funnel details with stages |
+| `list_deal_stages` | List deal stages of a pipeline (funnel) |
 | `create_opportunity` | Create a sales opportunity in a funnel |
+| `update_deal` | Update a deal/opportunity by ID |
+| `get_deal` | Get a deal/opportunity by ID |
+| `list_deals` | List deals with optional filters and pagination |
+| `list_segmentations` | List contact segmentations |
+| `get_segmentation_contacts` | List contacts inside a given segmentation |
+| `update_lead_scoring` | Mark a contact as lead, qualified lead, or opportunity (lead scoring) |
+| `create_webhook` | Subscribe a webhook to RD Station events (WEBHOOK.CONVERTED / WEBHOOK.MARKED_OPPORTUNITY) |
 
 ## Authentication
 

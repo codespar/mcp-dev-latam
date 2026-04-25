@@ -27,20 +27,32 @@ npx tsx packages/colombia/wompi/src/index.ts --http
 | `MCP_HTTP` | No | Set to `"true"` to enable HTTP transport |
 | `MCP_PORT` | No | HTTP port (default: 3000) |
 
-## Tools
+## Tools (22)
 
-| Tool | Description |
-|------|-------------|
+| Tool | Purpose |
+|---|---|
 | `create_transaction` | Create a payment transaction |
 | `get_transaction` | Get transaction details by ID |
 | `list_transactions` | List transactions |
+| `search_transaction_by_reference` | Find transaction(s) by merchant reference |
 | `void_transaction` | Void a transaction |
 | `create_payment_link` | Create a payment link |
 | `get_payment_link` | Get payment link details |
-| `list_payment_methods` | List available payment methods |
-| `get_acceptance_token` | Get merchant acceptance token |
+| `update_payment_link` | Update a payment link |
+| `list_payment_links` | List payment links |
+| `list_payment_methods` | List available payment methods for the merchant |
+| `get_acceptance_token` | Get merchant acceptance token (required for transactions) |
 | `create_tokenized_card` | Tokenize a credit/debit card |
+| `create_tokenized_nequi` | Tokenize a Nequi wallet (start async tokenization by phone number) |
+| `get_tokenization_status` | Query async tokenization status (Nequi etc.) by tokenization id |
+| `create_payment_source` | Create a reusable payment source (CARD/NEQUI/PSE) linked to a customer email |
+| `create_customer` | Create a customer profile |
+| `get_customer` | Get customer by ID |
+| `list_financial_institutions` | List PSE banks (financial institutions) |
+| `create_refund` | Create a refund for a transaction |
+| `get_refund` | Get refund details by ID |
 | `get_merchant` | Get merchant information |
+| `validate_webhook_signature` | Validate a Wompi event signature. |
 
 ## Auth
 

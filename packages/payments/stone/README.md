@@ -53,49 +53,28 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 
 ## Tools (21)
 
-### Banking — accounts
-| Tool | Description |
-|------|-------------|
+| Tool | Purpose |
+|---|---|
 | `get_balance` | Get account balance |
 | `list_transactions` | List account transactions |
 | `get_statement` | Get account statement for a period |
-
-### Banking — payments & transfers
-| Tool | Description |
-|------|-------------|
 | `create_payment` | Create a payment via Stone |
 | `get_payment` | Get payment details by ID |
-| `list_payments` | List payments with filters |
+| `list_payments` | List payments with optional filters |
 | `create_transfer` | Create a bank transfer (internal or external) |
-| `create_pix_payment` | Send a Pix payment (outbound) |
-| `create_pix_charge` | Create a Pix charge / QR Code (inbound) |
-| `create_boleto` | Issue a boleto bancário |
-
-### Acquiring — charges & cards
-| Tool | Description |
-|------|-------------|
-| `create_card_charge` | Charge a credit / debit card |
-| `tokenize_card` | Tokenize a card into a PCI-safe token |
+| `create_pix_payment` | Create a Pix payment (outbound) via Stone |
+| `create_pix_charge` | Create a Pix charge (QR Code / cob) to receive a payment |
+| `create_boleto` | Create a boleto bancário for charging a customer |
+| `create_card_charge` | Charge a credit or debit card (Stone acquiring) |
+| `tokenize_card` | Tokenize a card to PCI-safe token for later charging |
 | `refund_transaction` | Refund a settled transaction (full or partial) |
 | `cancel_transaction` | Cancel an authorized (not-yet-captured) transaction |
-
-### Anticipations & receivables
-| Tool | Description |
-|------|-------------|
-| `create_anticipation` | Anticipate future card receivables (Stone's flagship) |
-| `get_anticipation_limits` | Get available / min / max anticipation limits |
-| `list_receivables` | Search future receivables |
-
-### Terminals (Stone / TON POS)
-| Tool | Description |
-|------|-------------|
-| `list_terminals` | List physical POS terminals |
-| `get_terminal_status` | Get online / offline status for a terminal |
-
-### Webhooks
-| Tool | Description |
-|------|-------------|
-| `register_webhook` | Register a webhook endpoint |
+| `create_anticipation` | Anticipate future receivables (Stone's flagship 'antecipação') |
+| `get_anticipation_limits` | Get current anticipation limits (max / min / available) for a merchant |
+| `list_receivables` | Search receivables (future credits from card transactions) |
+| `list_terminals` | List physical Stone / TON terminals for a merchant |
+| `get_terminal_status` | Get current status of a specific POS terminal (online / offline / last seen) |
+| `register_webhook` | Register a webhook endpoint for Stone events |
 | `list_webhooks` | List registered webhook endpoints |
 
 ## Authentication

@@ -4,34 +4,35 @@ MCP server for [Adyen Checkout API v71](https://docs.adyen.com/api-explorer/Chec
 
 Distinct from every other server in our catalog: it's the one gateway enterprise merchants choose when a single contract has to cover BR + EU + US + APAC.
 
-## Tools (15)
+## Tools (25)
 
-**Payments**
-- `create_payment` — direct payment
-- `payment_details` — submit 3DS challenge / redirect result
-- `capture_payment` — capture a delayed authorization
-- `cancel_payment` — cancel uncaptured
-- `refund_payment` — full or partial refund
-- `reverse_payment` — void-or-refund atomic
-- `update_amount` — change authorized amount (tips, hotel incidentals)
-
-**Discovery**
-- `get_payment_methods` — dynamic per country/currency/amount
-
-**Payment Links**
-- `create_payment_link`
-- `get_payment_link`
-- `update_payment_link` — typically to expire early
-
-**Donations**
-- `create_donation` — Adyen Giving round-up
-
-**Stored methods**
-- `list_stored_payment_methods` — one-click recall
-- `disable_stored_payment_method` — shopper opt-out
-
-**Sessions**
-- `create_session` — Drop-in / Web Components initialization
+| Tool | Purpose |
+|---|---|
+| `create_payment` | Create a payment. |
+| `payment_details` | Submit additional details for a payment (3DS challenge response, redirect returnUrl payload, etc). |
+| `capture_payment` | Capture an authorized payment (for delayed-capture flows). |
+| `cancel_payment` | Cancel an authorized-but-uncaptured payment. |
+| `refund_payment` | Refund a captured payment (full or partial). |
+| `reverse_payment` | Void-or-refund a payment atomically. |
+| `update_amount` | Update the authorized amount of an unsettled payment (common in tips / hotel incidentals). |
+| `get_payment_methods` | Dynamically list available payment methods for a country/currency/amount combination. |
+| `create_payment_link` | Create a hosted payment link (URL you send to the customer). |
+| `get_payment_link` | Retrieve a payment link by id. |
+| `update_payment_link` | Update a payment link — typically to expire it early. |
+| `create_donation` | Create a round-up donation linked to an original payment (Adyen Giving). |
+| `list_stored_payment_methods` | List a shopper's stored payment methods (one-click reuse). |
+| `disable_stored_payment_method` | Delete a stored payment method (shopper opt-out). |
+| `create_session` | Create a Checkout session (used by Drop-in and Web Components to load methods + handle the full flow client... |
+| `get_session` | Retrieve the status/result of a Checkout session (poll after the shopper finishes Drop-in). |
+| `retrieve_applicable_defense_reasons` | List the defense reason codes Adyen will accept for a given dispute (Dispute Service v30). |
+| `accept_dispute` | Accept a dispute — forfeit the funds and close the case (Dispute Service v30). |
+| `defend_dispute` | Defend a dispute using one of the applicable defense reason codes (Dispute Service v30). |
+| `supply_defense_document` | Upload a supporting document for an ongoing dispute defense (Dispute Service v30). |
+| `list_balance_accounts` | List the balance accounts owned by an account holder (Balance Platform BCL v2). |
+| `get_balance_account` | Fetch a single balance account by id (Balance Platform BCL v2). |
+| `create_transfer` | Initiate a transfer (bank payout, internal move, third-party card push) from a balance account (Transfers B... |
+| `get_transfer` | Retrieve a transfer by id (Transfers BTL v4). |
+| `list_merchants` | List merchant accounts visible to the API credential (Management API v3). |
 
 ## Install
 

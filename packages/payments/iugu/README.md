@@ -49,57 +49,32 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools (20)
+## Tools (23)
 
-### Invoices
-| Tool | Description |
-|------|-------------|
-| `create_invoice` | Create an invoice (Pix, boleto, or credit card) |
+| Tool | Purpose |
+|---|---|
+| `create_invoice` | Create an invoice in iugu (Pix, boleto, or credit card) |
 | `get_invoice` | Get invoice details by ID |
 | `list_invoices` | List invoices with optional filters |
-| `cancel_invoice` | Cancel (delete) an invoice |
-| `refund_invoice` | Full or partial refund on a paid invoice |
-| `duplicate_invoice` | Duplicate an invoice with a new due date |
-
-### Customers
-| Tool | Description |
-|------|-------------|
-| `create_customer` | Create a customer |
-| `update_customer` | Update customer data (PUT) |
+| `cancel_invoice` | Cancel (delete) an invoice. |
+| `refund_invoice` | Refund a paid invoice (full or partial). |
+| `duplicate_invoice` | Duplicate an existing invoice with a new due date. |
+| `create_customer` | Create a customer in iugu |
+| `update_customer` | Update a customer. |
 | `list_customers` | List customers with optional filters |
-
-### Plans (recurring templates)
-| Tool | Description |
-|------|-------------|
-| `create_plan` | Create a subscription plan |
-| `update_plan` | Update an existing plan |
-| `list_plans` | List subscription plans |
-
-### Subscriptions
-| Tool | Description |
-|------|-------------|
-| `create_subscription` | Create a recurring subscription |
-| `suspend_subscription` | Suspend a subscription |
-| `activate_subscription` | Reactivate a suspended subscription |
-| `cancel_subscription` | Cancel (delete) a subscription |
-
-### Payment Tokens & Methods
-| Tool | Description |
-|------|-------------|
-| `create_payment_token` | Tokenize a card server-side (PCI audit applies) |
-| `create_payment_method` | Attach a saved payment method to a customer |
-
-### Marketplace & Payouts
-| Tool | Description |
-|------|-------------|
-| `create_subaccount` | Create a marketplace sub-account |
-| `create_transfer` | Transfer funds between iugu accounts |
-| `request_withdraw` | Request a bank withdrawal (saque) for a sub-account |
-
-### Webhooks & Account
-| Tool | Description |
-|------|-------------|
-| `create_webhook` | Register a webhook (gatilho) for an iugu event |
+| `create_plan` | Create a subscription plan (recurring template). |
+| `update_plan` | Update an existing plan. |
+| `list_plans` | List subscription plans. |
+| `create_subscription` | Create a recurring subscription in iugu |
+| `suspend_subscription` | Suspend a subscription. |
+| `activate_subscription` | Reactivate a suspended subscription. |
+| `cancel_subscription` | Cancel (delete) a subscription. |
+| `create_payment_token` | Tokenize a credit card server-side. |
+| `create_payment_method` | Attach a payment method (credit card token) to a customer. |
+| `create_subaccount` | Create a marketplace sub-account. |
+| `create_transfer` | Transfer funds between iugu accounts (marketplace). |
+| `request_withdraw` | Request a bank withdrawal (saque) from a sub-account. |
+| `create_webhook` | Register a webhook (gatilho) for an iugu event. |
 | `get_account_info` | Get account information, configuration, and balance |
 
 ## Authentication

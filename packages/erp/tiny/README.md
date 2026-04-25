@@ -49,10 +49,10 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (21)
 
-| Tool | Description |
-|------|-------------|
+| Tool | Purpose |
+|---|---|
 | `list_products` | List products in Tiny ERP |
 | `get_product` | Get product details by ID |
 | `list_orders` | List sales orders in Tiny ERP |
@@ -63,6 +63,17 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 | `get_invoice` | Get invoice details by ID |
 | `get_stock` | Get current stock for a product |
 | `list_accounts_payable` | List accounts payable in Tiny ERP |
+| `update_stock` | Update (adjust) product stock balance — credit or debit a quantity for a deposit |
+| `list_categories` | List product categories as a tree in Tiny ERP |
+| `list_warehouses` | List stock warehouses (depósitos) configured in Tiny ERP |
+| `list_price_lists` | List price lists (listas de preços) configured in Tiny ERP |
+| `update_order_status` | Change a sales order's status — useful for cancelling or marking as approved/billed |
+| `list_invoices` | List fiscal invoices (NF-e/NFC-e) in Tiny ERP |
+| `get_invoice_xml` | Get the XML payload of an issued invoice (NF-e) |
+| `get_invoice_link` | Get the DANFE PDF/link for an issued invoice |
+| `send_invoice_email` | Email an issued invoice to a recipient |
+| `list_accounts_receivable` | List accounts receivable in Tiny ERP |
+| `get_account_receivable` | Get a single accounts-receivable record by ID |
 
 ## Authentication
 

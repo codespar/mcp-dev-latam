@@ -51,10 +51,10 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (20)
 
-| Tool | Description |
-|------|-------------|
+| Tool | Purpose |
+|---|---|
 | `get_ticker` | Get ticker data for a trading pair (price, volume, etc.) |
 | `list_orderbook` | Get order book (bids and asks) for a trading pair |
 | `create_order` | Create a buy or sell order |
@@ -65,6 +65,16 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 | `list_trades` | List executed trades for a trading pair |
 | `get_candles` | Get candlestick/OHLCV data for a trading pair |
 | `withdraw` | Create a withdrawal request |
+| `cancel_all_orders` | Cancel all open orders for a symbol |
+| `list_account_trades` | List authenticated account fills/trades for a symbol |
+| `list_deposits` | List deposits (crypto + fiat) for the authenticated account |
+| `list_withdrawals` | List withdrawals (crypto + fiat) for the authenticated account |
+| `get_withdrawal` | Get withdrawal details by ID |
+| `list_symbols` | List available trading symbols (pairs) on the exchange |
+| `list_assets` | List supported assets/coins on the exchange |
+| `list_networks` | List supported blockchain networks for a given asset |
+| `get_fees` | Query trading fees (maker/taker) for a symbol |
+| `list_positions` | List open margin/futures positions (if applicable to the account) |
 
 ## Authentication
 

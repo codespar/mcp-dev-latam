@@ -53,10 +53,10 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (18)
 
-| Tool | Description |
-|------|-------------|
+| Tool | Purpose |
+|---|---|
 | `create_cob` | Create an immediate Pix charge (cobranca imediata) |
 | `get_cob` | Get Pix charge details by txid |
 | `list_cobs` | List Pix charges by date range |
@@ -65,6 +65,16 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 | `create_carnet` | Create a carnet (payment booklet with multiple parcels) |
 | `get_pix_key` | Get details of a registered Pix key |
 | `create_pix_evp` | Create a random Pix key (EVP/alias) |
+| `create_cobv` | Create a Pix due charge (cobranca com vencimento). |
+| `get_cobv` | Get Pix due charge (cobv) details by txid |
+| `update_cobv` | Update an existing Pix due charge (cobv) by txid |
+| `create_devolucao` | Request a Pix devolution (refund) on a received Pix transaction |
+| `get_devolucao` | Get details of a Pix devolution by e2eId and devolution id |
+| `list_pix_received` | List received Pix transactions (recebidos) by date range |
+| `delete_pix_key` | Delete a registered Pix key (DICT) |
+| `register_webhook` | Register a webhook URL for a given Pix key |
+| `list_webhooks` | List registered webhooks by date range |
+| `delete_webhook` | Delete the webhook registered for a Pix key |
 
 ## Authentication
 

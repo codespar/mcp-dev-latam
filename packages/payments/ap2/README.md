@@ -1,5 +1,8 @@
 # @codespar/mcp-ap2
 
+
+> **Alpha release** — published under the `alpha` npm dist-tag. Endpoint paths follow public docs and BACEN/provider conventions but have not been fully live-validated. Pin exact versions during `0.x.x-alpha`. Install with `npm install <pkg>@alpha`.
+
 > MCP server for **AP2** — Google's Agent-to-Agent Payment Protocol (authorization, audit, and trust for agentic payments)
 
 [![npm](https://img.shields.io/npm/v/@codespar/mcp-ap2)](https://www.npmjs.com/package/@codespar/mcp-ap2)
@@ -57,23 +60,32 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (22)
 
-| Tool | Description |
-|------|-------------|
-| `register_agent` | Register an AI agent as a trusted payer in AP2 |
-| `get_agent` | Get agent registration details and trust status |
-| `list_agents` | List registered agents with filters |
-| `revoke_agent` | Revoke an agent's payment authorization |
-| `authorize_payment` | Request payment authorization with scoped limits |
-| `get_authorization` | Get authorization details by ID |
-| `list_authorizations` | List payment authorizations with filters |
-| `execute_payment` | Execute an authorized payment |
-| `get_audit_trail` | Get full audit trail for a transaction |
-| `list_audit_events` | List audit events with filters |
-| `list_payment_methods` | List available payment methods via AP2 partners |
-| `get_transaction` | Get full transaction details |
-| `list_transactions` | List transactions with filters |
+| Tool | Purpose |
+|---|---|
+| `register_agent` | Register an AI agent as a trusted payer in the AP2 network. |
+| `get_agent` | Get agent registration details, trust status, and current spend usage |
+| `list_agents` | List registered agents with optional filters |
+| `revoke_agent` | Revoke an agent's payment authorization. |
+| `authorize_payment` | Request payment authorization with scoped limits. |
+| `get_authorization` | Get authorization details including status, limits, and expiry |
+| `list_authorizations` | List payment authorizations with optional filters |
+| `execute_payment` | Execute an authorized payment. |
+| `get_audit_trail` | Get the complete audit trail for a transaction — every authorization, approval, execution, and settlement e... |
+| `list_audit_events` | List audit events across all transactions with filters |
+| `list_payment_methods` | List available payment methods from AP2 partner network (Visa, Mastercard, Stripe, PayPal, etc.) |
+| `get_transaction` | Get full transaction details including authorization, execution, and settlement status |
+| `list_transactions` | List transactions with optional filters |
+| `create_intent_mandate` | Create an AP2 intent mandate — a Verifiable Credential expressing the user's intent to delegate a transacti... |
+| `create_cart_mandate` | Create an AP2 cart mandate — a signed, locked-cart commitment from a merchant binding line items, totals, a... |
+| `create_payment_mandate` | Create an AP2 payment mandate — the final Verifiable Credential authorizing settlement against a cart mandate. |
+| `verify_credential` | Verify a Verifiable Credential (intent, cart, or payment mandate). |
+| `create_presentation` | Create a Verifiable Presentation bundling one or more credentials (e.g. |
+| `verify_presentation` | Verify a Verifiable Presentation and all embedded credentials, including holder binding and challenge nonce. |
+| `resolve_did` | Resolve a Decentralized Identifier (DID) to its DID document via the AP2 universal resolver. |
+| `create_receipt` | Create a signed receipt for a settled payment — a tamper-evident record linking transaction, mandates, and... |
+| `verify_receipt` | Verify a receipt's signature, issuer, and chain back to the originating mandates. |
 
 ## Authentication
 

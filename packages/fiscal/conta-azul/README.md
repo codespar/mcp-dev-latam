@@ -49,20 +49,30 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (20)
 
-| Tool | Description |
-|------|-------------|
+| Tool | Purpose |
+|---|---|
 | `list_customers` | List customers in Conta Azul |
 | `create_customer` | Create a customer in Conta Azul |
+| `update_customer` | Update a customer in Conta Azul |
+| `delete_customer` | Delete a customer in Conta Azul |
 | `list_products` | List products in Conta Azul |
 | `create_product` | Create a product in Conta Azul |
+| `update_product` | Update a product in Conta Azul |
+| `delete_product` | Delete a product in Conta Azul |
 | `list_sales` | List sales in Conta Azul |
 | `create_sale` | Create a sale in Conta Azul |
+| `get_sale` | Get a sale by id in Conta Azul |
+| `cancel_sale` | Cancel a sale in Conta Azul |
 | `list_services` | List services in Conta Azul |
 | `create_service` | Create a service in Conta Azul |
+| `update_service` | Update a service in Conta Azul |
+| `delete_service` | Delete a service in Conta Azul |
 | `get_financial_summary` | Get financial summary from Conta Azul |
 | `list_categories` | List product/service categories |
+| `list_bank_accounts` | List bank accounts in Conta Azul |
+| `list_accounts_receivable` | List accounts receivable (financial events to receive) in Conta Azul |
 
 ## Authentication
 

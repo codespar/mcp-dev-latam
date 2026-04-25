@@ -4,22 +4,32 @@ MCP server for [Braintree](https://www.braintreepayments.com) (PayPal) — globa
 
 Target customer: LatAm SaaS selling to US/EU buyers who already hold a Braintree merchant account and want agent-driven payments, vaulting, and customer management.
 
-## Tools
+## Tools (22)
 
-| Tool | Operation |
-|------|-----------|
-| `authorize_transaction` | `authorizePaymentMethod` — reserve funds without capturing |
-| `charge_transaction` | `chargePaymentMethod` — authorize + capture atomically |
-| `capture_transaction` | `captureTransaction` — capture a previously authorized transaction |
-| `refund_transaction` | `refundTransaction` — refund a settled transaction |
-| `void_transaction` | `reverseTransaction` — void an unsettled authorization |
-| `vault_payment_method` | `vaultPaymentMethod` — permanently store a tokenized method |
-| `delete_payment_method` | `deletePaymentMethodFromVault` — remove a vaulted method |
-| `create_customer` | `createCustomer` |
-| `update_customer` | `updateCustomer` |
-| `get_transaction` | `search.transactions` (by id) |
-| `get_customer` | `node(id: "...")` on Customer |
-| `create_client_token` | `createClientToken` — mint a client-side tokenization token |
+| Tool | Purpose |
+|---|---|
+| `authorize_transaction` | Authorize a transaction (reserve funds without capturing) via Braintree GraphQL authorizePaymentMethod. |
+| `charge_transaction` | Authorize and capture a transaction atomically via Braintree GraphQL chargePaymentMethod. |
+| `capture_transaction` | Capture a previously authorized transaction via captureTransaction. |
+| `refund_transaction` | Refund a settled transaction via refundTransaction. |
+| `void_transaction` | Void an unsettled transaction (reverse the authorization) via reverseTransaction. |
+| `vault_payment_method` | Permanently store a tokenized payment method in the Braintree vault via vaultPaymentMethod. |
+| `delete_payment_method` | Delete a vaulted payment method via deletePaymentMethodFromVault. |
+| `create_customer` | Create a Braintree customer via createCustomer. |
+| `update_customer` | Update an existing Braintree customer via updateCustomer. |
+| `get_transaction` | Fetch a transaction by id via the GraphQL search.transactions query. |
+| `get_customer` | Fetch a customer by id via the GraphQL node(id:) query. |
+| `submit_for_settlement` | Submit a previously authorized transaction for settlement via submitTransactionForSettlement. |
+| `update_payment_method` | Update metadata on a vaulted payment method via updatePaymentMethod. |
+| `verify_payment_method` | Run a credit-card verification (zero-auth or $1 auth) on a tokenized payment method via verifyPaymentMethod. |
+| `delete_customer` | Delete a Braintree customer via deleteCustomer. |
+| `find_customer` | Search for customers via the GraphQL search.customers query. |
+| `search_transactions` | Search transactions via the GraphQL search.transactions query. |
+| `find_dispute` | Fetch a dispute by id via the GraphQL node(id:) query. |
+| `accept_dispute` | Accept liability for a dispute via acceptDispute — the merchant concedes and the disputed amount is refunde... |
+| `finalize_dispute` | Finalize a dispute via finalizeDispute — submits previously added evidence to the card network for review. |
+| `find_merchant_account` | Fetch a merchant account by id via the GraphQL node(id:) query. |
+| `create_client_token` | Mint a Braintree client token via createClientToken for client-side tokenization (Drop-in, Hosted Fields, m... |
 
 ## Install
 

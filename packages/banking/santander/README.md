@@ -19,21 +19,33 @@ Remaining paths (Pix, Arrecadação, Extrato) are best-guesses based on (a) BACE
 
 Pin to exact versions during `0.1.x`; paths will be corrected to match the portal spec once an onboarded merchant can validate.
 
-## Tools
+## Tools (23)
 
 | Tool | Purpose |
 |---|---|
-| `get_oauth_token` | Mint / inspect a cached OAuth2 bearer |
-| `send_pix` | Initiate an outbound Pix payment |
-| `create_pix_qr` | Create a dynamic Pix charge with QR (cob) |
-| `get_pix` | Retrieve a Pix by `endToEndId` |
-| `resolve_dict_key` | Resolve a DICT key (CPF/CNPJ/email/phone/EVP) to an account |
-| `refund_pix` | Refund (devolução) a received Pix |
-| `create_boleto` | Issue a boleto via Santander Cobrança v2 (workspace-scoped) |
-| `get_boleto` | Retrieve a boleto (SONDA query) |
-| `cancel_boleto` | Cancel (baixa) an outstanding boleto |
-| `get_statement` | Account statement transactions |
-| `arrecadacao_pay` | Pay utility / tax / concessionária bills |
+| `get_oauth_token` | Mint or return a cached OAuth2 client_credentials bearer token for the Santander Developer Portal. |
+| `send_pix` | Initiate an outbound Pix payment from the merchant's Santander account. |
+| `create_pix_qr` | Create a dynamic Pix charge with QR code (cob). |
+| `get_pix` | Retrieve a Pix transaction by its BCB endToEndId (E<ispb><yyyymmddhhmm><sequence>). |
+| `resolve_dict_key` | Resolve a DICT key (CPF, CNPJ, email, phone, EVP) to the owner's account data before sending a Pix. |
+| `refund_pix` | Refund (devolução) a previously received Pix. |
+| `create_boleto` | Issue a boleto via Santander Cobrança (collection_bill_management v2). |
+| `get_boleto` | Retrieve a boleto by its Santander bill_id (SONDA query via collection_bill_management v2). |
+| `cancel_boleto` | Cancel (baixa) an outstanding boleto before payment. |
+| `get_statement` | Retrieve account statement transactions for a given period. |
+| `create_pix_cobv` | Create a Pix charge with due date (cobv — cobrança com vencimento). |
+| `get_pix_cob` | Retrieve a Pix immediate charge (cob) by its txid. |
+| `list_pix_cob` | List Pix immediate charges (cob) created in a given period. |
+| `update_pix_cob` | Update (PATCH) an existing Pix immediate charge. |
+| `list_pix_received` | List received Pix (Pix recebidos) in a given period. |
+| `register_dict_key` | Register a new DICT key for one of the merchant's Santander accounts. |
+| `delete_dict_key` | Remove (unregister) a DICT key previously registered for the merchant. |
+| `download_boleto_pdf` | Fetch the PDF (second copy / segunda via) of a registered boleto. |
+| `get_account_balance` | Get current available and blocked balance for a Santander merchant account. |
+| `send_ted` | Initiate a TED transfer from a Santander merchant account to an account at another bank. |
+| `transfer_internal` | Transfer between two Santander accounts (TEF / mesma instituição). |
+| `create_openfinance_consent` | Create an Open Finance consent (BACEN-regulated) for data access or payment initiation against a third-part... |
+| `arrecadacao_pay` | Pay a utility, tax, or concessionária bill via Santander Arrecadação / Pagamento de Contas. |
 
 ## Install
 

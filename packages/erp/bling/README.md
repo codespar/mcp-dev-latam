@@ -49,63 +49,38 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (28)
 
-### Products & catalog
-| Tool | Description |
-|------|-------------|
-| `list_products` | List products |
-| `create_product` | Create a product |
-| `list_categories` | List product categories |
-| `create_category` | Create a product category |
-
-### Sales & purchasing
-| Tool | Description |
-|------|-------------|
-| `list_orders` | List sales orders |
-| `create_order` | Create a sales order |
-| `list_purchase_orders` | List purchase orders |
-| `create_purchase_order` | Create a purchase order |
-
-### Contacts
-| Tool | Description |
-|------|-------------|
-| `list_contacts` | List contacts (customers/suppliers) |
-| `create_contact` | Create a contact |
-| `get_contact` | Get a contact by ID |
+| Tool | Purpose |
+|---|---|
+| `list_products` | List products in Bling |
+| `create_product` | Create a product in Bling |
+| `list_categories` | List product categories in Bling |
+| `create_category` | Create a product category in Bling |
+| `list_orders` | List sales orders in Bling |
+| `create_order` | Create a sales order in Bling |
+| `list_purchase_orders` | List purchase orders (pedidos de compras) in Bling |
+| `create_purchase_order` | Create a purchase order (pedido de compra) in Bling |
+| `list_contacts` | List contacts (customers/suppliers) in Bling |
+| `create_contact` | Create a contact in Bling |
+| `get_contact` | Get a single contact by ID |
 | `update_contact` | Update an existing contact |
-
-### Fiscal invoices
-| Tool | Description |
-|------|-------------|
-| `list_invoices` | List NF-e fiscal invoices |
-| `create_invoice` | Create an NF-e from a sales order |
-| `send_invoice` | Emit an NF-e to SEFAZ |
-| `create_service_invoice` | Create an NFS-e (service invoice) |
-
-### Inventory
-| Tool | Description |
-|------|-------------|
+| `list_invoices` | List fiscal invoices (NF-e) in Bling |
+| `create_invoice` | Create a fiscal invoice (NF-e) from an order |
+| `send_invoice` | Send/emit an already-created NF-e to SEFAZ |
+| `create_service_invoice` | Create a service invoice (NFS-e) in Bling |
 | `get_stock` | Get stock/inventory for a product |
-| `update_stock` | Update stock at a warehouse |
-| `create_stock_movement` | Register an in/out stock movement |
-| `list_warehouses` | List warehouses (depósitos) |
-| `create_warehouse` | Create a warehouse |
-
-### Finance
-| Tool | Description |
-|------|-------------|
-| `list_accounts_receivable` | List accounts receivable |
-| `create_account_receivable` | Create an account receivable |
-| `list_accounts_payable` | List accounts payable |
-| `create_account_payable` | Create an account payable |
-| `list_payment_methods` | List payment methods |
-
-### Integration
-| Tool | Description |
-|------|-------------|
-| `subscribe_webhook` | Register a webhook/notification |
-| `unsubscribe_webhook` | Remove a webhook |
+| `update_stock` | Update stock for a product at a warehouse |
+| `create_stock_movement` | Register a stock-in or stock-out movement for a product (alias of update_stock with explicit direction) |
+| `list_warehouses` | List warehouses (depósitos) in Bling |
+| `create_warehouse` | Create a warehouse (depósito) in Bling |
+| `list_accounts_receivable` | List accounts receivable (contas a receber) |
+| `create_account_receivable` | Create an account receivable (conta a receber) |
+| `list_accounts_payable` | List accounts payable (contas a pagar) |
+| `create_account_payable` | Create an account payable (conta a pagar) |
+| `list_payment_methods` | List payment methods (formas de pagamento) |
+| `subscribe_webhook` | Register a webhook (notificação) to receive Bling events |
+| `unsubscribe_webhook` | Remove a previously registered webhook |
 
 ## Authentication
 

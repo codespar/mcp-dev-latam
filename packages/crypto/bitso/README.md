@@ -51,10 +51,10 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (20)
 
-| Tool | Description |
-|------|-------------|
+| Tool | Purpose |
+|---|---|
 | `get_ticker` | Get ticker data for a trading pair (price, volume, VWAP, etc.) |
 | `list_orderbook` | Get order book (bids and asks) for a trading pair |
 | `create_order` | Create a buy or sell order |
@@ -65,6 +65,16 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 | `list_trades` | List executed trades for an order book |
 | `list_funding_sources` | List available funding sources (bank accounts, etc.) |
 | `create_withdrawal` | Create a withdrawal request (crypto or fiat) |
+| `list_ledger` | List account ledger entries (trades, fees, fundings, withdrawals) |
+| `list_open_orders` | List currently open orders for the authenticated user |
+| `lookup_order` | Look up one or more orders by origin_id (client_id) |
+| `cancel_all_orders` | Cancel all open orders for the authenticated user |
+| `list_fundings` | List account fundings (deposits) |
+| `list_withdrawals` | List account withdrawals |
+| `get_withdrawal` | Retrieve a specific withdrawal by its ID |
+| `list_fees` | List applicable fees for the authenticated user across trading pairs |
+| `get_account_status` | Retrieve account KYC and verification status (tier, limits, required docs) |
+| `list_funding_destinations` | Get funding destination details (address/CLABE) for a given currency |
 
 ## Authentication
 

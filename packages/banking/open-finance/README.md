@@ -53,18 +53,28 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (18)
 
-| Tool | Description |
-|------|-------------|
+| Tool | Purpose |
+|---|---|
 | `list_accounts` | List customer bank accounts via Open Finance |
 | `get_account_balance` | Get account balance via Open Finance |
 | `list_transactions` | List account transactions via Open Finance |
+| `get_account_overdraft_limits` | Get account overdraft (limites) via Open Finance |
 | `get_consent` | Get consent details by ID |
 | `create_consent` | Create a new consent request for data access |
+| `revoke_consent` | Revoke an existing consent (data or payment) |
 | `list_credit_cards` | List credit card accounts via Open Finance |
+| `get_credit_card_bills` | Get credit card bills (faturas) via Open Finance |
 | `get_credit_card_transactions` | Get credit card transactions via Open Finance |
+| `list_loans` | List loan contracts (empréstimos) via Open Finance |
+| `get_loan_payments` | Get loan payment schedule via Open Finance |
+| `list_financings` | List financing contracts (financiamentos) via Open Finance |
 | `list_investments` | List investment products via Open Finance |
+| `create_payment_consent` | Create payment-initiation consent (e.g., PIX) via Open Finance |
+| `create_payment` | Initiate a payment using an authorized payment consent |
+| `get_personal_qualifications` | Get personal customer qualifications (income, occupation) via Open Finance |
+| `get_business_qualifications` | Get business customer qualifications via Open Finance |
 
 ## Authentication
 

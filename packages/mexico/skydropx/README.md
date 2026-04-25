@@ -23,20 +23,33 @@ npx tsx packages/mexico/skydropx/src/index.ts --http
 | `MCP_HTTP` | No | Set to `"true"` to enable HTTP transport |
 | `MCP_PORT` | No | HTTP port (default: 3000) |
 
-## Tools
+## Tools (23)
 
-| Tool | Description |
-|------|-------------|
-| `create_shipment` | Create a shipment (origin, destination, parcels) |
+| Tool | Purpose |
+|---|---|
+| `create_shipment` | Create a shipment |
 | `get_shipment` | Get shipment by ID |
-| `list_shipments` | List shipments with pagination |
-| `get_rates` | Get shipping rates for a route and parcel |
+| `list_shipments` | List shipments |
+| `get_rates` | Get shipping rates for a shipment |
 | `create_label` | Create a shipping label for a shipment |
-| `track_shipment` | Track a shipment by tracking number |
+| `track_shipment` | Track a shipment |
 | `list_carriers` | List available carriers |
 | `create_address` | Create an address |
 | `get_address` | Get address by ID |
 | `cancel_shipment` | Cancel a shipment |
+| `validate_address` | Validate an address (zip, city, province, country) |
+| `list_addresses` | List saved addresses |
+| `list_parcels` | List saved parcel presets |
+| `get_label` | Get a label by ID |
+| `list_labels` | List labels |
+| `create_pickup` | Schedule a carrier pickup |
+| `list_pickups` | List scheduled pickups |
+| `cancel_pickup` | Cancel a scheduled pickup |
+| `get_tracker` | Get tracker (events) by tracker ID |
+| `list_trackers` | List trackers |
+| `create_webhook` | Register a webhook to receive shipment/tracker events |
+| `list_webhooks` | List registered webhooks |
+| `delete_webhook` | Delete a registered webhook |
 
 ## Auth
 

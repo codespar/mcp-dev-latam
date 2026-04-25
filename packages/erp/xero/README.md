@@ -4,22 +4,34 @@ MCP server for [Xero](https://www.xero.com) — global cloud accounting for SMBs
 
 Xero is the #2 global SMB ERP and the leader in the UK, Australia, and New Zealand, with rapid expansion in the US. Paired with QuickBooks, the two platforms cover roughly 80% of global SMB accounting. For LatAm SaaS serving US/UK/AU/NZ customers or with international subsidiaries, Xero is the essential complement to our Brazil-native ERPs (Omie, Conta Azul, Bling, Tiny).
 
-## Tools
+## Tools (24)
 
 | Tool | Purpose |
-|------|---------|
-| `create_contact` | Create a customer or supplier |
-| `get_contact` | Retrieve a contact by ContactID |
-| `list_contacts` | List contacts with optional where clause |
-| `create_invoice` | Issue an AR (ACCREC) or AP (ACCPAY) invoice |
-| `get_invoice` | Retrieve an invoice by ID or number |
-| `list_invoices` | List invoices with where clause / status filter |
-| `email_invoice` | Email an AUTHORISED invoice to the contact |
-| `create_payment` | Record a payment against an invoice |
-| `create_item` | Create an inventory/product item |
-| `list_items` | List items |
-| `list_accounts` | List the chart of accounts |
-| `get_balance_sheet` | Pull the Balance Sheet report |
+|---|---|
+| `create_contact` | Create a Xero contact (customer or supplier — Xero uses one unified Contact object with IsCustomer/IsSuppli... |
+| `get_contact` | Retrieve a single Xero contact by ContactID (UUID). |
+| `list_contacts` | List Xero contacts. |
+| `create_invoice` | Create an invoice in Xero. |
+| `get_invoice` | Retrieve a single invoice by InvoiceID (UUID) or InvoiceNumber. |
+| `list_invoices` | List invoices with optional Xero where-clause filtering. |
+| `email_invoice` | Email an AUTHORISED invoice to the contact's email address on file. |
+| `create_payment` | Record a payment against an invoice or credit note. |
+| `create_item` | Create a Xero inventory/product item. |
+| `list_items` | List all items/products in the Xero tenant. |
+| `list_accounts` | List the Xero chart of accounts. |
+| `update_contact` | Update an existing Xero contact. |
+| `archive_contact` | Archive a Xero contact by setting ContactStatus=ARCHIVED. |
+| `update_invoice` | Update an existing invoice. |
+| `void_invoice` | Void an invoice by setting Status=VOIDED. |
+| `get_payment` | Retrieve a single payment by PaymentID. |
+| `list_payments` | List payments recorded in Xero. |
+| `create_bank_transaction` | Create a bank transaction (SPEND = money out, RECEIVE = money in) directly on a bank account — for transact... |
+| `list_bank_transactions` | List bank transactions (spend/receive entries on bank accounts). |
+| `list_organisations` | Retrieve the Xero organisation(s) the access token has access to — returns name, base currency, country, fi... |
+| `list_tax_rates` | List tax rates configured in the Xero tenant. |
+| `create_credit_note` | Create a credit note. |
+| `list_credit_notes` | List credit notes. |
+| `get_balance_sheet` | Retrieve the Balance Sheet report for the tenant. |
 
 ## Install
 

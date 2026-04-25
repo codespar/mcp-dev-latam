@@ -51,10 +51,10 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (25)
 
-| Tool | Description |
-|------|-------------|
+| Tool | Purpose |
+|---|---|
 | `send_text` | Send a text message via WhatsApp |
 | `send_image` | Send an image message via WhatsApp |
 | `send_document` | Send a document via WhatsApp |
@@ -65,6 +65,21 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 | `send_poll` | Send a poll message via WhatsApp |
 | `get_messages` | Get messages from a chat |
 | `check_number` | Check if a phone number is registered on WhatsApp |
+| `create_group` | Create a WhatsApp group |
+| `get_group_info` | Get group metadata, participants, and settings |
+| `update_profile` | Update instance profile (name, status text, or picture) |
+| `set_presence` | Set online/offline presence for an instance |
+| `get_chat_history` | Get full chat history with pagination support |
+| `logout_instance` | Logout an instance (disconnects the WhatsApp session without deleting the instance) |
+| `restart_instance` | Restart an instance |
+| `delete_instance` | Delete an instance permanently |
+| `connection_state` | Get the connection state of an instance (open, connecting, close) |
+| `leave_group` | Leave a WhatsApp group |
+| `update_group_participants` | Add, remove, promote, or demote participants in a WhatsApp group |
+| `fetch_group_invite_code` | Fetch the invite code/link for a WhatsApp group |
+| `mark_message_as_read` | Mark one or more messages in a chat as read |
+| `archive_chat` | Archive or unarchive a chat |
+| `delete_message` | Delete a message for me or for everyone in a chat |
 
 ## Authentication
 

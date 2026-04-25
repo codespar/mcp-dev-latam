@@ -64,52 +64,40 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (30)
 
-### Payment Intents
-
-| Tool | Description |
-|------|-------------|
-| `create_payment_intent` | Create a PaymentIntent (Stripe's modern charge primitive) |
-| `confirm_payment_intent` | Confirm a deferred PaymentIntent |
-| `retrieve_payment_intent` | Get a PaymentIntent by id |
-| `cancel_payment_intent` | Cancel before capture / while still cancelable |
-
-### Refunds
-
-| Tool | Description |
-|------|-------------|
-| `create_refund` | Refund a PaymentIntent or Charge (full or partial) |
-
-### Customers
-
-| Tool | Description |
-|------|-------------|
-| `create_customer` | Create a Customer |
-| `retrieve_customer` | Get a Customer by id |
-| `update_customer` | Update Customer fields |
-
-### Subscriptions (Stripe Billing)
-
-| Tool | Description |
-|------|-------------|
-| `create_subscription` | Create a recurring subscription from Prices |
-| `cancel_subscription` | Cancel a subscription |
-| `list_subscriptions` | List with filters (customer, status, price) |
-
-### Checkout & Payment Links
-
-| Tool | Description |
-|------|-------------|
-| `create_checkout_session` | Hosted Checkout (one-time / subscription / setup) |
-| `create_payment_link` | Long-lived shareable payment URL |
-
-### Invoices & Disputes
-
-| Tool | Description |
-|------|-------------|
-| `create_invoice` | Create an invoice draft for a customer |
-| `update_dispute` | Submit evidence on a chargeback dispute |
+| Tool | Purpose |
+|---|---|
+| `create_payment_intent` | Create a PaymentIntent — Stripe's modern primitive for charging a customer. |
+| `confirm_payment_intent` | Confirm a PaymentIntent created with confirm=false. |
+| `retrieve_payment_intent` | Retrieve a PaymentIntent by id. |
+| `cancel_payment_intent` | Cancel a PaymentIntent. |
+| `list_payment_intents` | List PaymentIntents. |
+| `create_refund` | Refund a charge or a PaymentIntent. |
+| `list_refunds` | List Refunds. |
+| `create_customer` | Create a Stripe Customer. |
+| `retrieve_customer` | Retrieve a Customer by id. |
+| `update_customer` | Update a Customer. |
+| `create_product` | Create a Product — the catalog entity Prices reference. |
+| `list_products` | List Products. |
+| `create_price` | Create a Price attached to a Product. |
+| `list_prices` | List Prices. |
+| `create_subscription` | Create a Subscription for an existing customer. |
+| `update_subscription` | Update a Subscription. |
+| `cancel_subscription` | Cancel a Subscription. |
+| `list_subscriptions` | List Subscriptions. |
+| `create_checkout_session` | Create a hosted Checkout Session. |
+| `create_payment_link` | Create a long-lived Payment Link (shareable URL) that charges a price or set of line items. |
+| `list_payment_links` | List Payment Links. |
+| `create_invoice` | Create an Invoice draft for a customer. |
+| `list_invoices` | List Invoices. |
+| `finalize_invoice` | Finalize a draft Invoice. |
+| `send_invoice` | Send a finalized Invoice to the customer by email. |
+| `pay_invoice` | Attempt to collect payment on an open Invoice. |
+| `void_invoice` | Void a finalized Invoice. |
+| `update_dispute` | Submit evidence on a Dispute. |
+| `list_disputes` | List Disputes. |
+| `retrieve_balance` | Retrieve the current Stripe account balance — available, pending, and connect_reserved funds broken down by... |
 
 ## Authentication
 

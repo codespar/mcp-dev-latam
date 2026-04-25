@@ -49,49 +49,32 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (22)
 
-### Orders & Charges
-| Tool | Description |
-|------|-------------|
+| Tool | Purpose |
+|---|---|
 | `create_order` | Create an order in Pagar.me with items and payment |
 | `get_order` | Get order details by ID |
 | `list_orders` | List orders with optional filters |
 | `create_charge` | Create a charge (Pix, boleto, or credit card) |
 | `get_charge` | Get charge details by ID |
-| `capture_charge` | Capture a pre-authorized charge (auth-then-capture flow) |
-| `refund` | Refund a charge (full or partial) |
-| `partial_refund` | Explicit partial refund with required amount |
-
-### Recipients & Money Movement
-| Tool | Description |
-|------|-------------|
 | `create_recipient` | Create a recipient for split payments |
-| `list_recipients` | List recipients with optional filters |
 | `get_balance` | Get current account balance |
 | `create_transfer` | Create a transfer to a recipient |
-| `create_withdrawal` | Withdraw recipient balance to their bank account |
-
-### Anticipations
-| Tool | Description |
-|------|-------------|
-| `create_anticipation` | Request anticipation of receivables |
-| `get_anticipation` | Get anticipation details |
-| `get_anticipation_limits` | Get anticipation limits for a recipient |
-
-### Subscriptions
-| Tool | Description |
-|------|-------------|
+| `refund` | Refund a charge (full or partial) |
+| `list_recipients` | List recipients with optional filters |
+| `create_anticipation` | Request anticipation of receivables for a recipient (antecipação) |
+| `get_anticipation` | Get anticipation details by ID |
+| `get_anticipation_limits` | Get anticipation limits available for a recipient |
 | `create_plan` | Create a subscription plan |
-| `update_plan` | Update plan name/description/status |
-| `create_subscription` | Create a recurring subscription |
-| `cancel_subscription` | Cancel a subscription |
-
-### Tokens & Webhooks
-| Tool | Description |
-|------|-------------|
-| `create_card_token` | Tokenize a credit card (PCI-safe, uses public key) |
-| `register_webhook` | Register a webhook endpoint for events |
+| `update_plan` | Update an existing subscription plan |
+| `create_subscription` | Create a recurring subscription for a customer |
+| `cancel_subscription` | Cancel a recurring subscription |
+| `create_card_token` | Tokenize a credit card (PCI-safe). |
+| `create_withdrawal` | Create a withdrawal (saque) transferring recipient balance to their registered bank account |
+| `register_webhook` | Register a webhook endpoint to receive event notifications |
+| `capture_charge` | Capture a pre-authorized charge (auth-then-capture flow). |
+| `partial_refund` | Refund a portion of a charge (explicit partial refund; |
 
 ## Authentication
 

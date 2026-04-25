@@ -59,33 +59,34 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (24)
 
-### ACP Protocol
-
-| Tool | Description |
-|------|-------------|
-| `create_checkout` | Create an ACP checkout session with a seller |
-| `get_checkout` | Retrieve checkout session state and pricing |
-| `update_checkout` | Update quantities, address, fulfillment |
-| `complete_checkout` | Submit payment token and finalize order |
-| `cancel_checkout` | Cancel session and release inventory |
-
-### Stripe Core
-
-| Tool | Description |
-|------|-------------|
+| Tool | Purpose |
+|---|---|
+| `create_checkout` | Create an ACP checkout session with a seller. |
+| `get_checkout` | Retrieve the current state of an ACP checkout session, including status, pricing, and available payment met... |
+| `update_checkout` | Update an ACP checkout session — modify quantities, shipping address, or fulfillment selections |
+| `complete_checkout` | Complete an ACP checkout by submitting a payment token. |
+| `cancel_checkout` | Cancel an ACP checkout session. |
 | `create_customer` | Create a Stripe customer |
-| `list_customers` | List customers with filters |
-| `create_payment_link` | Create a shareable payment link |
-| `list_payment_intents` | List payment intents |
-| `create_refund` | Refund a payment |
-| `get_balance` | Get account balance |
-| `list_products` | List products in catalog |
-| `create_product` | Create a new product |
-| `list_prices` | List prices for products |
-| `create_invoice` | Create a draft invoice |
-| `list_subscriptions` | List active subscriptions |
+| `list_customers` | List Stripe customers with optional filters |
+| `create_payment_link` | Create a shareable Stripe Payment Link for a price |
+| `list_payment_intents` | List Stripe payment intents with optional filters |
+| `create_refund` | Refund a Stripe payment intent or charge |
+| `get_balance` | Get Stripe account balance |
+| `list_products` | List products in the Stripe catalog |
+| `create_product` | Create a new product in Stripe |
+| `list_prices` | List prices for Stripe products |
+| `create_invoice` | Create a draft invoice for a customer |
+| `list_subscriptions` | List active Stripe subscriptions |
+| `create_subscription` | Create a subscription for a customer with a recurring price |
+| `cancel_subscription` | Cancel a Stripe subscription immediately or at period end |
+| `create_invoice_item` | Add a line item to an upcoming or specific invoice |
+| `finalize_invoice` | Finalize a draft invoice so it can be paid |
+| `create_coupon` | Create a discount coupon |
+| `list_disputes` | List payment disputes (chargebacks) |
+| `create_checkout_session` | Create a Stripe Checkout Session (hosted payment page) |
+| `get_account` | Get Stripe account info for the authenticated account |
 
 ## Authentication
 

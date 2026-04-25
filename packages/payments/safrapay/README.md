@@ -6,27 +6,37 @@ Safrapay's API surface is operated on Aditum's payment platform (documented at [
 
 > **Status: 0.1.0-alpha.1.** The endpoint paths here were derived from the Aditum-hosted Safrapay developer docs (publicly reachable). Auth flow (BCRYPT + CNPJ on gateway, JWT Bearer thereafter) is best-effort: the BCRYPT hash input format is not fully specified in public docs and very likely requires a sandbox account to finalize. Treat all tools as scaffolding until validated against a live sandbox merchant.
 
-## Tools (12)
+## Tools (22)
 
 | Tool | Purpose |
 |---|---|
-| `authorize_payment` | Authorize a credit-card payment (optional pre-auth only) |
-| `capture_payment` | Capture a previously authorized payment |
-| `cancel_payment` | Cancel / void an authorized-but-uncaptured payment |
-| `refund_payment` | Full or partial refund |
-| `create_pix` | Create Pix charge, returns QR + copy-paste payload |
-| `create_boleto` | Create boleto charge |
-| `get_payment` | Retrieve a charge by id |
-| `tokenize_card` | PCI-safe card tokenization (persistent + temporary) |
-| `create_split_rule` | Configure split distribution for a charge |
-| `get_statement` | Digital statement (Safrapay differentiator) |
-| `list_transactions` | List charges with filters |
-| `register_webhook` | Bulk-register webhook subscriptions |
+| `authorize_payment` | Authorize a credit-card payment on Safrapay. |
+| `capture_payment` | Capture a previously authorized (pre-auth) payment. |
+| `cancel_payment` | Cancel (void) an authorized-but-uncaptured payment. |
+| `refund_payment` | Refund a captured payment. |
+| `create_pix` | Create a Pix charge. |
+| `create_boleto` | Create a boleto charge. |
+| `get_payment` | Retrieve a charge by Safrapay chargeId. |
+| `tokenize_card` | Tokenize a card for PCI-safe reuse. |
+| `create_split_rule` | Configure split distribution for an existing charge. |
+| `get_statement` | Retrieve the digital statement (extrato). |
+| `list_transactions` | List charges with optional filters. |
+| `delete_card_token` | Revoke a stored card token. |
+| `search_by_merchant_order` | Look up charges by the merchant-side order identifier (the order_id supplied at creation). |
+| `query_chargeback` | Retrieve chargeback (contestacao) detail for a charge: reason code, acquirer deadline, dispute amount, evid... |
+| `query_installments` | Simulate an installment plan for a given amount. |
+| `authenticate_3ds` | Kick off 3-D Secure authentication before authorize_payment. |
+| `create_recurrence` | Create a recurring-billing subscription. |
+| `get_recurrence` | Retrieve a recurrence by id: schedule, next-charge date, charge history, status. |
+| `cancel_recurrence` | Cancel an active recurrence. |
+| `get_settlement_report` | Retrieve a settlement (liquidacao) report from the reconciliation host. |
+| `create_payment_link` | Create a hosted-checkout payment link. |
+| `register_webhook` | Bulk-register webhook subscriptions on the Safrapay webhook product. |
 
 ## Install
 
 ```bash
-npm install @codespar/mcp-safrapay
+npm install @codespar/mcp-safrapay@alpha
 ```
 
 ## Environment

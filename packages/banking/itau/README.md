@@ -10,21 +10,32 @@ Itaú's Developer Portal is **contract-gated** — the full OpenAPI specs for Pi
 
 Pin to exact versions during `0.1.x`; paths will be corrected to match the portal spec once an onboarded merchant can validate.
 
-## Tools
+## Tools (22)
 
 | Tool | Purpose |
 |---|---|
-| `get_oauth_token` | Mint / inspect a cached OAuth2 bearer |
-| `send_pix` | Initiate an outbound Pix payment |
-| `create_pix_qr` | Create a dynamic Pix charge with QR (cob) |
-| `get_pix` | Retrieve a Pix by `endToEndId` |
-| `resolve_dict_key` | Resolve a DICT key (CPF/CNPJ/email/phone/EVP) to an account |
-| `refund_pix` | Refund (devolução) a received Pix |
-| `create_boleto` | Issue a boleto via Itaú Cobrança |
-| `get_boleto` | Retrieve a boleto |
-| `cancel_boleto` | Cancel (baixa) an outstanding boleto |
-| `get_statement` | Account statement transactions |
-| `arrecadacao_pay` | Pay utility / tax / concessionária bills |
+| `get_oauth_token` | Mint or return a cached OAuth2 client_credentials bearer token for the Itaú Developer Portal. |
+| `send_pix` | Initiate an outbound Pix payment from the merchant's Itaú account. |
+| `create_pix_qr` | Create a dynamic Pix charge with QR code (cob). |
+| `get_pix` | Retrieve a Pix transaction by its BCB endToEndId (E<ispb><yyyymmddhhmm><sequence>). |
+| `resolve_dict_key` | Resolve a DICT key (CPF, CNPJ, email, phone, EVP) to the owner's account data before sending a Pix. |
+| `refund_pix` | Refund (devolução) a previously received Pix. |
+| `create_boleto` | Issue a boleto via Itaú Cobrança. |
+| `get_boleto` | Retrieve a boleto by its Itaú identifier (id or nosso_numero). |
+| `cancel_boleto` | Cancel (baixa) an outstanding boleto before payment. |
+| `get_statement` | Retrieve account statement transactions for a given period. |
+| `arrecadacao_pay` | Pay a utility, tax, or concessionária bill via Itaú Arrecadação. |
+| `create_pix_cobv` | Create a Pix charge with due date (cobv) — used for boleto-like Pix where the payer can pay at or after a d... |
+| `list_pix_charges` | List immediate Pix charges (cob) registered by the merchant within a date range. |
+| `register_pix_key` | Register a DICT key (CPF, CNPJ, email, phone, or EVP) on an Itaú account owned by the merchant. |
+| `delete_pix_key` | Delete a DICT key owned by the merchant. |
+| `list_pix_keys` | List DICT keys currently registered to the merchant's Itaú accounts. |
+| `get_boleto_pdf` | Download the PDF of an issued boleto. |
+| `send_ted` | Send a TED transfer to an account at another bank. |
+| `transfer_between_accounts` | TAA — transfer between two Itaú accounts (owned by the merchant or a counterparty). |
+| `get_tariffs` | Query the tariff schedule applicable to the merchant's active contracts (Pix per-transaction, boleto regist... |
+| `list_dda_bills` | List bills registered for the merchant under the DDA (Débito Direto Autorizado) enrolment. |
+| `schedule_payment` | Schedule a future-dated payment (Pix, boleto, arrecadação, or TED). |
 
 ## Install
 

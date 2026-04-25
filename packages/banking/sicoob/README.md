@@ -10,23 +10,23 @@ Sicoob's Developers Portal is gated by cooperative onboarding. The endpoint path
 
 Pin to exact versions during `0.1.x`; paths will be corrected to match the portal spec once an onboarded cooperative member can validate.
 
-## Tools
+## Tools (13)
 
 | Tool | Purpose |
 |---|---|
-| `get_oauth_token` | Mint / inspect a cached OAuth2 bearer |
-| `create_pix_cob` | Create an immediate Pix charge (cob) |
-| `get_pix_cob` | Retrieve an immediate Pix charge by txid |
-| `list_pix_cob` | List immediate Pix charges by date range |
-| `create_pix_cobv` | Create a Pix charge with due date (cobv) |
-| `get_pix_cobv` | Retrieve a due-date Pix charge |
-| `lookup_dict_key` | Resolve a DICT key to account data |
-| `register_dict_key` | Register a DICT key on a Sicoob account |
-| `delete_dict_key` | Delete a DICT key |
-| `create_boleto` | Issue a boleto via Sicoob Cobrança |
-| `get_boleto` | Retrieve a boleto |
-| `cancel_boleto` | Cancel (baixa) an outstanding boleto |
-| `get_account_balance` | Query merchant account balance (SPB) |
+| `get_oauth_token` | Mint or return a cached OAuth2 client_credentials bearer token for the Sicoob Developers Portal. |
+| `create_pix_cob` | Create an immediate Pix charge (cob) with QR code. |
+| `get_pix_cob` | Retrieve an immediate Pix charge by its txid. |
+| `list_pix_cob` | List immediate Pix charges (cob) registered by the merchant within a date range. |
+| `create_pix_cobv` | Create a Pix charge with due date (cobv) — boleto-like Pix payable on or after a due date with optional fin... |
+| `get_pix_cobv` | Retrieve a due-date Pix charge (cobv) by its txid. |
+| `lookup_dict_key` | Resolve a DICT key (CPF, CNPJ, email, phone, EVP) to the owner's account data before sending a Pix. |
+| `register_dict_key` | Register a DICT key (CPF, CNPJ, email, phone, or EVP) on a Sicoob account owned by the cooperative member. |
+| `delete_dict_key` | Delete a DICT key owned by the cooperative member. |
+| `create_boleto` | Issue a boleto via Sicoob Cobrança. |
+| `get_boleto` | Retrieve a boleto by its Sicoob identifier (id or nosso_numero). |
+| `cancel_boleto` | Cancel (baixa) an outstanding boleto before payment. |
+| `get_account_balance` | Query the merchant cooperative account balance via Sicoob SPB. |
 
 ## Install
 

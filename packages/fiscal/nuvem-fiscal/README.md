@@ -51,20 +51,34 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (24)
 
-| Tool | Description |
-|------|-------------|
-| `create_nfe` | Create a NF-e (nota fiscal eletronica) |
+| Tool | Purpose |
+|---|---|
+| `create_nfe` | Create a NF-e (nota fiscal eletrônica) |
 | `get_nfe` | Get NF-e details by ID |
 | `cancel_nfe` | Cancel a NF-e |
-| `create_nfse` | Create a NFS-e (nota fiscal de servico eletronica) |
+| `create_nfse` | Create a NFS-e (nota fiscal de serviço eletrônica) |
 | `get_nfse` | Get NFS-e details by ID |
 | `cancel_nfse` | Cancel a NFS-e |
-| `create_nfce` | Create a NFC-e (nota fiscal de consumidor eletronica) |
+| `create_nfce` | Create a NFC-e (nota fiscal de consumidor eletrônica) |
 | `consult_cnpj` | Consult company data by CNPJ number |
 | `consult_cep` | Consult address by CEP (postal code) |
 | `register_company` | Register a company in Nuvem Fiscal |
+| `create_cte` | Create a CT-e (conhecimento de transporte eletrônico) |
+| `get_cte` | Get CT-e details by ID |
+| `cancel_cte` | Cancel a CT-e |
+| `create_mdfe` | Create a MDF-e (manifesto de documentos fiscais eletrônico) |
+| `get_nfe_events` | Get events for a NF-e (cancellations, corrections, etc.) |
+| `cancel_nfce` | Cancel a NFC-e (nota fiscal de consumidor eletrônica) |
+| `send_correction_letter_nfe` | Send a carta de correção eletrônica (CCe) for a NF-e. |
+| `send_correction_letter_cte` | Send a carta de correção for a CT-e. |
+| `get_nfe_batch` | Get NF-e batch (lote) status by batch ID. |
+| `get_mdfe` | Get MDF-e details by ID |
+| `cancel_mdfe` | Cancel a MDF-e (manifesto) |
+| `close_mdfe` | Close (encerrar) a MDF-e at route end. |
+| `list_empresas` | List all companies (empresas) registered in the account. |
+| `upload_certificate` | Upload or update an A1 digital certificate (.pfx, base64) for an empresa. |
 
 ## Authentication
 

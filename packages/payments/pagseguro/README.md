@@ -51,10 +51,10 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (24)
 
-| Tool | Description |
-|------|-------------|
+| Tool | Purpose |
+|---|---|
 | `create_order` | Create an order in PagSeguro (Pix, boleto, or credit card) |
 | `get_order` | Get order details by ID |
 | `list_orders` | List orders with optional filters |
@@ -63,6 +63,22 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 | `get_pix_qrcode` | Get Pix QR code payload and image for an order charge |
 | `create_customer` | Create a customer in PagSeguro |
 | `get_balance` | Get account balance |
+| `create_subscription` | Create a recurring subscription plan in PagSeguro |
+| `list_subscriptions` | List subscriptions with optional filters |
+| `get_notifications` | Get payment notification details by notification code |
+| `create_split` | Create a split payment configuration for marketplace transactions |
+| `get_dispute` | Get dispute/chargeback details by ID |
+| `pay_order` | Pay an existing order (attach a charge/payment to an order in CREATED state) |
+| `get_charge` | Get charge details by ID |
+| `list_charges` | List charges with optional filters |
+| `capture_charge` | Capture a pre-authorized credit card charge |
+| `cancel_charge` | Cancel a charge that has not yet been settled |
+| `create_boleto` | Create a boleto charge |
+| `get_boleto` | Get boleto charge details by ID |
+| `get_public_keys` | Get PagSeguro public key for card data encryption (type: card) |
+| `create_payout` | Create a payout/transfer to a bank account or Pix key |
+| `create_webhook` | Register an application webhook URL to receive event notifications |
+| `list_webhooks` | List registered application webhooks |
 
 ## Authentication
 
