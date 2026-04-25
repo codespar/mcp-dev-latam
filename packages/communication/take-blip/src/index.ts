@@ -3,21 +3,31 @@
 /**
  * MCP Server for Take Blip — Brazilian chatbot and messaging platform.
  *
- * Tools:
+ * Tools (18):
  * - send_message: Send a message to a contact
  * - get_contacts: List contacts
  * - create_contact: Create a contact
+ * - update_contact: Merge/update a contact
+ * - delete_contact: Delete a contact
+ * - get_contact: Get a single contact by identity
  * - get_threads: Get message threads
+ * - get_thread: Get a thread between bot and an identity
  * - send_notification: Send a notification/broadcast message
  * - get_analytics: Get chatbot analytics
  * - create_broadcast: Create a broadcast list and send
  * - get_chatbot_flow: Get chatbot flow configuration
+ * - create_ticket: Open a support ticket / human handoff
+ * - close_ticket: Close an open ticket
+ * - list_tickets: List tickets in a queue
+ * - track_event: Track a custom analytics event
+ * - set_bot_resource: Set a bot resource (variable / bucket value)
+ * - get_bot_resource: Get a bot resource (variable / bucket value)
  *
  * Environment:
  *   TAKE_BLIP_BOT_ID — Bot identifier
  *   TAKE_BLIP_ACCESS_KEY — Bot access key
  *
- * Note: Take Blip uses a JSON-based messaging protocol.
+ * Note: Take Blip uses a JSON-based messaging protocol (LIME/BLiP HTTP API).
  * Requests go as POST to /commands with type/method/uri in body.
  */
 
@@ -76,7 +86,7 @@ async function blipMessage(to: string, type: string, content: unknown): Promise<
 }
 
 const server = new Server(
-  { name: "mcp-take-blip", version: "0.1.0" },
+  { name: "mcp-take-blip", version: "0.2.0" },
   { capabilities: { tools: {} } }
 );
 
@@ -190,6 +200,129 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         },
       },
     },
+    {
+      name: "update_contact",
+      description: "Merge/update fields on an existing contact",
+      inputSchema: {
+        type: "object",
+        properties: {
+          identity: { type: "string", description: "Contact identity (e.g., 5511999999999@wa.gw.msging.net)" },
+          name: { type: "string", description: "Contact name" },
+          email: { type: "string", description: "Contact email" },
+          phoneNumber: { type: "string", description: "Phone number" },
+          group: { type: "string", description: "Contact group" },
+          extras: { type: "object", description: "Custom extras key/value object" },
+        },
+        required: ["identity"],
+      },
+    },
+    {
+      name: "delete_contact",
+      description: "Delete a contact by identity",
+      inputSchema: {
+        type: "object",
+        properties: {
+          identity: { type: "string", description: "Contact identity" },
+        },
+        required: ["identity"],
+      },
+    },
+    {
+      name: "get_contact",
+      description: "Get a single contact by identity",
+      inputSchema: {
+        type: "object",
+        properties: {
+          identity: { type: "string", description: "Contact identity" },
+        },
+        required: ["identity"],
+      },
+    },
+    {
+      name: "get_thread",
+      description: "Get the message thread between the bot and a specific identity",
+      inputSchema: {
+        type: "object",
+        properties: {
+          identity: { type: "string", description: "Contact identity" },
+          take: { type: "number", description: "Number of messages to return (default 20)" },
+        },
+        required: ["identity"],
+      },
+    },
+    {
+      name: "create_ticket",
+      description: "Open a support ticket / human handoff for a contact",
+      inputSchema: {
+        type: "object",
+        properties: {
+          customerIdentity: { type: "string", description: "Contact identity to open ticket for" },
+          team: { type: "string", description: "Agent team / queue name" },
+        },
+        required: ["customerIdentity"],
+      },
+    },
+    {
+      name: "close_ticket",
+      description: "Close an open support ticket",
+      inputSchema: {
+        type: "object",
+        properties: {
+          ticketId: { type: "string", description: "Ticket id to close" },
+        },
+        required: ["ticketId"],
+      },
+    },
+    {
+      name: "list_tickets",
+      description: "List tickets, optionally filtering by status",
+      inputSchema: {
+        type: "object",
+        properties: {
+          status: { type: "string", description: "Ticket status filter (e.g., Open, Waiting, Closed)" },
+          skip: { type: "number", description: "Pagination skip" },
+          take: { type: "number", description: "Pagination take (default 20)" },
+        },
+      },
+    },
+    {
+      name: "track_event",
+      description: "Track a custom analytics event in the bot event tracker",
+      inputSchema: {
+        type: "object",
+        properties: {
+          category: { type: "string", description: "Event category" },
+          action: { type: "string", description: "Event action" },
+          extras: { type: "object", description: "Additional event metadata" },
+          contactIdentity: { type: "string", description: "Contact identity associated with the event" },
+        },
+        required: ["category", "action"],
+      },
+    },
+    {
+      name: "set_bot_resource",
+      description: "Set a bot resource value (used as bot variables / state via /resources bucket)",
+      inputSchema: {
+        type: "object",
+        properties: {
+          name: { type: "string", description: "Resource name (key)" },
+          value: { description: "Resource value (string, number, object)" },
+          type: { type: "string", description: "MIME type (default text/plain; use application/json for objects)" },
+        },
+        required: ["name", "value"],
+      },
+    },
+    {
+      name: "get_bot_resource",
+      description: "Get a bot resource value by name (variable / state)",
+      inputSchema: {
+        type: "object",
+        properties: {
+          name: { type: "string", description: "Resource name (key)" },
+        },
+        required: ["name"],
+      },
+    },
   ],
 }));
 
@@ -254,6 +387,53 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const uri = args?.flowId ? `/buckets/blip_portal:builder_working_flow_${args.flowId}` : "/buckets/blip_portal:builder_working_flow";
         return { content: [{ type: "text", text: JSON.stringify(await blipCommand(crypto.randomUUID(), "get", uri), null, 2) }] };
       }
+      case "update_contact": {
+        const resource: Record<string, unknown> = { identity: args?.identity };
+        if (args?.name) resource.name = args.name;
+        if (args?.email) resource.email = args.email;
+        if (args?.phoneNumber) resource.phoneNumber = args.phoneNumber;
+        if (args?.group) resource.group = args.group;
+        if (args?.extras) resource.extras = args.extras;
+        return { content: [{ type: "text", text: JSON.stringify(await blipCommand(crypto.randomUUID(), "merge", "/contacts", "application/vnd.lime.contact+json", resource), null, 2) }] };
+      }
+      case "delete_contact": {
+        return { content: [{ type: "text", text: JSON.stringify(await blipCommand(crypto.randomUUID(), "delete", `/contacts/${encodeURIComponent(String(args?.identity))}`), null, 2) }] };
+      }
+      case "get_contact": {
+        return { content: [{ type: "text", text: JSON.stringify(await blipCommand(crypto.randomUUID(), "get", `/contacts/${encodeURIComponent(String(args?.identity))}`), null, 2) }] };
+      }
+      case "get_thread": {
+        const take = args?.take ? `$take=${args.take}` : "$take=20";
+        return { content: [{ type: "text", text: JSON.stringify(await blipCommand(crypto.randomUUID(), "get", `/threads/${encodeURIComponent(String(args?.identity))}?${take}`), null, 2) }] };
+      }
+      case "create_ticket": {
+        const resource: Record<string, unknown> = { customerIdentity: args?.customerIdentity };
+        if (args?.team) resource.team = args.team;
+        return { content: [{ type: "text", text: JSON.stringify(await blipCommand(crypto.randomUUID(), "set", "/tickets", "application/vnd.iris.ticket+json", resource), null, 2) }] };
+      }
+      case "close_ticket": {
+        return { content: [{ type: "text", text: JSON.stringify(await blipCommand(crypto.randomUUID(), "set", `/tickets/${encodeURIComponent(String(args?.ticketId))}/change-status`, "application/vnd.iris.ticket+json", { status: "ClosedAttendant" }), null, 2) }] };
+      }
+      case "list_tickets": {
+        const filters: string[] = [];
+        if (args?.status) filters.push(`$filter=${encodeURIComponent(`status eq '${args.status}'`)}`);
+        if (args?.skip) filters.push(`$skip=${args.skip}`);
+        filters.push(args?.take ? `$take=${args.take}` : "$take=20");
+        return { content: [{ type: "text", text: JSON.stringify(await blipCommand(crypto.randomUUID(), "get", `/tickets?${filters.join("&")}`), null, 2) }] };
+      }
+      case "track_event": {
+        const resource: Record<string, unknown> = { category: args?.category, action: args?.action };
+        if (args?.extras) resource.extras = args.extras;
+        if (args?.contactIdentity) resource.contactIdentity = args.contactIdentity;
+        return { content: [{ type: "text", text: JSON.stringify(await blipCommand(crypto.randomUUID(), "set", "/event-track", "application/vnd.iris.eventTrack+json", resource), null, 2) }] };
+      }
+      case "set_bot_resource": {
+        const type = String(args?.type || (typeof args?.value === "object" ? "application/json" : "text/plain"));
+        return { content: [{ type: "text", text: JSON.stringify(await blipCommand(crypto.randomUUID(), "set", `/resources/${encodeURIComponent(String(args?.name))}`, type, args?.value), null, 2) }] };
+      }
+      case "get_bot_resource": {
+        return { content: [{ type: "text", text: JSON.stringify(await blipCommand(crypto.randomUUID(), "get", `/resources/${encodeURIComponent(String(args?.name))}`), null, 2) }] };
+      }
       default:
         return { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true };
     }
@@ -276,7 +456,7 @@ async function main() {
       if (!sid && isInitializeRequest(req.body)) {
         const t = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID(), onsessioninitialized: (id) => { transports.set(id, t); } });
         t.onclose = () => { if (t.sessionId) transports.delete(t.sessionId); };
-        const s = new Server({ name: "mcp-take-blip", version: "0.1.0" }, { capabilities: { tools: {} } }); (server as any)._requestHandlers.forEach((v: any, k: any) => (s as any)._requestHandlers.set(k, v)); (server as any)._notificationHandlers?.forEach((v: any, k: any) => (s as any)._notificationHandlers.set(k, v)); await s.connect(t);
+        const s = new Server({ name: "mcp-take-blip", version: "0.2.0" }, { capabilities: { tools: {} } }); (server as any)._requestHandlers.forEach((v: any, k: any) => (s as any)._requestHandlers.set(k, v)); (server as any)._notificationHandlers?.forEach((v: any, k: any) => (s as any)._notificationHandlers.set(k, v)); await s.connect(t);
         await t.handleRequest(req, res, req.body); return;
       }
       res.status(400).json({ jsonrpc: "2.0", error: { code: -32000, message: "Bad Request" }, id: null });

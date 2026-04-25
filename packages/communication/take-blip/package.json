@@ -1,6 +1,6 @@
 {
   "name": "@codespar/mcp-take-blip",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "MCP server for Take Blip — chatbots, messaging, contacts, broadcasts",
   "type": "module",
   "main": "./dist/index.js",
