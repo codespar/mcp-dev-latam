@@ -1,6 +1,6 @@
 {
   "name": "@codespar/mcp-coordinadora",
-  "version": "0.1.0",
+  "version": "0.2.0-alpha.1",
   "description": "MCP server for Coordinadora — Colombian courier and logistics",
   "type": "module",
   "main": "dist/index.js",
