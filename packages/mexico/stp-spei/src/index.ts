@@ -3,15 +3,25 @@
 /**
  * MCP Server for STP/SPEI — Mexican instant bank transfers (equivalent to Brazil's PIX).
  *
- * Tools:
+ * Tools (18):
  * - create_transfer: Create a SPEI transfer
  * - get_transfer: Get transfer by ID
  * - list_transfers: List transfers with filters
+ * - cancel_transfer: Cancel a pending orden by clave_rastreo
  * - get_balance: Get account balance
+ * - list_account_balances: List balances for all accounts
  * - validate_account: Validate a CLABE account
+ * - validate_clabe: Local CLABE structural + checksum validation
  * - list_banks: List participating banks
- * - get_cep: Get CEP (Comprobante Electrónico de Pago) for CLABE validation
+ * - lookup_bank_by_code: Look up bank by ABM/SPEI code
+ * - get_cep: Get CEP (Comprobante Electrónico de Pago)
  * - register_beneficiary: Register a beneficiary account
+ * - create_refund: Create a SPEI refund (devolución)
+ * - list_refunds: List devoluciones by date range
+ * - conciliation_report: Get transactions report by date for reconciliation
+ * - register_webhook: Register a notification webhook URL
+ * - list_webhooks: List registered webhooks
+ * - delete_webhook: Delete a registered webhook
  *
  * Environment:
  *   STP_API_KEY — API key for authentication
@@ -48,8 +58,28 @@ async function stpRequest(method: string, path: string, body?: unknown): Promise
   return res.json();
 }
 
+// Local CLABE checksum (mod-97 weighted) — no API call required.
+function clabeChecksum(clabe: string): { valid: boolean; bankCode: string; plaza: string; account: string; checkDigit: string; computed: number } {
+  if (!/^\d{18}$/.test(clabe)) {
+    return { valid: false, bankCode: "", plaza: "", account: "", checkDigit: "", computed: -1 };
+  }
+  const weights = [3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7];
+  let sum = 0;
+  for (let i = 0; i < 17; i++) sum += (parseInt(clabe[i], 10) * weights[i]) % 10;
+  const computed = (10 - (sum % 10)) % 10;
+  const checkDigit = clabe[17];
+  return {
+    valid: computed === parseInt(checkDigit, 10),
+    bankCode: clabe.substring(0, 3),
+    plaza: clabe.substring(3, 6),
+    account: clabe.substring(6, 17),
+    checkDigit,
+    computed,
+  };
+}
+
 const server = new Server(
-  { name: "mcp-stp-spei", version: "0.1.0" },
+  { name: "mcp-stp-spei", version: "0.2.0-alpha.1" },
   { capabilities: { tools: {} } }
 );
 
@@ -97,6 +127,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
       },
     },
     {
+      name: "cancel_transfer",
+      description: "Cancel a pending SPEI orden by clave_rastreo (only works while orden is pending)",
+      inputSchema: {
+        type: "object",
+        properties: {
+          tracking_key: { type: "string", description: "Clave de rastreo of the orden to cancel" },
+          reason: { type: "string", description: "Cancellation reason / motivo" },
+        },
+        required: ["tracking_key"],
+      },
+    },
+    {
       name: "get_balance",
       description: "Get account balance",
       inputSchema: {
@@ -107,8 +149,13 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
       },
     },
     {
+      name: "list_account_balances",
+      description: "List balances for all company accounts",
+      inputSchema: { type: "object", properties: {} },
+    },
+    {
       name: "validate_account",
-      description: "Validate a CLABE account number",
+      description: "Validate a CLABE account number against the receiving bank (online check)",
       inputSchema: {
         type: "object",
         properties: {
@@ -119,9 +166,31 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
       },
     },
     {
+      name: "validate_clabe",
+      description: "Validate CLABE structure and checksum locally (no API call). Returns bank code, plaza, account, and check digit",
+      inputSchema: {
+        type: "object",
+        properties: {
+          clabe: { type: "string", description: "CLABE account number (18 digits)" },
+        },
+        required: ["clabe"],
+      },
+    },
+    {
       name: "list_banks",
       description: "List participating SPEI banks",
       inputSchema: { type: "object", properties: {} },
+    },
+    {
+      name: "lookup_bank_by_code",
+      description: "Look up a participating bank by its ABM/SPEI code (first 3 digits of CLABE)",
+      inputSchema: {
+        type: "object",
+        properties: {
+          bank_code: { type: "string", description: "ABM/SPEI bank code (3 digits)" },
+        },
+        required: ["bank_code"],
+      },
     },
     {
       name: "get_cep",
@@ -151,6 +220,79 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
           bank_code: { type: "string", description: "Bank code" },
         },
         required: ["name", "clabe"],
+      },
+    },
+    {
+      name: "create_refund",
+      description: "Create a SPEI refund/devolución for a previously received transfer",
+      inputSchema: {
+        type: "object",
+        properties: {
+          original_tracking_key: { type: "string", description: "Clave de rastreo of the original orden being refunded" },
+          amount: { type: "number", description: "Refund amount in MXN" },
+          concept: { type: "string", description: "Refund concept/description" },
+          reference: { type: "string", description: "Numeric reference (up to 7 digits)" },
+          reason_code: { type: "string", description: "Devolución reason code (e.g. 02 = cuenta inexistente)" },
+        },
+        required: ["original_tracking_key", "amount"],
+      },
+    },
+    {
+      name: "list_refunds",
+      description: "List devoluciones (refunds) by date range",
+      inputSchema: {
+        type: "object",
+        properties: {
+          date_from: { type: "string", description: "Start date (YYYYMMDD)" },
+          date_to: { type: "string", description: "End date (YYYYMMDD)" },
+          status: { type: "string", description: "Refund status filter" },
+        },
+      },
+    },
+    {
+      name: "conciliation_report",
+      description: "Get transactions reconciliation report by date (all received + sent ordenes)",
+      inputSchema: {
+        type: "object",
+        properties: {
+          date: { type: "string", description: "Operation date (YYYYMMDD)" },
+          account: { type: "string", description: "Account CLABE filter" },
+          direction: { type: "string", description: "Direction filter: enviada | recibida" },
+        },
+        required: ["date"],
+      },
+    },
+    {
+      name: "register_webhook",
+      description: "Register a webhook URL to receive STP event notifications",
+      inputSchema: {
+        type: "object",
+        properties: {
+          url: { type: "string", description: "Webhook URL (HTTPS)" },
+          events: {
+            type: "array",
+            items: { type: "string" },
+            description: "Event types to subscribe to (e.g. orden.recibida, orden.liquidada, devolucion)",
+          },
+          secret: { type: "string", description: "Optional shared secret for signature verification" },
+        },
+        required: ["url"],
+      },
+    },
+    {
+      name: "list_webhooks",
+      description: "List registered webhooks for the company",
+      inputSchema: { type: "object", properties: {} },
+    },
+    {
+      name: "delete_webhook",
+      description: "Delete a registered webhook by ID",
+      inputSchema: {
+        type: "object",
+        properties: {
+          webhook_id: { type: "string", description: "Webhook ID to delete" },
+        },
+        required: ["webhook_id"],
       },
     },
   ],
@@ -186,18 +328,36 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
         if (args?.limit) body.limite = args.limit;
         return { content: [{ type: "text", text: JSON.stringify(await stpRequest("POST", "/ordenPago/lista", body), null, 2) }] };
       }
+      case "cancel_transfer": {
+        const body: any = { claveRastreo: args?.tracking_key, empresa: COMPANY };
+        if (args?.reason) body.motivo = args.reason;
+        return { content: [{ type: "text", text: JSON.stringify(await stpRequest("POST", "/ordenPago/cancela", body), null, 2) }] };
+      }
       case "get_balance": {
         const body: any = { empresa: COMPANY };
         if (args?.account) body.cuenta = args.account;
         return { content: [{ type: "text", text: JSON.stringify(await stpRequest("POST", "/ordenPago/saldo", body), null, 2) }] };
       }
+      case "list_account_balances":
+        return { content: [{ type: "text", text: JSON.stringify(await stpRequest("POST", "/ordenPago/saldos", { empresa: COMPANY }), null, 2) }] };
       case "validate_account": {
         const body: any = { cuenta: args?.clabe };
         if (args?.beneficiary_name) body.nombre = args.beneficiary_name;
         return { content: [{ type: "text", text: JSON.stringify(await stpRequest("POST", "/ordenPago/validaCuenta", body), null, 2) }] };
       }
+      case "validate_clabe": {
+        const result = clabeChecksum(String(args?.clabe || ""));
+        return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      }
       case "list_banks":
         return { content: [{ type: "text", text: JSON.stringify(await stpRequest("GET", "/ordenPago/bancos"), null, 2) }] };
+      case "lookup_bank_by_code": {
+        const code = String(args?.bank_code || "");
+        const banks = (await stpRequest("GET", "/ordenPago/bancos")) as any;
+        const list: any[] = Array.isArray(banks) ? banks : (banks?.bancos ?? banks?.data ?? []);
+        const match = list.find((b: any) => String(b?.codigo ?? b?.code ?? b?.claveSpei ?? "") === code) || null;
+        return { content: [{ type: "text", text: JSON.stringify({ bank_code: code, match }, null, 2) }] };
+      }
       case "get_cep": {
         const body: any = {
           claveRastreo: args?.tracking_key,
@@ -219,6 +379,40 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
         if (args?.bank_code) payload.banco = args.bank_code;
         return { content: [{ type: "text", text: JSON.stringify(await stpRequest("PUT", "/ordenPago/registraBeneficiario", payload), null, 2) }] };
       }
+      case "create_refund": {
+        const payload: any = {
+          claveRastreoOriginal: args?.original_tracking_key,
+          monto: args?.amount,
+          empresa: COMPANY,
+        };
+        if (args?.concept) payload.conceptoPago = args.concept;
+        if (args?.reference) payload.referenciaNumerica = args.reference;
+        if (args?.reason_code) payload.codigoMotivo = args.reason_code;
+        return { content: [{ type: "text", text: JSON.stringify(await stpRequest("PUT", "/ordenPago/devolucion", payload), null, 2) }] };
+      }
+      case "list_refunds": {
+        const body: any = { empresa: COMPANY };
+        if (args?.date_from) body.fechaInicio = args.date_from;
+        if (args?.date_to) body.fechaFin = args.date_to;
+        if (args?.status) body.estado = args.status;
+        return { content: [{ type: "text", text: JSON.stringify(await stpRequest("POST", "/ordenPago/devoluciones", body), null, 2) }] };
+      }
+      case "conciliation_report": {
+        const body: any = { empresa: COMPANY, fechaOperacion: args?.date };
+        if (args?.account) body.cuenta = args.account;
+        if (args?.direction) body.tipo = args.direction;
+        return { content: [{ type: "text", text: JSON.stringify(await stpRequest("POST", "/ordenPago/conciliacion", body), null, 2) }] };
+      }
+      case "register_webhook": {
+        const payload: any = { empresa: COMPANY, url: args?.url };
+        if (Array.isArray(args?.events)) payload.eventos = args.events;
+        if (args?.secret) payload.secreto = args.secret;
+        return { content: [{ type: "text", text: JSON.stringify(await stpRequest("PUT", "/webhooks/registra", payload), null, 2) }] };
+      }
+      case "list_webhooks":
+        return { content: [{ type: "text", text: JSON.stringify(await stpRequest("POST", "/webhooks/lista", { empresa: COMPANY }), null, 2) }] };
+      case "delete_webhook":
+        return { content: [{ type: "text", text: JSON.stringify(await stpRequest("POST", "/webhooks/elimina", { empresa: COMPANY, id: args?.webhook_id }), null, 2) }] };
       default:
         return { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true };
     }
@@ -241,7 +435,7 @@ async function main() {
       if (!sid && isInitializeRequest(req.body)) {
         const t = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID(), onsessioninitialized: (id) => { transports.set(id, t); } });
         t.onclose = () => { if (t.sessionId) transports.delete(t.sessionId); };
-        const s = new Server({ name: "mcp-stp-spei", version: "0.1.0" }, { capabilities: { tools: {} } }); (server as any)._requestHandlers.forEach((v: any, k: any) => (s as any)._requestHandlers.set(k, v)); (server as any)._notificationHandlers?.forEach((v: any, k: any) => (s as any)._notificationHandlers.set(k, v)); await s.connect(t);
+        const s = new Server({ name: "mcp-stp-spei", version: "0.2.0-alpha.1" }, { capabilities: { tools: {} } }); (server as any)._requestHandlers.forEach((v: any, k: any) => (s as any)._requestHandlers.set(k, v)); (server as any)._notificationHandlers?.forEach((v: any, k: any) => (s as any)._notificationHandlers.set(k, v)); await s.connect(t);
         await t.handleRequest(req, res, req.body); return;
       }
       res.status(400).json({ jsonrpc: "2.0", error: { code: -32000, message: "Bad Request" }, id: null });

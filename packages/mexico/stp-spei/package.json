@@ -1,6 +1,6 @@
 {
   "name": "@codespar/mcp-stp-spei",
-  "version": "0.1.0",
+  "version": "0.2.0-alpha.1",
   "description": "MCP server for STP/SPEI — Mexican instant bank transfers",
   "type": "module",
   "main": "dist/index.js",
