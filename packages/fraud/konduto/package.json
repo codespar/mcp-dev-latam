@@ -1,6 +1,6 @@
 {
   "name": "@codespar/mcp-konduto",
-  "version": "0.1.0-alpha.1",
+  "version": "0.2.0-alpha.1",
   "description": "MCP server for Konduto — Brazilian fraud prevention, API-first order risk scoring, behavioral device intelligence, and blocklist/allowlist/reviewlist management",
   "type": "module",
   "main": "./dist/index.js",

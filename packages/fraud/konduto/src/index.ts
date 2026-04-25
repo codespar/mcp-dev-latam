@@ -17,15 +17,25 @@
  *   Konduto    — smaller footprint, API-first, strongest on behavioral fingerprinting
  * BR merchants commonly run both in parallel for score comparison or failover.
  *
- * Tools (8):
+ * Tools (18):
  *   send_order_for_analysis   — submit an order; returns decision + score
  *   get_order                 — retrieve current decision + score for an order
  *   update_order_status       — feed the merchant's final status back to Konduto
+ *   report_chargeback         — convenience wrapper: mark order as fraud (chargeback)
+ *   report_order_approved     — convenience wrapper: mark order as approved
+ *   report_order_declined     — convenience wrapper: mark order as declined
  *   add_to_blocklist          — add email/phone/ip/name/bin_last4/zip/tax_id to blocklist
  *   query_blocklist           — check whether a value is on the blocklist
+ *   update_blocklist_entry    — update an existing blocklist entry (e.g. extend expiration)
  *   remove_from_blocklist     — remove a value from the blocklist
  *   add_to_allowlist          — add a trusted value to the allowlist (auto-approve)
+ *   query_allowlist           — check whether a value is on the allowlist
+ *   update_allowlist_entry    — update an existing allowlist entry
+ *   remove_from_allowlist     — remove a value from the allowlist
  *   add_to_reviewlist         — add a value to the reviewlist (force manual review)
+ *   query_reviewlist          — check whether a value is on the reviewlist
+ *   update_reviewlist_entry   — update an existing reviewlist entry
+ *   remove_from_reviewlist    — remove a value from the reviewlist
  *
  * Authentication
  *   HTTP Basic. The API key is the username with an empty password:
@@ -36,15 +46,28 @@
  *   KONDUTO_BASE_URL  — optional; defaults to https://api.konduto.com/v1
  *
  * Alpha note
- *   Shipped as 0.1.0-alpha.1. Order create (POST /orders) and the blocklist
- *   family (POST/GET/DELETE /blacklist/{type}) are verified against the public
- *   docs at docs.konduto.com. Order retrieve (GET /orders/{id}) and status
- *   update (PUT /orders/{id}) follow the standard REST pattern used by
- *   Konduto's official client libraries but are not separately indexed on the
- *   public reference. Card-only analyze, disputes, and the /visitors retrieval
- *   endpoint hypothesized in the category spec are NOT in the public docs and
- *   have been dropped from this release. If/when Konduto publishes them,
- *   promote to 0.2.0.
+ *   Shipped as 0.2.0-alpha.1. Order create (POST /orders) and the full
+ *   blocklist / allowlist / reviewlist CRUD families (POST/GET/PUT/DELETE
+ *   on /blacklist|/whitelist|/greylist /{type}/{value}) are verified against
+ *   the public docs at docs.konduto.com. Order retrieve (GET /orders/{id})
+ *   and status update (PUT /orders/{id}) follow the standard REST pattern
+ *   used by Konduto's official client libraries but are not separately
+ *   indexed on the public reference. The chargeback / approve / decline
+ *   convenience wrappers are PUT /orders/{id} with a fixed status — they
+ *   are the merchant-side feedback signal Konduto's docs explicitly call
+ *   out as "the primary input to retrain the model".
+ *
+ *   Tools intentionally NOT shipped in this release because they are not
+ *   in the public API: webhook CRUD (dashboard-only per docs), device /
+ *   visitor lookup (only inbound `visitor` field on orders, no GET), customer
+ *   history GET, list orders, promo code lookup, lead scoring, separate
+ *   payment-retry decision endpoint. If/when Konduto publishes them, promote.
+ *
+ *   For the allowlist and reviewlist, the public docs explicitly enumerate
+ *   only `email` as the supported dimension. We expose the full BLOCKLIST_TYPES
+ *   enum on those tools to match the existing add_to_allowlist / add_to_reviewlist
+ *   surface — Konduto's API may accept other types silently, and existing tools
+ *   already shape the contract this way. Stick to email for guaranteed behavior.
  *
  * Docs: https://docs.konduto.com
  */
@@ -87,7 +110,7 @@ async function kondutoRequest(method: string, path: string, body?: unknown): Pro
 const BLOCKLIST_TYPES = ["email", "phone", "ip", "name", "bin_last4", "zip", "tax_id"];
 
 const server = new Server(
-  { name: "mcp-konduto", version: "0.1.0-alpha.1" },
+  { name: "mcp-konduto", version: "0.2.0-alpha.1" },
   { capabilities: { tools: {} } }
 );
 
@@ -168,6 +191,42 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
       },
     },
     {
+      name: "report_chargeback",
+      description: "Report a confirmed chargeback for an order. Convenience wrapper around update_order_status with status='fraud' — the primary feedback signal Konduto's ML model uses to retrain on similar buyers. Call this as soon as the chargeback dispute is confirmed (not when first received).",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "Merchant-side order id of the charged-back order" },
+          comments: { type: "string", description: "Optional notes (e.g. chargeback reason code, acquirer reference)" },
+        },
+        required: ["id"],
+      },
+    },
+    {
+      name: "report_order_approved",
+      description: "Report that an order was ultimately approved by the merchant. Convenience wrapper around update_order_status with status='approved'. Use after Konduto returned 'review' and a human approved the order, or when the merchant overrode a 'declined' recommendation.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "Merchant-side order id" },
+          comments: { type: "string", description: "Optional notes on why the order was approved (e.g. manual review outcome)" },
+        },
+        required: ["id"],
+      },
+    },
+    {
+      name: "report_order_declined",
+      description: "Report that an order was ultimately declined by the merchant. Convenience wrapper around update_order_status with status='declined'. Use after manual review concluded the order should be rejected, or when the acquirer declined the payment.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "Merchant-side order id" },
+          comments: { type: "string", description: "Optional notes on the decline reason" },
+        },
+        required: ["id"],
+      },
+    },
+    {
       name: "add_to_blocklist",
       description: "Add a value to the Konduto blocklist. Any future order matching the value is auto-declined. Useful for known-bad emails, IPs, tax IDs, or card BIN+last4 pairs observed in confirmed fraud.",
       inputSchema: {
@@ -191,6 +250,19 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         properties: {
           type: { type: "string", enum: BLOCKLIST_TYPES, description: "Blocklist dimension" },
           value: { type: "string", description: "Value to query" },
+        },
+        required: ["type", "value"],
+      },
+    },
+    {
+      name: "update_blocklist_entry",
+      description: "Update an existing blocklist entry — typically used to extend or shorten the expiration window (expires_at) without removing and re-adding the entry. The (type, value) pair must already exist on the blocklist.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          type: { type: "string", enum: BLOCKLIST_TYPES, description: "Blocklist dimension" },
+          value: { type: "string", description: "Existing blocklist value to update" },
+          expires_at: { type: "string", description: "ISO-8601 timestamp for new expiration. Omit (or set null) to make the entry permanent." },
         },
         required: ["type", "value"],
       },
@@ -220,6 +292,43 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
       },
     },
     {
+      name: "query_allowlist",
+      description: "Check whether a value is currently on the Konduto allowlist. Konduto's public docs explicitly support email; other dimensions are accepted by symmetry with the blocklist contract but only email is guaranteed.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          type: { type: "string", enum: BLOCKLIST_TYPES, description: "Allowlist dimension (use 'email' for guaranteed behavior)" },
+          value: { type: "string", description: "Value to query" },
+        },
+        required: ["type", "value"],
+      },
+    },
+    {
+      name: "update_allowlist_entry",
+      description: "Update an existing allowlist entry — typically to extend or shorten the expiration window. Konduto's docs recommend short windows (1-2 days) for allowlist entries since they bypass ML scoring entirely.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          type: { type: "string", enum: BLOCKLIST_TYPES, description: "Allowlist dimension" },
+          value: { type: "string", description: "Existing allowlist value to update" },
+          expires_at: { type: "string", description: "ISO-8601 timestamp for new expiration. Omit (or set null) to make the entry permanent." },
+        },
+        required: ["type", "value"],
+      },
+    },
+    {
+      name: "remove_from_allowlist",
+      description: "Remove a value from the Konduto allowlist. Future orders matching the value will once again undergo full ML scoring.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          type: { type: "string", enum: BLOCKLIST_TYPES, description: "Allowlist dimension" },
+          value: { type: "string", description: "Value to remove" },
+        },
+        required: ["type", "value"],
+      },
+    },
+    {
       name: "add_to_reviewlist",
       description: "Add a value to the Konduto reviewlist. Future orders matching the value are forced into manual review regardless of score. Useful for ambiguous signals that warrant human eyes.",
       inputSchema: {
@@ -227,6 +336,43 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         properties: {
           type: { type: "string", enum: BLOCKLIST_TYPES, description: "Reviewlist dimension (same dimensions as blocklist)" },
           value: { type: "string", description: "Value to force into review" },
+        },
+        required: ["type", "value"],
+      },
+    },
+    {
+      name: "query_reviewlist",
+      description: "Check whether a value is currently on the Konduto reviewlist. Konduto's public docs explicitly support email; other dimensions are accepted by symmetry with the blocklist contract but only email is guaranteed.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          type: { type: "string", enum: BLOCKLIST_TYPES, description: "Reviewlist dimension (use 'email' for guaranteed behavior)" },
+          value: { type: "string", description: "Value to query" },
+        },
+        required: ["type", "value"],
+      },
+    },
+    {
+      name: "update_reviewlist_entry",
+      description: "Update an existing reviewlist entry — typically to extend or shorten the expiration window without removing and re-adding the entry.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          type: { type: "string", enum: BLOCKLIST_TYPES, description: "Reviewlist dimension" },
+          value: { type: "string", description: "Existing reviewlist value to update" },
+          expires_at: { type: "string", description: "ISO-8601 timestamp for new expiration. Omit (or set null) to make the entry permanent." },
+        },
+        required: ["type", "value"],
+      },
+    },
+    {
+      name: "remove_from_reviewlist",
+      description: "Remove a value from the Konduto reviewlist. Future orders matching the value will be scored normally instead of being forced into review.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          type: { type: "string", enum: BLOCKLIST_TYPES, description: "Reviewlist dimension" },
+          value: { type: "string", description: "Value to remove" },
         },
         required: ["type", "value"],
       },
@@ -252,6 +398,27 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         if (a.comments) body.comments = a.comments;
         return { content: [{ type: "text", text: JSON.stringify(await kondutoRequest("PUT", `/orders/${id}`, body), null, 2) }] };
       }
+      case "report_chargeback": {
+        const a = args as { id: string; comments?: string };
+        const id = encodeURIComponent(String(a.id));
+        const body: Record<string, unknown> = { status: "fraud" };
+        if (a.comments) body.comments = a.comments;
+        return { content: [{ type: "text", text: JSON.stringify(await kondutoRequest("PUT", `/orders/${id}`, body), null, 2) }] };
+      }
+      case "report_order_approved": {
+        const a = args as { id: string; comments?: string };
+        const id = encodeURIComponent(String(a.id));
+        const body: Record<string, unknown> = { status: "approved" };
+        if (a.comments) body.comments = a.comments;
+        return { content: [{ type: "text", text: JSON.stringify(await kondutoRequest("PUT", `/orders/${id}`, body), null, 2) }] };
+      }
+      case "report_order_declined": {
+        const a = args as { id: string; comments?: string };
+        const id = encodeURIComponent(String(a.id));
+        const body: Record<string, unknown> = { status: "declined" };
+        if (a.comments) body.comments = a.comments;
+        return { content: [{ type: "text", text: JSON.stringify(await kondutoRequest("PUT", `/orders/${id}`, body), null, 2) }] };
+      }
       case "add_to_blocklist": {
         const a = args as { type: string; value: string };
         return { content: [{ type: "text", text: JSON.stringify(await kondutoRequest("POST", `/blacklist/${encodeURIComponent(a.type)}`, { value: a.value }), null, 2) }] };
@@ -259,6 +426,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case "query_blocklist": {
         const a = args as { type: string; value: string };
         return { content: [{ type: "text", text: JSON.stringify(await kondutoRequest("GET", `/blacklist/${encodeURIComponent(a.type)}/${encodeURIComponent(a.value)}`), null, 2) }] };
+      }
+      case "update_blocklist_entry": {
+        const a = args as { type: string; value: string; expires_at?: string };
+        const body: Record<string, unknown> = {};
+        if (a.expires_at !== undefined) body.expires_at = a.expires_at;
+        return { content: [{ type: "text", text: JSON.stringify(await kondutoRequest("PUT", `/blacklist/${encodeURIComponent(a.type)}/${encodeURIComponent(a.value)}`, body), null, 2) }] };
       }
       case "remove_from_blocklist": {
         const a = args as { type: string; value: string };
@@ -268,9 +441,37 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const a = args as { type: string; value: string };
         return { content: [{ type: "text", text: JSON.stringify(await kondutoRequest("POST", `/whitelist/${encodeURIComponent(a.type)}`, { value: a.value }), null, 2) }] };
       }
+      case "query_allowlist": {
+        const a = args as { type: string; value: string };
+        return { content: [{ type: "text", text: JSON.stringify(await kondutoRequest("GET", `/whitelist/${encodeURIComponent(a.type)}/${encodeURIComponent(a.value)}`), null, 2) }] };
+      }
+      case "update_allowlist_entry": {
+        const a = args as { type: string; value: string; expires_at?: string };
+        const body: Record<string, unknown> = {};
+        if (a.expires_at !== undefined) body.expires_at = a.expires_at;
+        return { content: [{ type: "text", text: JSON.stringify(await kondutoRequest("PUT", `/whitelist/${encodeURIComponent(a.type)}/${encodeURIComponent(a.value)}`, body), null, 2) }] };
+      }
+      case "remove_from_allowlist": {
+        const a = args as { type: string; value: string };
+        return { content: [{ type: "text", text: JSON.stringify(await kondutoRequest("DELETE", `/whitelist/${encodeURIComponent(a.type)}/${encodeURIComponent(a.value)}`), null, 2) }] };
+      }
       case "add_to_reviewlist": {
         const a = args as { type: string; value: string };
         return { content: [{ type: "text", text: JSON.stringify(await kondutoRequest("POST", `/greylist/${encodeURIComponent(a.type)}`, { value: a.value }), null, 2) }] };
+      }
+      case "query_reviewlist": {
+        const a = args as { type: string; value: string };
+        return { content: [{ type: "text", text: JSON.stringify(await kondutoRequest("GET", `/greylist/${encodeURIComponent(a.type)}/${encodeURIComponent(a.value)}`), null, 2) }] };
+      }
+      case "update_reviewlist_entry": {
+        const a = args as { type: string; value: string; expires_at?: string };
+        const body: Record<string, unknown> = {};
+        if (a.expires_at !== undefined) body.expires_at = a.expires_at;
+        return { content: [{ type: "text", text: JSON.stringify(await kondutoRequest("PUT", `/greylist/${encodeURIComponent(a.type)}/${encodeURIComponent(a.value)}`, body), null, 2) }] };
+      }
+      case "remove_from_reviewlist": {
+        const a = args as { type: string; value: string };
+        return { content: [{ type: "text", text: JSON.stringify(await kondutoRequest("DELETE", `/greylist/${encodeURIComponent(a.type)}/${encodeURIComponent(a.value)}`), null, 2) }] };
       }
       default:
         return { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true };
@@ -294,7 +495,7 @@ async function main() {
       if (!sid && isInitializeRequest(req.body)) {
         const t = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID(), onsessioninitialized: (id) => { transports.set(id, t); } });
         t.onclose = () => { if (t.sessionId) transports.delete(t.sessionId); };
-        const s = new Server({ name: "mcp-konduto", version: "0.1.0-alpha.1" }, { capabilities: { tools: {} } });
+        const s = new Server({ name: "mcp-konduto", version: "0.2.0-alpha.1" }, { capabilities: { tools: {} } });
         (server as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.forEach((v, k) => (s as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.set(k, v));
         (server as unknown as { _notificationHandlers?: Map<unknown, unknown> })._notificationHandlers?.forEach((v, k) => (s as unknown as { _notificationHandlers: Map<unknown, unknown> })._notificationHandlers.set(k, v));
         await s.connect(t);
