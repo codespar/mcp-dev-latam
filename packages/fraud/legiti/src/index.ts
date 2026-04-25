@@ -29,15 +29,25 @@
  *
  * Merchants frequently bundle 2-3 of these for best-of-breed scoring.
  *
- * Tools (8):
- *   evaluate_order         — POST /v2/order; send an order and get the decision
- *   update_order           — PUT /v2/order; notify Legiti of order status changes
- *   mark_order_fraudulent  — POST /v2/order/mark_fraudulent; chargeback feedback
- *   evaluate_sale          — POST /evaluation; legacy single-shot sale evaluation
- *   track_account          — POST /account; account created/updated/deleted
- *   track_event            — POST /event; event (concert/show) created/updated
- *   track_sale             — POST /sale; sale created/updated
- *   track_auth             — POST /auth; login/logout/password recovery/reset
+ * Tools (18):
+ *   evaluate_order            — POST /v2/order; send an order and get the decision
+ *   update_order              — PUT /v2/order; notify Legiti of order status changes
+ *   mark_order_fraudulent     — POST /v2/order/mark_fraudulent; chargeback feedback
+ *   mark_dispute_resolution   — POST /v2/order/mark_dispute_resolution; resolve a chargeback dispute (won/lost)
+ *   evaluate_sale             — POST /evaluation; legacy single-shot sale evaluation
+ *   track_account             — POST /account; account created/updated/deleted
+ *   track_signup              — POST /account; account creation specifically (convenience over track_account)
+ *   track_account_update      — POST /account; account update specifically (convenience over track_account)
+ *   track_event               — POST /event; event (concert/show) created/updated
+ *   track_event_view          — POST /event_view; user viewed/browsed an event page
+ *   track_sale                — POST /sale; sale created/updated
+ *   track_payment             — POST /payment; payment attempt / authorization / capture / refund
+ *   track_auth                — POST /auth; login/logout/password recovery/reset
+ *   track_login               — POST /auth; login attempts specifically (convenience over track_auth)
+ *   track_logout              — POST /auth; logout specifically
+ *   track_password_recovery   — POST /auth; password recovery request specifically
+ *   get_decision              — GET /v2/order/{sale_id}; fetch the latest decision + score for an order
+ *   update_decision_status    — POST /v2/order/decision; manually override a decision (accept/decline a manual review)
  *
  * Authentication
  *   Bearer token (JWT-format). Passed as `Authorization: Bearer <LEGITI_API_KEY>`.
@@ -51,16 +61,17 @@
  *                      Legiti issues customer-specific base URLs — override per contract.
  *
  * Alpha note
- *   Shipped as 0.1.0-alpha.1. Legiti's public docs are smaller than ClearSale's
- *   or Konduto's — the v2 order family (order / order PUT / mark_fraudulent)
- *   is referenced in public integration guides at docs.legiti.com; the legacy
- *   /evaluation endpoint and the Collection API (account, event, sale, auth)
- *   are documented in the open-source github.com/legiti/docs-backend repo.
- *   No public custom-rules surface exists, so the original category spec's
- *   create/list/update/delete rule tools are not shipped. Track endpoints
- *   accept a free-form `action` field ("create" | "update" | "delete") to
- *   cover all state transitions in a single tool each, keeping the surface
- *   at ~8 tools.
+ *   Shipped as 0.2.0-alpha.1. Legiti's public docs are smaller than ClearSale's
+ *   or Konduto's — the v2 order family (order / order PUT / mark_fraudulent /
+ *   mark_dispute_resolution / decision) is referenced in public integration
+ *   guides at docs.legiti.com; the legacy /evaluation endpoint and the
+ *   Collection API (account, event, event_view, sale, payment, auth) are
+ *   documented in the open-source github.com/legiti/docs-backend repo. No
+ *   public custom-rules surface exists, so the original category spec's
+ *   create/list/update/delete rule tools are not shipped. Endpoints and
+ *   request shapes for some Decision API surfaces (get_decision,
+ *   update_decision_status) are inferred from contract-gated docs and may
+ *   shift before stable.
  *
  * Docs: https://docs.legiti.com
  * Open-source docs: https://github.com/legiti/docs-backend
@@ -101,7 +112,7 @@ async function legitiRequest(method: string, path: string, body?: unknown): Prom
 }
 
 const server = new Server(
-  { name: "mcp-legiti", version: "0.1.0-alpha.1" },
+  { name: "mcp-legiti", version: "0.2.0-alpha.1" },
   { capabilities: { tools: {} } }
 );
 
@@ -260,6 +271,175 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         required: ["action", "account_id"],
       },
     },
+    {
+      name: "track_login",
+      description: "Notify Legiti of a login attempt (successful or failed). Convenience wrapper over track_auth that hard-codes action='login'. Failed logins are critical signal for ATO (account-takeover) — feed every attempt, including the ones blocked by your auth layer.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          account_id: { type: "string", description: "Account id involved. For failed attempts where the account doesn't exist, pass the attempted identifier (email/username)." },
+          success: { type: "boolean", description: "true if authentication succeeded, false otherwise. Default true." },
+          ip: { type: "string", description: "Client IP for this login attempt" },
+          user_agent: { type: "string", description: "Browser/app User-Agent for this login attempt" },
+          timestamp: { type: "number", description: "Unix timestamp (seconds) of the attempt" },
+        },
+        required: ["account_id"],
+      },
+    },
+    {
+      name: "track_logout",
+      description: "Notify Legiti of a logout event. Convenience wrapper over track_auth with action='logout'. Useful for session-duration features in ATO models.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          account_id: { type: "string", description: "Account id logging out" },
+          ip: { type: "string", description: "Client IP at logout" },
+          user_agent: { type: "string", description: "Browser/app User-Agent at logout" },
+          timestamp: { type: "number", description: "Unix timestamp (seconds) of the logout" },
+        },
+        required: ["account_id"],
+      },
+    },
+    {
+      name: "track_signup",
+      description: "Notify Legiti of a new account creation. Convenience wrapper over track_account with action='create'. Send this at the moment the account is provisioned — Legiti uses signup recency as a fraud signal.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          account_id: { type: "string", description: "Merchant-side account id (unique, stable)" },
+          account_email: { type: "string", description: "Account email address" },
+          account_name: { type: "string", description: "Account holder name" },
+          account_phone: { type: "string", description: "Account phone number (E.164 recommended)" },
+          account_cpf: { type: "string", description: "Account CPF / tax id" },
+          account_address: { type: "object", description: "Account address: { street, number, city, state, zip_code, country }" },
+          ip: { type: "string", description: "Client IP at signup" },
+          user_agent: { type: "string", description: "Browser/app User-Agent at signup" },
+          timestamp: { type: "number", description: "Unix timestamp (seconds) when the signup happened" },
+        },
+        required: ["account_id"],
+      },
+    },
+    {
+      name: "track_account_update",
+      description: "Notify Legiti of an account profile change (email, phone, CPF, address). Convenience wrapper over track_account with action='update'. Pass any fields that changed — omitted fields are not interpreted as cleared.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          account_id: { type: "string", description: "Merchant-side account id" },
+          account_email: { type: "string", description: "New account email (if changed)" },
+          account_name: { type: "string", description: "New account name (if changed)" },
+          account_phone: { type: "string", description: "New account phone (if changed)" },
+          account_cpf: { type: "string", description: "New account CPF (if changed)" },
+          account_address: { type: "object", description: "New account address (if changed)" },
+          timestamp: { type: "number", description: "Unix timestamp (seconds) of the update" },
+        },
+        required: ["account_id"],
+      },
+    },
+    {
+      name: "track_password_recovery",
+      description: "Notify Legiti of a password recovery request (the 'forgot password' click). Convenience wrapper over track_auth with action='password_recovery'. Recovery floods are a strong ATO signal.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          account_id: { type: "string", description: "Account id (or attempted identifier) requesting recovery" },
+          ip: { type: "string", description: "Client IP for the recovery request" },
+          user_agent: { type: "string", description: "Browser/app User-Agent for the recovery request" },
+          timestamp: { type: "number", description: "Unix timestamp (seconds) of the request" },
+        },
+        required: ["account_id"],
+      },
+    },
+    {
+      name: "track_event_view",
+      description: "Notify Legiti that a user viewed an event/show page. Browse signal — feeds Legiti's session model so the eventual evaluate_order has context for 'did this buyer actually look at the show before buying tickets?'. Optional but recommended for ticketing flows.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          account_id: { type: "string", description: "Account id viewing the event (omit for anonymous browsers)" },
+          event_id: { type: "string", description: "Merchant-side event id being viewed" },
+          event_date_id: { type: "string", description: "Specific event datetime being viewed (if a multi-date event)" },
+          ip: { type: "string", description: "Client IP at view time" },
+          user_agent: { type: "string", description: "Browser/app User-Agent at view time" },
+          referrer: { type: "string", description: "HTTP referrer for the view" },
+          timestamp: { type: "number", description: "Unix timestamp (seconds) of the view" },
+        },
+        required: ["event_id"],
+      },
+    },
+    {
+      name: "track_payment",
+      description: "Notify Legiti of a payment-method-level event (authorization attempt, capture, refund, void). Distinct from track_sale, which is order-level. Use this when you process payments separately from sale state — e.g. multi-installment captures or refund flows.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          action: {
+            type: "string",
+            enum: ["authorize", "capture", "refund", "void"],
+            description: "Payment action being reported",
+          },
+          sale_id: { type: "string", description: "Associated sale id" },
+          payment_id: { type: "string", description: "Merchant-side payment id (unique within the sale)" },
+          method: { type: "string", description: "Payment method ('credit'|'debit'|'boleto'|'pix')" },
+          first_six_digits_cc: { type: "string", description: "First six digits of the card (BIN), if card payment" },
+          last_four_digits_cc: { type: "string", description: "Last four digits of the card, if card payment" },
+          installments: { type: "number", description: "Number of installments (credit only)" },
+          amount: { type: "number", description: "Payment amount in BRL (major units)" },
+          status: { type: "string", description: "Resulting status ('approved'|'declined'|'pending')" },
+          decline_reason: { type: "string", description: "Acquirer/issuer decline reason, if applicable" },
+          timestamp: { type: "number", description: "Unix timestamp (seconds) of this payment action" },
+        },
+        required: ["action", "sale_id"],
+      },
+    },
+    {
+      name: "get_decision",
+      description: "Fetch the latest Legiti decision for an order. Returns the decision (approve / reject / manual), score, and the contributing reason codes. Useful for re-checking a sale after async re-scoring or for audit/UI display.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          sale_id: { type: "string", description: "Merchant-side sale id used in evaluate_order" },
+        },
+        required: ["sale_id"],
+      },
+    },
+    {
+      name: "update_decision_status",
+      description: "Manually override Legiti's decision for an order — typically used to accept or decline a sale that landed in 'manual' review after analyst inspection. The override is recorded as feedback for the ML model.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          sale_id: { type: "string", description: "Merchant-side sale id to override" },
+          status: {
+            type: "string",
+            enum: ["accept", "decline"],
+            description: "Manual decision: 'accept' (release the order) or 'decline' (reject the order)",
+          },
+          analyst_id: { type: "string", description: "Optional id/name of the analyst making the decision (for audit)" },
+          reason: { type: "string", description: "Optional free-text justification for the override" },
+          timestamp: { type: "number", description: "Unix timestamp (seconds) of the override" },
+        },
+        required: ["sale_id", "status"],
+      },
+    },
+    {
+      name: "mark_dispute_resolution",
+      description: "Report the outcome of a chargeback dispute back to Legiti — i.e. whether the merchant won or lost the chargeback case after representation. Complements mark_order_fraudulent (which reports the chargeback itself). Disputes won are valuable counter-signal.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          sale_id: { type: "string", description: "Merchant-side sale id the dispute applies to" },
+          resolution: {
+            type: "string",
+            enum: ["won", "lost"],
+            description: "'won' = chargeback reversed in merchant's favor; 'lost' = chargeback upheld",
+          },
+          resolution_datetime: { type: "number", description: "Unix timestamp (seconds) when the dispute was resolved" },
+          resolution_reason: { type: "string", description: "Optional reason / case notes from the acquirer" },
+        },
+        required: ["sale_id", "resolution"],
+      },
+    },
   ],
 }));
 
@@ -284,6 +464,28 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return { content: [{ type: "text", text: JSON.stringify(await legitiRequest("POST", "/sale", args), null, 2) }] };
       case "track_auth":
         return { content: [{ type: "text", text: JSON.stringify(await legitiRequest("POST", "/auth", args), null, 2) }] };
+      case "track_login":
+        return { content: [{ type: "text", text: JSON.stringify(await legitiRequest("POST", "/auth", { ...(args as Record<string, unknown>), action: "login" }), null, 2) }] };
+      case "track_logout":
+        return { content: [{ type: "text", text: JSON.stringify(await legitiRequest("POST", "/auth", { ...(args as Record<string, unknown>), action: "logout" }), null, 2) }] };
+      case "track_signup":
+        return { content: [{ type: "text", text: JSON.stringify(await legitiRequest("POST", "/account", { ...(args as Record<string, unknown>), action: "create" }), null, 2) }] };
+      case "track_account_update":
+        return { content: [{ type: "text", text: JSON.stringify(await legitiRequest("POST", "/account", { ...(args as Record<string, unknown>), action: "update" }), null, 2) }] };
+      case "track_password_recovery":
+        return { content: [{ type: "text", text: JSON.stringify(await legitiRequest("POST", "/auth", { ...(args as Record<string, unknown>), action: "password_recovery" }), null, 2) }] };
+      case "track_event_view":
+        return { content: [{ type: "text", text: JSON.stringify(await legitiRequest("POST", "/event_view", args), null, 2) }] };
+      case "track_payment":
+        return { content: [{ type: "text", text: JSON.stringify(await legitiRequest("POST", "/payment", args), null, 2) }] };
+      case "get_decision": {
+        const a = args as { sale_id?: string };
+        return { content: [{ type: "text", text: JSON.stringify(await legitiRequest("GET", `/v2/order/${encodeURIComponent(a.sale_id ?? "")}`), null, 2) }] };
+      }
+      case "update_decision_status":
+        return { content: [{ type: "text", text: JSON.stringify(await legitiRequest("POST", "/v2/order/decision", args), null, 2) }] };
+      case "mark_dispute_resolution":
+        return { content: [{ type: "text", text: JSON.stringify(await legitiRequest("POST", "/v2/order/mark_dispute_resolution", args), null, 2) }] };
       default:
         return { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true };
     }
@@ -306,7 +508,7 @@ async function main() {
       if (!sid && isInitializeRequest(req.body)) {
         const t = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID(), onsessioninitialized: (id) => { transports.set(id, t); } });
         t.onclose = () => { if (t.sessionId) transports.delete(t.sessionId); };
-        const s = new Server({ name: "mcp-legiti", version: "0.1.0-alpha.1" }, { capabilities: { tools: {} } });
+        const s = new Server({ name: "mcp-legiti", version: "0.2.0-alpha.1" }, { capabilities: { tools: {} } });
         (server as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.forEach((v, k) => (s as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.set(k, v));
         (server as unknown as { _notificationHandlers?: Map<unknown, unknown> })._notificationHandlers?.forEach((v, k) => (s as unknown as { _notificationHandlers: Map<unknown, unknown> })._notificationHandlers.set(k, v));
         await s.connect(t);

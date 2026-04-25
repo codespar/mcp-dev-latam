@@ -1,6 +1,6 @@
 {
   "name": "@codespar/mcp-legiti",
-  "version": "0.1.0-alpha.1",
+  "version": "0.2.0-alpha.1",
   "description": "MCP server for Legiti — Brazilian fraud prevention (ticketing + ecommerce), real-time order evaluation, chargeback feedback, and account/event/sale collection",
   "type": "module",
   "main": "./dist/index.js",
