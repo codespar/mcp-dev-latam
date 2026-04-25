@@ -13,17 +13,27 @@
  *   get_transaction / get_transaction_details → pull document data,
  *   similarity score, credentials.
  *
- * Tools (10):
- *   initiate_account          — create a persistent end-user account
- *   initiate_transaction      — start a KYC workflow (returns redirectUrl)
- *   get_transaction           — workflow execution summary
- *   list_transactions         — list workflow executions for an account
- *   get_transaction_details   — full workflow result
- *   retrieve_document_data    — extracted fields from the ID document
- *   retrieve_similarity_score — face-match (selfie vs document) result
- *   delete_transaction        — GDPR deletion of a workflow execution
- *   update_transaction_status — merchant-side status update (PATCH)
- *   retrieve_credentials      — credentials list (for PDF / image download)
+ * Tools (20):
+ *   initiate_account            — create a persistent end-user account
+ *   initiate_transaction        — start a KYC workflow (returns redirectUrl)
+ *   get_transaction             — workflow execution summary
+ *   list_transactions           — list workflow executions for an account
+ *   get_transaction_details     — full workflow result
+ *   retrieve_document_data      — extracted fields from the ID document
+ *   retrieve_similarity_score   — face-match (selfie vs document) result
+ *   delete_transaction          — GDPR deletion of a workflow execution
+ *   update_transaction_status   — merchant-side status update (PATCH)
+ *   retrieve_credentials        — credentials list (for PDF / image download)
+ *   cancel_transaction          — cancel an in-flight workflow execution
+ *   retry_transaction           — retry a failed/expired workflow execution
+ *   retrieve_extraction_data    — raw OCR / extraction capability output
+ *   retrieve_liveness_result    — liveness capability decision + score
+ *   retrieve_facemap            — biometric facemap (template) for a workflow
+ *   retrieve_screening_result   — AML watchlist / adverse media hits
+ *   retrieve_data_export        — full GDPR-compliant data export for an account
+ *   register_callback_url       — set / update the account-level webhook URL
+ *   delete_account              — GDPR right-to-erasure on the entire account
+ *   list_accounts               — list Jumio end-user accounts (filter / paginate)
  *
  * Authentication
  *   HTTP Basic: user=JUMIO_API_TOKEN, password=JUMIO_API_SECRET
@@ -95,7 +105,7 @@ async function jumioRequest(
 }
 
 const server = new Server(
-  { name: "mcp-jumio", version: "0.1.0" },
+  { name: "mcp-jumio", version: "0.2.0" },
   { capabilities: { tools: {} } }
 );
 
@@ -252,6 +262,134 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         required: ["accountId", "workflowExecutionId"],
       },
     },
+    {
+      name: "cancel_transaction",
+      description: "Cancel an in-flight workflow execution (status 'INITIATED' or 'ACQUIRED'). Use when the user abandons the flow or you decide upstream not to proceed; finalises the workflow as cancelled and stops further processing.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          accountId: { type: "string", description: "Jumio account id." },
+          workflowExecutionId: { type: "string", description: "Workflow execution id to cancel." },
+          reason: { type: "string", description: "Optional free-text reason for cancellation (audit trail)." },
+        },
+        required: ["accountId", "workflowExecutionId"],
+      },
+    },
+    {
+      name: "retry_transaction",
+      description: "Retry a failed, expired, or rejected workflow execution. Creates a new workflow execution on the same account, optionally re-using the original workflow definition and customer references.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          accountId: { type: "string", description: "Jumio account id." },
+          workflowExecutionId: { type: "string", description: "Original workflow execution id to retry." },
+          workflowDefinition: {
+            type: "object",
+            description: "Optional override workflow definition. Defaults to the original workflow's definition.",
+            properties: {
+              key: { type: "number", description: "Numeric workflow key." },
+              credentials: { type: "array", items: { type: "object" } },
+            },
+          },
+          callbackUrl: { type: "string", description: "Optional callback URL override for the retry." },
+        },
+        required: ["accountId", "workflowExecutionId"],
+      },
+    },
+    {
+      name: "retrieve_extraction_data",
+      description: "Retrieve raw OCR / extraction capability output for a completed workflow — every extracted field with its source coordinates, MRZ raw lines, barcode contents, and confidence per field. Lower-level than retrieve_document_data.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          accountId: { type: "string", description: "Jumio account id." },
+          workflowExecutionId: { type: "string", description: "Workflow execution id." },
+        },
+        required: ["accountId", "workflowExecutionId"],
+      },
+    },
+    {
+      name: "retrieve_liveness_result",
+      description: "Retrieve the liveness capability result — passive/active liveness decision plus per-frame anti-spoofing scores. Requires a workflow that included a liveness capability (selfie or video).",
+      inputSchema: {
+        type: "object",
+        properties: {
+          accountId: { type: "string", description: "Jumio account id." },
+          workflowExecutionId: { type: "string", description: "Workflow execution id." },
+        },
+        required: ["accountId", "workflowExecutionId"],
+      },
+    },
+    {
+      name: "retrieve_facemap",
+      description: "Retrieve the biometric facemap (face template) generated during a workflow. Used for downstream face-search / re-verification flows; subject to biometric-data retention rules — handle accordingly.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          accountId: { type: "string", description: "Jumio account id." },
+          workflowExecutionId: { type: "string", description: "Workflow execution id." },
+        },
+        required: ["accountId", "workflowExecutionId"],
+      },
+    },
+    {
+      name: "retrieve_screening_result",
+      description: "Retrieve AML / watchlist screening output for a workflow — sanctions hits, PEP hits, adverse-media hits with source citations and match confidence. Requires a workflow that included a screening capability.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          accountId: { type: "string", description: "Jumio account id." },
+          workflowExecutionId: { type: "string", description: "Workflow execution id." },
+        },
+        required: ["accountId", "workflowExecutionId"],
+      },
+    },
+    {
+      name: "retrieve_data_export",
+      description: "Retrieve a full GDPR-compliant data export for an account — every workflow execution, captured image URL, extracted field, decision, and audit log. Use to fulfil a Subject Access Request.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          accountId: { type: "string", description: "Jumio account id to export." },
+        },
+        required: ["accountId"],
+      },
+    },
+    {
+      name: "register_callback_url",
+      description: "Set or update the account-level webhook (callback) URL where Jumio POSTs workflow result notifications. Per-transaction callbackUrl overrides this. Validate signatures using the shared HMAC secret configured in the Jumio portal.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          accountId: { type: "string", description: "Jumio account id." },
+          callbackUrl: { type: "string", description: "HTTPS URL Jumio will POST workflow result events to." },
+        },
+        required: ["accountId", "callbackUrl"],
+      },
+    },
+    {
+      name: "delete_account",
+      description: "Delete a Jumio end-user account and every workflow execution under it (GDPR right-to-erasure). Irreversible. For deleting only a single transaction, use delete_transaction instead.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          accountId: { type: "string", description: "Jumio account id to delete." },
+        },
+        required: ["accountId"],
+      },
+    },
+    {
+      name: "list_accounts",
+      description: "List Jumio end-user accounts under your authorizer / merchant. Supports pagination + filtering by customerInternalReference. Useful for admin dashboards and back-office reconciliation.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          customerInternalReference: { type: "string", description: "Optional filter — return only accounts matching this internal reference." },
+          pageSize: { type: "number", description: "Page size (max usually 100)." },
+          cursor: { type: "string", description: "Opaque pagination cursor returned by a previous call." },
+        },
+      },
+    },
   ],
 }));
 
@@ -285,6 +423,38 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
       case "retrieve_credentials":
         return { content: [{ type: "text", text: JSON.stringify(await jumioRequest("GET", `/api/v1/accounts/${a.accountId}/workflow-executions/${a.workflowExecutionId}/credentials`), null, 2) }] };
+      case "cancel_transaction": {
+        const { accountId, workflowExecutionId, ...rest } = a;
+        return { content: [{ type: "text", text: JSON.stringify(await jumioRequest("PUT", `/api/v1/accounts/${accountId}/workflow-executions/${workflowExecutionId}/cancel`, rest), null, 2) }] };
+      }
+      case "retry_transaction": {
+        const { accountId, workflowExecutionId, ...rest } = a;
+        return { content: [{ type: "text", text: JSON.stringify(await jumioRequest("POST", `/api/v1/accounts/${accountId}/workflow-executions/${workflowExecutionId}/retry`, rest), null, 2) }] };
+      }
+      case "retrieve_extraction_data":
+        return { content: [{ type: "text", text: JSON.stringify(await jumioRequest("GET", `/api/v1/accounts/${a.accountId}/workflow-executions/${a.workflowExecutionId}/capabilities/extraction`), null, 2) }] };
+      case "retrieve_liveness_result":
+        return { content: [{ type: "text", text: JSON.stringify(await jumioRequest("GET", `/api/v1/accounts/${a.accountId}/workflow-executions/${a.workflowExecutionId}/capabilities/liveness`), null, 2) }] };
+      case "retrieve_facemap":
+        return { content: [{ type: "text", text: JSON.stringify(await jumioRequest("GET", `/api/v1/accounts/${a.accountId}/workflow-executions/${a.workflowExecutionId}/facemap`), null, 2) }] };
+      case "retrieve_screening_result":
+        return { content: [{ type: "text", text: JSON.stringify(await jumioRequest("GET", `/api/v1/accounts/${a.accountId}/workflow-executions/${a.workflowExecutionId}/capabilities/watchlist-screening`), null, 2) }] };
+      case "retrieve_data_export":
+        return { content: [{ type: "text", text: JSON.stringify(await jumioRequest("GET", `/api/v1/accounts/${a.accountId}/data-export`), null, 2) }] };
+      case "register_callback_url": {
+        const { accountId, ...rest } = a;
+        return { content: [{ type: "text", text: JSON.stringify(await jumioRequest("PATCH", `/api/v1/accounts/${accountId}`, rest), null, 2) }] };
+      }
+      case "delete_account":
+        return { content: [{ type: "text", text: JSON.stringify(await jumioRequest("DELETE", `/api/v1/accounts/${a.accountId}`), null, 2) }] };
+      case "list_accounts": {
+        const params = new URLSearchParams();
+        if (typeof a.customerInternalReference === "string") params.set("customerInternalReference", a.customerInternalReference);
+        if (typeof a.pageSize === "number") params.set("pageSize", String(a.pageSize));
+        if (typeof a.cursor === "string") params.set("cursor", a.cursor);
+        const qs = params.toString();
+        return { content: [{ type: "text", text: JSON.stringify(await jumioRequest("GET", `/api/v1/accounts${qs ? `?${qs}` : ""}`), null, 2) }] };
+      }
       default:
         return { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true };
     }
@@ -307,7 +477,7 @@ async function main() {
       if (!sid && isInitializeRequest(req.body)) {
         const t = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID(), onsessioninitialized: (id) => { transports.set(id, t); } });
         t.onclose = () => { if (t.sessionId) transports.delete(t.sessionId); };
-        const s = new Server({ name: "mcp-jumio", version: "0.1.0" }, { capabilities: { tools: {} } });
+        const s = new Server({ name: "mcp-jumio", version: "0.2.0" }, { capabilities: { tools: {} } });
         (server as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.forEach((v, k) => (s as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.set(k, v));
         (server as unknown as { _notificationHandlers?: Map<unknown, unknown> })._notificationHandlers?.forEach((v, k) => (s as unknown as { _notificationHandlers: Map<unknown, unknown> })._notificationHandlers.set(k, v));
         await s.connect(t);
