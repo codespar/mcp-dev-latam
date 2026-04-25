@@ -9,20 +9,29 @@
  * biometric) or via Pix, and funds settle to the merchant. Pre-authorized
  * flows (CIBA/OTP) unlock recurrence and true one-click for repeat buyers.
  *
- * Tools (13):
- *   create_payment           — POST /v1/checkouts/payments
- *   get_payment_status       — GET  /v1/checkouts/payments/{id}/status
- *   cancel_payment           — POST /v1/checkouts/payments/{id}/cancel
- *   create_refund            — POST /v1/checkouts/payments/{id}/refunds
- *   get_refund               — GET  /v1/checkouts/payments/{id}/refunds/{refundId}
- *   create_recipient         — POST /v1/recipients
- *   get_recipient            — GET  /v1/recipients/{referenceId}
- *   query_payment_conditions — POST /v2/checkouts/payment-conditions
- *   create_preauth_payment   — POST /v1/checkouts/payments (Bearer-auth variant for recurrence)
- *   backchannel_start        — POST /v1/backchannel/authentication  (CIBA/OTP kickoff)
- *   backchannel_complete     — POST /v1/backchannel/authentication/complete (OTP validation)
- *   backchannel_resend_otp   — POST /v1/backchannel/authentication/otp/resend
- *   exchange_token           — POST /v1/token  (authorization_code or refresh_token)
+ * Tools (22):
+ *   create_payment           — POST   /v1/checkouts/payments
+ *   get_payment              — GET    /v1/checkouts/payments/{id}
+ *   get_payment_status       — GET    /v1/checkouts/payments/{id}/status
+ *   list_payments_by_date    — GET    /v1/checkouts/payments?startDate&endDate
+ *   cancel_payment           — POST   /v1/checkouts/payments/{id}/cancel
+ *   create_refund            — POST   /v1/checkouts/payments/{id}/refunds
+ *   get_refund               — GET    /v1/checkouts/payments/{id}/refunds/{refundId}
+ *   list_refunds             — GET    /v1/checkouts/payments/{id}/refunds
+ *   create_recipient         — POST   /v1/recipients
+ *   get_recipient            — GET    /v1/recipients/{referenceId}
+ *   update_recipient         — PUT    /v1/recipients/{referenceId}
+ *   delete_recipient         — DELETE /v1/recipients/{referenceId}
+ *   list_recipients          — GET    /v1/recipients
+ *   list_settlements         — GET    /v1/settlements?startDate&endDate
+ *   get_settlement           — GET    /v1/settlements/{settlementId}
+ *   query_payment_conditions — POST   /v2/checkouts/payment-conditions
+ *   create_preauth_payment   — POST   /v1/checkouts/payments (Bearer-auth variant for recurrence)
+ *   backchannel_start        — POST   /v1/backchannel/authentication  (CIBA/OTP kickoff)
+ *   backchannel_complete     — POST   /v1/backchannel/authentication/complete (OTP validation)
+ *   backchannel_resend_otp   — POST   /v1/backchannel/authentication/otp/resend
+ *   exchange_token           — POST   /v1/token  (authorization_code or refresh_token)
+ *   revoke_token             — POST   /v1/token/revoke (invalidate access/refresh token)
  *
  * Authentication
  *   Two flows:
@@ -109,6 +118,16 @@ async function nupayRequest(
   }
 }
 
+function buildQuery(params: Record<string, unknown>): string {
+  const qs = new URLSearchParams();
+  for (const [k, v] of Object.entries(params)) {
+    if (v === undefined || v === null || v === "") continue;
+    qs.append(k, String(v));
+  }
+  const s = qs.toString();
+  return s ? `?${s}` : "";
+}
+
 async function nupayFormRequest(
   path: string,
   form: Record<string, string>
@@ -134,7 +153,7 @@ async function nupayFormRequest(
 }
 
 const server = new Server(
-  { name: "mcp-nupay", version: "0.1.0" },
+  { name: "mcp-nupay", version: "0.2.0" },
   { capabilities: { tools: {} } }
 );
 
@@ -215,6 +234,17 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
       },
     },
     {
+      name: "get_payment",
+      description: "Retrieve full payment details (amount, shopper, items, current status, timestamps) by pspReferenceId. Use this for richer detail than get_payment_status.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          pspReferenceId: { type: "string", description: "NuPay-assigned payment id" },
+        },
+        required: ["pspReferenceId"],
+      },
+    },
+    {
       name: "get_payment_status",
       description: "Retrieve a payment's status by pspReferenceId.",
       inputSchema: {
@@ -223,6 +253,21 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
           pspReferenceId: { type: "string", description: "NuPay-assigned payment id" },
         },
         required: ["pspReferenceId"],
+      },
+    },
+    {
+      name: "list_payments_by_date",
+      description: "List payments created within a date range. Supports cursor pagination via limit + offset. Useful for reconciliation and reporting.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          startDate: { type: "string", description: "ISO-8601 start (inclusive)" },
+          endDate: { type: "string", description: "ISO-8601 end (inclusive)" },
+          status: { type: "string", description: "Optional filter (e.g. AUTHORIZED, SETTLED, CANCELED, REFUNDED)" },
+          limit: { type: "number", description: "Page size (default 50)" },
+          offset: { type: "number", description: "Page offset" },
+        },
+        required: ["startDate", "endDate"],
       },
     },
     {
@@ -271,6 +316,17 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
       },
     },
     {
+      name: "list_refunds",
+      description: "List all refunds issued against a given payment.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          pspReferenceId: { type: "string", description: "NuPay-assigned payment id" },
+        },
+        required: ["pspReferenceId"],
+      },
+    },
+    {
       name: "create_recipient",
       description: "Register a final beneficiary (required for regulatory split payments). Up to 10 recipients can later be attached to a payment.",
       inputSchema: {
@@ -294,6 +350,68 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
           referenceId: { type: "string" },
         },
         required: ["referenceId"],
+      },
+    },
+    {
+      name: "update_recipient",
+      description: "Update a registered final beneficiary (name, document, country, type). referenceId is the path key and cannot be changed.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          referenceId: { type: "string", description: "Existing recipient referenceId" },
+          country: { type: "string", description: "ISO 3166-1 alpha-2" },
+          name: { type: "string" },
+          document: { type: "string" },
+          documentType: { type: "string", enum: ["CPF", "CNPJ", "Other"] },
+        },
+        required: ["referenceId"],
+      },
+    },
+    {
+      name: "delete_recipient",
+      description: "Remove a registered recipient. Will fail if the recipient is currently attached to in-flight payments.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          referenceId: { type: "string", description: "Recipient referenceId to delete" },
+        },
+        required: ["referenceId"],
+      },
+    },
+    {
+      name: "list_recipients",
+      description: "List registered recipients (final beneficiaries) for the merchant. Supports pagination.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          limit: { type: "number", description: "Page size (default 50)" },
+          offset: { type: "number", description: "Page offset" },
+        },
+      },
+    },
+    {
+      name: "list_settlements",
+      description: "List settlement reports (payouts to the merchant bank account) within a date range. Use for reconciliation.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          startDate: { type: "string", description: "ISO-8601 start (inclusive)" },
+          endDate: { type: "string", description: "ISO-8601 end (inclusive)" },
+          limit: { type: "number" },
+          offset: { type: "number" },
+        },
+        required: ["startDate", "endDate"],
+      },
+    },
+    {
+      name: "get_settlement",
+      description: "Retrieve a single settlement (payout batch) including the list of underlying transactions.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          settlementId: { type: "string", description: "NuPay-assigned settlement id" },
+        },
+        required: ["settlementId"],
       },
     },
     {
@@ -381,6 +499,23 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         required: ["grant_type", "client_assertion", "client_assertion_type"],
       },
     },
+    {
+      name: "revoke_token",
+      description: "Revoke an issued access_token or refresh_token at POST /v1/token/revoke. Use to terminate a recurrence mandate or after card-token deletion. Form-encoded; expects a signed JWT client_assertion.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          token: { type: "string", description: "The access_token or refresh_token to revoke" },
+          token_type_hint: { type: "string", enum: ["access_token", "refresh_token"], description: "Optional hint" },
+          client_assertion: { type: "string", description: "Signed JWT assertion" },
+          client_assertion_type: {
+            type: "string",
+            description: "Always 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer'",
+          },
+        },
+        required: ["token", "client_assertion", "client_assertion_type"],
+      },
+    },
   ],
 }));
 
@@ -397,9 +532,25 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case "create_payment":
         return ok(await nupayRequest("POST", "/v1/checkouts/payments", args));
 
+      case "get_payment": {
+        const id = String(args.pspReferenceId);
+        return ok(await nupayRequest("GET", `/v1/checkouts/payments/${encodeURIComponent(id)}`));
+      }
+
       case "get_payment_status": {
         const id = String(args.pspReferenceId);
         return ok(await nupayRequest("GET", `/v1/checkouts/payments/${encodeURIComponent(id)}/status`));
+      }
+
+      case "list_payments_by_date": {
+        const qs = buildQuery({
+          startDate: args.startDate,
+          endDate: args.endDate,
+          status: args.status,
+          limit: args.limit,
+          offset: args.offset,
+        });
+        return ok(await nupayRequest("GET", `/v1/checkouts/payments${qs}`));
       }
 
       case "cancel_payment": {
@@ -423,12 +574,51 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return ok(await nupayRequest("GET", `/v1/checkouts/payments/${encodeURIComponent(id)}/refunds/${encodeURIComponent(rid)}`));
       }
 
+      case "list_refunds": {
+        const id = String(args.pspReferenceId);
+        return ok(await nupayRequest("GET", `/v1/checkouts/payments/${encodeURIComponent(id)}/refunds`));
+      }
+
       case "create_recipient":
         return ok(await nupayRequest("POST", "/v1/recipients", args));
 
       case "get_recipient": {
         const ref = String(args.referenceId);
         return ok(await nupayRequest("GET", `/v1/recipients/${encodeURIComponent(ref)}`));
+      }
+
+      case "update_recipient": {
+        const ref = String(args.referenceId);
+        const body: Json = {};
+        for (const k of ["country", "name", "document", "documentType"] as const) {
+          if (args[k] !== undefined) body[k] = args[k];
+        }
+        return ok(await nupayRequest("PUT", `/v1/recipients/${encodeURIComponent(ref)}`, body));
+      }
+
+      case "delete_recipient": {
+        const ref = String(args.referenceId);
+        return ok(await nupayRequest("DELETE", `/v1/recipients/${encodeURIComponent(ref)}`));
+      }
+
+      case "list_recipients": {
+        const qs = buildQuery({ limit: args.limit, offset: args.offset });
+        return ok(await nupayRequest("GET", `/v1/recipients${qs}`));
+      }
+
+      case "list_settlements": {
+        const qs = buildQuery({
+          startDate: args.startDate,
+          endDate: args.endDate,
+          limit: args.limit,
+          offset: args.offset,
+        });
+        return ok(await nupayRequest("GET", `/v1/settlements${qs}`));
+      }
+
+      case "get_settlement": {
+        const sid = String(args.settlementId);
+        return ok(await nupayRequest("GET", `/v1/settlements/${encodeURIComponent(sid)}`));
       }
 
       case "query_payment_conditions":
@@ -462,6 +652,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return ok(await nupayFormRequest("/v1/token", form));
       }
 
+      case "revoke_token": {
+        const form: Record<string, string> = {
+          token: String(args.token),
+          client_assertion: String(args.client_assertion),
+          client_assertion_type: String(args.client_assertion_type),
+        };
+        if (args.token_type_hint !== undefined && args.token_type_hint !== null) {
+          form.token_type_hint = String(args.token_type_hint);
+        }
+        return ok(await nupayFormRequest("/v1/token/revoke", form));
+      }
+
       default:
         return { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true };
     }
@@ -487,7 +689,7 @@ async function main() {
       if (!sid && isInitializeRequest(req.body)) {
         const t = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID(), onsessioninitialized: (id) => { transports.set(id, t); } });
         t.onclose = () => { if (t.sessionId) transports.delete(t.sessionId); };
-        const s = new Server({ name: "mcp-nupay", version: "0.1.0" }, { capabilities: { tools: {} } });
+        const s = new Server({ name: "mcp-nupay", version: "0.2.0" }, { capabilities: { tools: {} } });
         (server as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.forEach((v, k) => (s as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.set(k, v));
         (server as unknown as { _notificationHandlers?: Map<unknown, unknown> })._notificationHandlers?.forEach((v, k) => (s as unknown as { _notificationHandlers: Map<unknown, unknown> })._notificationHandlers.set(k, v));
         await s.connect(t);

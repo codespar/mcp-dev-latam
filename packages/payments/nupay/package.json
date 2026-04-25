@@ -1,6 +1,6 @@
 {
   "name": "@codespar/mcp-nupay",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "MCP server for NuPay — Nubank's merchant checkout rail. Pix + NuPay wallet one-click checkout backed by Nubank's 100M+ BR customer distribution.",
   "type": "module",
   "main": "./dist/index.js",

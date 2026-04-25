@@ -7,12 +7,12 @@
     "source": "github",
     "subfolder": "packages/payments/nupay"
   },
-  "version": "0.1.0",
+  "version": "0.2.0",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "@codespar/mcp-nupay",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "transport": {
         "type": "stdio"
       },
