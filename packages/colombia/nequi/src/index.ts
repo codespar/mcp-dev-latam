@@ -3,13 +3,23 @@
 /**
  * MCP Server for Nequi — Colombian digital wallet (50M+ users, by Bancolombia).
  *
- * Tools:
+ * Tools (16):
  * - create_push_payment: Send a push payment notification to a Nequi user
  * - get_payment_status: Check payment status
- * - create_qr_payment: Generate a QR code payment
+ * - create_qr_payment: Generate a QR code payment (dynamic)
+ * - create_static_qr: Generate a static (reusable) QR code
  * - reverse_payment: Reverse a payment
+ * - reverse_transaction: Reverse any transaction by ID
  * - get_subscription: Get subscription details
  * - unsubscribe: Cancel a subscription
+ * - validate_phone: Check if a phone number is enrolled in Nequi
+ * - notify_unregistered_payment: Notify a non-Nequi user with payment instructions
+ * - list_transactions: List transactions for a merchant in a date range
+ * - get_balance: Get merchant account balance
+ * - schedule_payment: Schedule a payment for a future date
+ * - authorize_recurring_charge: Authorize a recurring charge agreement
+ * - get_merchant_info: Retrieve merchant business profile
+ * - get_settlement: Query settlement for a given date
  *
  * Environment:
  *   NEQUI_API_KEY       — API key
@@ -78,7 +88,7 @@ async function nequiRequest(method: string, path: string, body?: unknown): Promi
 }
 
 const server = new Server(
-  { name: "mcp-nequi", version: "0.1.0" },
+  { name: "mcp-nequi", version: "0.2.0-alpha.1" },
   { capabilities: { tools: {} } }
 );
 
@@ -165,6 +175,140 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
           token: { type: "string", description: "Subscription token" },
         },
         required: ["phone_number", "code", "token"],
+      },
+    },
+    {
+      name: "create_static_qr",
+      description: "Generate a static (reusable) Nequi QR code for a merchant",
+      inputSchema: {
+        type: "object",
+        properties: {
+          code: { type: "string", description: "Merchant QR code identifier" },
+          merchant_id: { type: "string", description: "Merchant ID" },
+          message: { type: "string", description: "QR description" },
+        },
+        required: ["code"],
+      },
+    },
+    {
+      name: "reverse_transaction",
+      description: "Reverse any Nequi transaction by transaction ID (refund flow)",
+      inputSchema: {
+        type: "object",
+        properties: {
+          transaction_id: { type: "string", description: "Original transaction ID" },
+          merchant_id: { type: "string", description: "Merchant ID" },
+          value: { type: "string", description: "Amount to reverse in COP" },
+          reason: { type: "string", description: "Reversal reason" },
+        },
+        required: ["transaction_id", "value"],
+      },
+    },
+    {
+      name: "validate_phone",
+      description: "Check whether a phone number is enrolled in Nequi",
+      inputSchema: {
+        type: "object",
+        properties: {
+          phone_number: { type: "string", description: "Phone number (10 digits, CO)" },
+          merchant_id: { type: "string", description: "Merchant ID" },
+        },
+        required: ["phone_number"],
+      },
+    },
+    {
+      name: "notify_unregistered_payment",
+      description: "Notify a non-Nequi recipient with instructions to claim a payment",
+      inputSchema: {
+        type: "object",
+        properties: {
+          phone_number: { type: "string", description: "Recipient phone number" },
+          code: { type: "string", description: "Payment code" },
+          value: { type: "string", description: "Amount in COP" },
+          merchant_id: { type: "string", description: "Merchant ID" },
+          message: { type: "string", description: "Notification message" },
+        },
+        required: ["phone_number", "code", "value"],
+      },
+    },
+    {
+      name: "list_transactions",
+      description: "List transactions for a merchant within a date range",
+      inputSchema: {
+        type: "object",
+        properties: {
+          merchant_id: { type: "string", description: "Merchant ID" },
+          date_from: { type: "string", description: "Start date (ISO 8601)" },
+          date_to: { type: "string", description: "End date (ISO 8601)" },
+          status: { type: "string", description: "Optional status filter" },
+        },
+        required: ["date_from", "date_to"],
+      },
+    },
+    {
+      name: "get_balance",
+      description: "Get the merchant's own Nequi account balance",
+      inputSchema: {
+        type: "object",
+        properties: {
+          merchant_id: { type: "string", description: "Merchant ID" },
+        },
+        required: [],
+      },
+    },
+    {
+      name: "schedule_payment",
+      description: "Schedule a Nequi push payment for a future date",
+      inputSchema: {
+        type: "object",
+        properties: {
+          phone_number: { type: "string", description: "Nequi phone number" },
+          code: { type: "string", description: "Payment code" },
+          value: { type: "string", description: "Amount in COP" },
+          merchant_id: { type: "string", description: "Merchant ID" },
+          scheduled_date: { type: "string", description: "ISO 8601 date to execute" },
+          message: { type: "string", description: "Description" },
+        },
+        required: ["phone_number", "code", "value", "scheduled_date"],
+      },
+    },
+    {
+      name: "authorize_recurring_charge",
+      description: "Authorize a recurring charge agreement against a Nequi user",
+      inputSchema: {
+        type: "object",
+        properties: {
+          phone_number: { type: "string", description: "Nequi phone number" },
+          code: { type: "string", description: "Subscription/agreement code" },
+          merchant_id: { type: "string", description: "Merchant ID" },
+          max_value: { type: "string", description: "Max charge amount in COP" },
+          frequency: { type: "string", description: "Frequency: monthly|weekly|daily" },
+          message: { type: "string", description: "Description" },
+        },
+        required: ["phone_number", "code", "max_value", "frequency"],
+      },
+    },
+    {
+      name: "get_merchant_info",
+      description: "Retrieve registered merchant business profile",
+      inputSchema: {
+        type: "object",
+        properties: {
+          merchant_id: { type: "string", description: "Merchant ID" },
+        },
+        required: [],
+      },
+    },
+    {
+      name: "get_settlement",
+      description: "Query settlement (liquidation) for a given date",
+      inputSchema: {
+        type: "object",
+        properties: {
+          merchant_id: { type: "string", description: "Merchant ID" },
+          settlement_date: { type: "string", description: "Settlement date (YYYY-MM-DD)" },
+        },
+        required: ["settlement_date"],
       },
     },
   ],
@@ -270,6 +414,160 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
             },
           },
         }), null, 2) }] };
+      case "create_static_qr":
+        return { content: [{ type: "text", text: JSON.stringify(await nequiRequest("POST", "/payments/v2/-services-paymentservice-generatestaticcodeqr", {
+          RequestMessage: {
+            RequestHeader: { Channel: "PNP04-C001", RequestDate: new Date().toISOString(), MessageID: `MCP-${Date.now()}`, ClientID: CLIENT_ID },
+            RequestBody: {
+              any: {
+                generateStaticCodeQRRQ: {
+                  code: args?.code,
+                  merchantId: args?.merchant_id,
+                  message: args?.message,
+                },
+              },
+            },
+          },
+        }), null, 2) }] };
+      case "reverse_transaction":
+        return { content: [{ type: "text", text: JSON.stringify(await nequiRequest("POST", "/payments/v2/-services-reverseservices-reversetransactionbyid", {
+          RequestMessage: {
+            RequestHeader: { Channel: "PNP04-C001", RequestDate: new Date().toISOString(), MessageID: `MCP-${Date.now()}`, ClientID: CLIENT_ID },
+            RequestBody: {
+              any: {
+                reverseTransactionByIdRQ: {
+                  transactionId: args?.transaction_id,
+                  merchantId: args?.merchant_id,
+                  value: args?.value,
+                  reason: args?.reason,
+                },
+              },
+            },
+          },
+        }), null, 2) }] };
+      case "validate_phone":
+        return { content: [{ type: "text", text: JSON.stringify(await nequiRequest("POST", "/payments/v2/-services-clientservice-validateclient", {
+          RequestMessage: {
+            RequestHeader: { Channel: "PNP04-C001", RequestDate: new Date().toISOString(), MessageID: `MCP-${Date.now()}`, ClientID: CLIENT_ID },
+            RequestBody: {
+              any: {
+                validateClientRQ: {
+                  phoneNumber: args?.phone_number,
+                  merchantId: args?.merchant_id,
+                },
+              },
+            },
+          },
+        }), null, 2) }] };
+      case "notify_unregistered_payment":
+        return { content: [{ type: "text", text: JSON.stringify(await nequiRequest("POST", "/payments/v2/-services-paymentservice-notifyunregistered", {
+          RequestMessage: {
+            RequestHeader: { Channel: "PNP04-C001", RequestDate: new Date().toISOString(), MessageID: `MCP-${Date.now()}`, ClientID: CLIENT_ID },
+            RequestBody: {
+              any: {
+                notifyUnregisteredRQ: {
+                  phoneNumber: args?.phone_number,
+                  code: args?.code,
+                  value: args?.value,
+                  merchantId: args?.merchant_id,
+                  message: args?.message,
+                },
+              },
+            },
+          },
+        }), null, 2) }] };
+      case "list_transactions":
+        return { content: [{ type: "text", text: JSON.stringify(await nequiRequest("POST", "/payments/v2/-services-reportservice-listtransactions", {
+          RequestMessage: {
+            RequestHeader: { Channel: "PNP04-C001", RequestDate: new Date().toISOString(), MessageID: `MCP-${Date.now()}`, ClientID: CLIENT_ID },
+            RequestBody: {
+              any: {
+                listTransactionsRQ: {
+                  merchantId: args?.merchant_id,
+                  dateFrom: args?.date_from,
+                  dateTo: args?.date_to,
+                  status: args?.status,
+                },
+              },
+            },
+          },
+        }), null, 2) }] };
+      case "get_balance":
+        return { content: [{ type: "text", text: JSON.stringify(await nequiRequest("POST", "/payments/v2/-services-merchantservice-getbalance", {
+          RequestMessage: {
+            RequestHeader: { Channel: "PNP04-C001", RequestDate: new Date().toISOString(), MessageID: `MCP-${Date.now()}`, ClientID: CLIENT_ID },
+            RequestBody: {
+              any: {
+                getBalanceRQ: {
+                  merchantId: args?.merchant_id,
+                },
+              },
+            },
+          },
+        }), null, 2) }] };
+      case "schedule_payment":
+        return { content: [{ type: "text", text: JSON.stringify(await nequiRequest("POST", "/payments/v2/-services-paymentservice-schedulepayment", {
+          RequestMessage: {
+            RequestHeader: { Channel: "PNP04-C001", RequestDate: new Date().toISOString(), MessageID: `MCP-${Date.now()}`, ClientID: CLIENT_ID },
+            RequestBody: {
+              any: {
+                schedulePaymentRQ: {
+                  phoneNumber: args?.phone_number,
+                  code: args?.code,
+                  value: args?.value,
+                  merchantId: args?.merchant_id,
+                  scheduledDate: args?.scheduled_date,
+                  message: args?.message,
+                },
+              },
+            },
+          },
+        }), null, 2) }] };
+      case "authorize_recurring_charge":
+        return { content: [{ type: "text", text: JSON.stringify(await nequiRequest("POST", "/payments/v2/-services-subscriptionpaymentservice-authorizerecurring", {
+          RequestMessage: {
+            RequestHeader: { Channel: "PNP04-C001", RequestDate: new Date().toISOString(), MessageID: `MCP-${Date.now()}`, ClientID: CLIENT_ID },
+            RequestBody: {
+              any: {
+                authorizeRecurringRQ: {
+                  phoneNumber: args?.phone_number,
+                  code: args?.code,
+                  merchantId: args?.merchant_id,
+                  maxValue: args?.max_value,
+                  frequency: args?.frequency,
+                  message: args?.message,
+                },
+              },
+            },
+          },
+        }), null, 2) }] };
+      case "get_merchant_info":
+        return { content: [{ type: "text", text: JSON.stringify(await nequiRequest("POST", "/payments/v2/-services-merchantservice-getmerchantinfo", {
+          RequestMessage: {
+            RequestHeader: { Channel: "PNP04-C001", RequestDate: new Date().toISOString(), MessageID: `MCP-${Date.now()}`, ClientID: CLIENT_ID },
+            RequestBody: {
+              any: {
+                getMerchantInfoRQ: {
+                  merchantId: args?.merchant_id,
+                },
+              },
+            },
+          },
+        }), null, 2) }] };
+      case "get_settlement":
+        return { content: [{ type: "text", text: JSON.stringify(await nequiRequest("POST", "/payments/v2/-services-reportservice-getsettlement", {
+          RequestMessage: {
+            RequestHeader: { Channel: "PNP04-C001", RequestDate: new Date().toISOString(), MessageID: `MCP-${Date.now()}`, ClientID: CLIENT_ID },
+            RequestBody: {
+              any: {
+                getSettlementRQ: {
+                  merchantId: args?.merchant_id,
+                  settlementDate: args?.settlement_date,
+                },
+              },
+            },
+          },
+        }), null, 2) }] };
       default:
         return { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true };
     }
@@ -292,7 +590,7 @@ async function main() {
       if (!sid && isInitializeRequest(req.body)) {
         const t = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID(), onsessioninitialized: (id) => { transports.set(id, t); } });
         t.onclose = () => { if (t.sessionId) transports.delete(t.sessionId); };
-        const s = new Server({ name: "mcp-nequi", version: "0.1.0" }, { capabilities: { tools: {} } }); (server as any)._requestHandlers.forEach((v: any, k: any) => (s as any)._requestHandlers.set(k, v)); (server as any)._notificationHandlers?.forEach((v: any, k: any) => (s as any)._notificationHandlers.set(k, v)); await s.connect(t);
+        const s = new Server({ name: "mcp-nequi", version: "0.2.0-alpha.1" }, { capabilities: { tools: {} } }); (server as any)._requestHandlers.forEach((v: any, k: any) => (s as any)._requestHandlers.set(k, v)); (server as any)._notificationHandlers?.forEach((v: any, k: any) => (s as any)._notificationHandlers.set(k, v)); await s.connect(t);
         await t.handleRequest(req, res, req.body); return;
       }
       res.status(400).json({ jsonrpc: "2.0", error: { code: -32000, message: "Bad Request" }, id: null });
