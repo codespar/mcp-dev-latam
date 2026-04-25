@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-zenvia",
-  "version": "0.1.2",
-  "description": "MCP server for Zenvia — SMS, WhatsApp, RCS messaging and templates",
+  "version": "0.2.0",
+  "description": "MCP server for Zenvia — SMS, WhatsApp, RCS, Email, Voice, Facebook messaging, templates and reports",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {
@@ -25,6 +25,9 @@
     "sms",
     "whatsapp",
     "rcs",
+    "email",
+    "voice",
+    "facebook",
     "brazil"
   ],
   "mcpName": "io.github.codespar/mcp-zenvia"

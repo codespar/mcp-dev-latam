@@ -1,18 +1,18 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.codespar/mcp-zenvia",
-  "description": "MCP server for Zenvia — SMS, WhatsApp, RCS messaging and templates",
+  "description": "MCP server for Zenvia — SMS, WhatsApp, RCS, Email, Voice, Facebook messaging, templates and reports",
   "repository": {
     "url": "https://github.com/codespar/mcp-dev-brasil",
     "source": "github",
     "subfolder": "packages/communication/zenvia"
   },
-  "version": "0.1.2",
+  "version": "0.2.0",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "@codespar/mcp-zenvia",
-      "version": "0.1.2",
+      "version": "0.2.0",
       "transport": {
         "type": "stdio"
       },
