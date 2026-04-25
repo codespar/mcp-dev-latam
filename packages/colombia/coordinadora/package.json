@@ -1,13 +1,15 @@
 {
   "name": "@codespar/mcp-coordinadora",
-  "version": "0.2.0-alpha.1",
-  "description": "MCP server for Coordinadora — Colombian courier and logistics",
+  "version": "0.2.0-alpha.2",
+  "description": "MCP server for Coordinadora \u2014 Colombian courier and logistics",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
     "mcp-coordinadora": "dist/index.js"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js"
@@ -20,6 +22,13 @@
     "typescript": "^5.8.0"
   },
   "license": "MIT",
-  "keywords": ["coordinadora", "courier", "logistics", "colombia", "shipping", "mcp"],
+  "keywords": [
+    "coordinadora",
+    "courier",
+    "logistics",
+    "colombia",
+    "shipping",
+    "mcp"
+  ],
   "mcpName": "io.github.codespar/mcp-coordinadora"
 }

@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-picpay",
-  "version": "0.2.0-alpha.1",
-  "description": "MCP server for PicPay Business — Brazilian digital wallet with 60M+ users. Merchant checkout API, Pix QR, refunds, cancellations, and recurring subscriptions.",
+  "version": "0.2.0-alpha.2",
+  "description": "MCP server for PicPay Business \u2014 Brazilian digital wallet with 60M+ users. Merchant checkout API, Pix QR, refunds, cancellations, and recurring subscriptions.",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

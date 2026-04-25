@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-amazon",
-  "version": "0.2.0-alpha.1",
-  "description": "MCP server for Amazon Selling Partner API (SP-API) — the global marketplace, including Amazon BR/MX/US. Orders, listings, catalog, inventory, reports, finances, fulfillment, notifications.",
+  "version": "0.2.0-alpha.2",
+  "description": "MCP server for Amazon Selling Partner API (SP-API) \u2014 the global marketplace, including Amazon BR/MX/US. Orders, listings, catalog, inventory, reports, finances, fulfillment, notifications.",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

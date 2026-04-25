@@ -207,7 +207,7 @@ async function bradescoRequest(method: string, path: string, body?: unknown): Pr
 }
 
 const server = new Server(
-  { name: "mcp-bradesco", version: "0.2.0-alpha.1" },
+  { name: "mcp-bradesco", version: "0.2.0-alpha.2" },
   { capabilities: { tools: {} } }
 );
 
@@ -778,7 +778,7 @@ async function main() {
       if (!sid && isInitializeRequest(req.body)) {
         const t = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID(), onsessioninitialized: (id) => { transports.set(id, t); } });
         t.onclose = () => { if (t.sessionId) transports.delete(t.sessionId); };
-        const s = new Server({ name: "mcp-bradesco", version: "0.2.0-alpha.1" }, { capabilities: { tools: {} } });
+        const s = new Server({ name: "mcp-bradesco", version: "0.2.0-alpha.2" }, { capabilities: { tools: {} } });
         (server as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.forEach((v, k) => (s as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.set(k, v));
         (server as unknown as { _notificationHandlers?: Map<unknown, unknown> })._notificationHandlers?.forEach((v, k) => (s as unknown as { _notificationHandlers: Map<unknown, unknown> })._notificationHandlers.set(k, v));
         await s.connect(t);

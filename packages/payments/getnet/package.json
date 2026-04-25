@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-getnet",
-  "version": "0.2.0",
-  "description": "MCP server for Getnet — Santander-owned Brazilian acquirer. Credit, debit, Pix, boleto + marketplace seller onboarding and split.",
+  "version": "0.2.1",
+  "description": "MCP server for Getnet \u2014 Santander-owned Brazilian acquirer. Credit, debit, Pix, boleto + marketplace seller onboarding and split.",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

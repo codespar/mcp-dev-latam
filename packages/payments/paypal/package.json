@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-paypal",
-  "version": "0.1.0",
-  "description": "MCP server for PayPal — global payments and payouts via the PayPal REST API. Orders v2 (create/authorize/capture), Payments v2 (capture/refund/void), Payouts, Subscriptions, Disputes, Webhooks.",
+  "version": "0.1.1",
+  "description": "MCP server for PayPal \u2014 global payments and payouts via the PayPal REST API. Orders v2 (create/authorize/capture), Payments v2 (capture/refund/void), Payouts, Subscriptions, Disputes, Webhooks.",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

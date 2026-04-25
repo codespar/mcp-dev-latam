@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-stripe-acp",
-  "version": "0.1.2",
-  "description": "MCP server for Stripe ACP — Agentic Commerce Protocol for AI agent checkout, payment delegation, and product discovery",
+  "version": "0.1.3",
+  "description": "MCP server for Stripe ACP \u2014 Agentic Commerce Protocol for AI agent checkout, payment delegation, and product discovery",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

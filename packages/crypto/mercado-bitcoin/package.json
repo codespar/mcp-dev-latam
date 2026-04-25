@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-mercado-bitcoin",
-  "version": "0.2.0",
-  "description": "MCP server for Mercado Bitcoin — Brazilian crypto exchange, trading, orderbook, withdrawals",
+  "version": "0.2.1",
+  "description": "MCP server for Mercado Bitcoin \u2014 Brazilian crypto exchange, trading, orderbook, withdrawals",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

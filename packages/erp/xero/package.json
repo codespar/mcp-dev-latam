@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-xero",
-  "version": "0.2.0",
-  "description": "MCP server for Xero — global cloud accounting (UK/AU/NZ leader, expanding in US). Contacts, invoices, payments, items, accounts, reports.",
+  "version": "0.2.1",
+  "description": "MCP server for Xero \u2014 global cloud accounting (UK/AU/NZ leader, expanding in US). Contacts, invoices, payments, items, accounts, reports.",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

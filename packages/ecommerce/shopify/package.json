@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-shopify",
-  "version": "0.2.0",
-  "description": "MCP server for Shopify — global ecommerce platform Admin REST API (orders, products, customers, inventory, fulfillments, webhooks)",
+  "version": "0.2.1",
+  "description": "MCP server for Shopify \u2014 global ecommerce platform Admin REST API (orders, products, customers, inventory, fulfillments, webhooks)",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

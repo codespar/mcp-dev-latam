@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-foxbit",
-  "version": "0.2.0",
-  "description": "MCP server for Foxbit — Brazilian crypto exchange, trading, orderbook, institutional",
+  "version": "0.2.1",
+  "description": "MCP server for Foxbit \u2014 Brazilian crypto exchange, trading, orderbook, institutional",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

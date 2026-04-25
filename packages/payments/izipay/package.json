@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-izipay",
-  "version": "0.2.0-alpha.1",
-  "description": "MCP server for Izipay — Peru's enterprise acquirer (Niubiz). Card authorize/capture/refund, tokenization, cuotas, reconciliation.",
+  "version": "0.2.0-alpha.2",
+  "description": "MCP server for Izipay \u2014 Peru's enterprise acquirer (Niubiz). Card authorize/capture/refund, tokenization, cuotas, reconciliation.",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

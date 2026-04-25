@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-omie",
-  "version": "0.2.0",
-  "description": "MCP server for Omie — ERP, customers, products, orders, invoices, financials",
+  "version": "0.2.1",
+  "description": "MCP server for Omie \u2014 ERP, customers, products, orders, invoices, financials",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

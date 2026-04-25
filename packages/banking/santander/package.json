@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-santander",
-  "version": "0.2.0-alpha.1",
-  "description": "MCP server for Santander Brasil — 3rd largest private bank in Brazil. Pix, Cobrança (boleto), Arrecadação, and Extrato via Santander's trust-open Developer Portal APIs (OAuth2 + mTLS).",
+  "version": "0.2.0-alpha.2",
+  "description": "MCP server for Santander Brasil \u2014 3rd largest private bank in Brazil. Pix, Cobran\u00e7a (boleto), Arrecada\u00e7\u00e3o, and Extrato via Santander's trust-open Developer Portal APIs (OAuth2 + mTLS).",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

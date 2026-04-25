@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-transbank",
-  "version": "0.2.0-alpha.1",
-  "description": "MCP server for Transbank — Chile's dominant card acquirer (Webpay Plus + Webpay Mall + Webpay OneClick Mall)",
+  "version": "0.2.0-alpha.2",
+  "description": "MCP server for Transbank \u2014 Chile's dominant card acquirer (Webpay Plus + Webpay Mall + Webpay OneClick Mall)",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

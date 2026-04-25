@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-transak",
-  "version": "0.2.0-alpha.1",
-  "description": "MCP server for Transak — fiat-to-crypto on/off-ramp across ~170 countries with multi-chain support (Partner API)",
+  "version": "0.2.0-alpha.2",
+  "description": "MCP server for Transak \u2014 fiat-to-crypto on/off-ramp across ~170 countries with multi-chain support (Partner API)",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

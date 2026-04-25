@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-dock",
-  "version": "0.2.0-alpha.1",
-  "description": "MCP server for Dock — Brazilian Banking-as-a-Service (accounts, Pix, card issuing) for fintechs and embedded-finance products",
+  "version": "0.2.0-alpha.2",
+  "description": "MCP server for Dock \u2014 Brazilian Banking-as-a-Service (accounts, Pix, card issuing) for fintechs and embedded-finance products",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

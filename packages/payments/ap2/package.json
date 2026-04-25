@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-ap2",
-  "version": "0.2.0-alpha.1",
-  "description": "MCP server for AP2 — Google's Agent-to-Agent Payment Protocol (authorization, audit, trust)",
+  "version": "0.2.0-alpha.2",
+  "description": "MCP server for AP2 \u2014 Google's Agent-to-Agent Payment Protocol (authorization, audit, trust)",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

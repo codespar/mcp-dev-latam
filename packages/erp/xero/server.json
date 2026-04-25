@@ -7,12 +7,12 @@
     "source": "github",
     "subfolder": "packages/erp/xero"
   },
-  "version": "0.2.0",
+  "version": "0.2.1",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "@codespar/mcp-xero",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "transport": {
         "type": "stdio"
       },

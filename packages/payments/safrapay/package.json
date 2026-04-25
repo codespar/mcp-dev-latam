@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-safrapay",
-  "version": "0.2.0-alpha.1",
-  "description": "MCP server for Safrapay — Banco Safra's acquirer (B2B-banking crossover, mid-to-large BR merchants). Credit, Pix, boleto + split, statement, tokenization, recurrence, 3DS, chargebacks, settlement, payment links.",
+  "version": "0.2.0-alpha.2",
+  "description": "MCP server for Safrapay \u2014 Banco Safra's acquirer (B2B-banking crossover, mid-to-large BR merchants). Credit, Pix, boleto + split, statement, tokenization, recurrence, 3DS, chargebacks, settlement, payment links.",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

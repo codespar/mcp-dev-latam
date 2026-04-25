@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-stone",
-  "version": "0.2.0",
-  "description": "MCP server for Stone — acquiring (charges, card, Pix, boleto), anticipations, receivables, terminals, open banking",
+  "version": "0.2.1",
+  "description": "MCP server for Stone \u2014 acquiring (charges, card, Pix, boleto), anticipations, receivables, terminals, open banking",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

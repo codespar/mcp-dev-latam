@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-stripe",
-  "version": "0.2.0",
-  "description": "MCP server for Stripe — global standard-bearer payments API (PaymentIntents, Checkout, Billing, Refunds)",
+  "version": "0.2.1",
+  "description": "MCP server for Stripe \u2014 global standard-bearer payments API (PaymentIntents, Checkout, Billing, Refunds)",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

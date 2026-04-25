@@ -1,13 +1,15 @@
 {
   "name": "@codespar/mcp-tienda-nube",
-  "version": "0.2.0",
-  "description": "MCP server for Tienda Nube — LATAM e-commerce platform",
+  "version": "0.2.1",
+  "description": "MCP server for Tienda Nube \u2014 LATAM e-commerce platform",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
     "mcp-tienda-nube": "dist/index.js"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js"
@@ -20,6 +22,13 @@
     "typescript": "^5.8.0"
   },
   "license": "MIT",
-  "keywords": ["tienda-nube", "nuvemshop", "ecommerce", "argentina", "latam", "mcp"],
+  "keywords": [
+    "tienda-nube",
+    "nuvemshop",
+    "ecommerce",
+    "argentina",
+    "latam",
+    "mcp"
+  ],
   "mcpName": "io.github.codespar/mcp-tienda-nube"
 }

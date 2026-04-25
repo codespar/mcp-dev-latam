@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-ebanx",
-  "version": "0.2.0",
-  "description": "MCP server for EBANX — cross-border payments, payouts, exchange rates",
+  "version": "0.2.1",
+  "description": "MCP server for EBANX \u2014 cross-border payments, payouts, exchange rates",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

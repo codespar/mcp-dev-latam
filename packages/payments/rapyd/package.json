@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-rapyd",
-  "version": "0.2.0",
-  "description": "MCP server for Rapyd — global collect + disburse across 100+ countries, including cash pickup and managed wallets",
+  "version": "0.2.1",
+  "description": "MCP server for Rapyd \u2014 global collect + disburse across 100+ countries, including cash pickup and managed wallets",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

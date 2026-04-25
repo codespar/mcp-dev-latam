@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-correios",
-  "version": "0.2.0-alpha.1",
-  "description": "MCP server for Correios — package tracking, shipping rates, CEP lookup",
+  "version": "0.2.0-alpha.2",
+  "description": "MCP server for Correios \u2014 package tracking, shipping rates, CEP lookup",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

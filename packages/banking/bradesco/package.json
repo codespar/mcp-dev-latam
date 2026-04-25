@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-bradesco",
-  "version": "0.2.0-alpha.1",
-  "description": "MCP server for Bradesco — Brazil's 2nd largest private bank. Pix, Cobrança (boleto), Arrecadação, and Extrato via Bradesco's Developer Portal APIs (OAuth2 + mTLS).",
+  "version": "0.2.0-alpha.2",
+  "description": "MCP server for Bradesco \u2014 Brazil's 2nd largest private bank. Pix, Cobran\u00e7a (boleto), Arrecada\u00e7\u00e3o, and Extrato via Bradesco's Developer Portal APIs (OAuth2 + mTLS).",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

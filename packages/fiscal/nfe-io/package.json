@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-nfe-io",
-  "version": "0.2.0",
-  "description": "MCP server for NFe.io — NF-e, NFS-e, CNPJ, CEP",
+  "version": "0.2.1",
+  "description": "MCP server for NFe.io \u2014 NF-e, NFS-e, CNPJ, CEP",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

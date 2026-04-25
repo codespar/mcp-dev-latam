@@ -7,12 +7,12 @@
     "source": "github",
     "subfolder": "packages/colombia/coordinadora"
   },
-  "version": "0.2.0-alpha.1",
+  "version": "0.2.0-alpha.2",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "@codespar/mcp-coordinadora",
-      "version": "0.2.0-alpha.1",
+      "version": "0.2.0-alpha.2",
       "transport": { "type": "stdio" },
       "environmentVariables": [
         {

@@ -1,13 +1,15 @@
 {
   "name": "@codespar/mcp-belvo",
-  "version": "0.2.0",
-  "description": "MCP server for Belvo — Open Finance aggregator for LATAM",
+  "version": "0.2.1",
+  "description": "MCP server for Belvo \u2014 Open Finance aggregator for LATAM",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
     "mcp-belvo": "dist/index.js"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js"
@@ -20,6 +22,14 @@
     "typescript": "^5.8.0"
   },
   "license": "MIT",
-  "keywords": ["belvo", "open-finance", "mexico", "argentina", "colombia", "banking", "mcp"],
+  "keywords": [
+    "belvo",
+    "open-finance",
+    "mexico",
+    "argentina",
+    "colombia",
+    "banking",
+    "mcp"
+  ],
   "mcpName": "io.github.codespar/mcp-belvo"
 }

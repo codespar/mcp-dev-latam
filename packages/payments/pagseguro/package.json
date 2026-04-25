@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-pagseguro",
-  "version": "0.2.0",
-  "description": "MCP server for PagSeguro/PagBank — orders, Pix, boleto, credit card, charges",
+  "version": "0.2.1",
+  "description": "MCP server for PagSeguro/PagBank \u2014 orders, Pix, boleto, credit card, charges",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

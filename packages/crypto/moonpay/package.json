@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-moonpay",
-  "version": "0.2.0",
-  "description": "MCP server for MoonPay — fiat-to-crypto on/off-ramp covering 100+ crypto assets, multi-geography, Pix supported for Brazil",
+  "version": "0.2.1",
+  "description": "MCP server for MoonPay \u2014 fiat-to-crypto on/off-ramp covering 100+ crypto assets, multi-geography, Pix supported for Brazil",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

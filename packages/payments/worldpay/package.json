@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-worldpay",
-  "version": "0.2.0-alpha.1",
-  "description": "MCP server for Access Worldpay — global enterprise payment processor (authorize, capture, refund, reverse, verify, tokenize, fraud screen, disputes)",
+  "version": "0.2.0-alpha.2",
+  "description": "MCP server for Access Worldpay \u2014 global enterprise payment processor (authorize, capture, refund, reverse, verify, tokenize, fraud screen, disputes)",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

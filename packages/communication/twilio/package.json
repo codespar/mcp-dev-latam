@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-twilio",
-  "version": "0.2.0",
-  "description": "MCP server for Twilio — global SMS, WhatsApp, Voice, Verify, and Lookup across 180+ countries",
+  "version": "0.2.1",
+  "description": "MCP server for Twilio \u2014 global SMS, WhatsApp, Voice, Verify, and Lookup across 180+ countries",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

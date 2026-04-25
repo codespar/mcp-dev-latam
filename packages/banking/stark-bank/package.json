@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-stark-bank",
-  "version": "0.2.0",
-  "description": "MCP server for Stark Bank — transfers, boletos, invoices, Pix, balance",
+  "version": "0.2.1",
+  "description": "MCP server for Stark Bank \u2014 transfers, boletos, invoices, Pix, balance",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-persona",
-  "version": "0.2.0",
-  "description": "MCP server for Persona — modern developer-first identity verification and KYC (inquiries, accounts, reports, cases)",
+  "version": "0.2.1",
+  "description": "MCP server for Persona \u2014 modern developer-first identity verification and KYC (inquiries, accounts, reports, cases)",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

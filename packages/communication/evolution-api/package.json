@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-evolution-api",
-  "version": "0.2.0",
-  "description": "MCP server for Evolution API — WhatsApp messaging, instances, contacts",
+  "version": "0.2.1",
+  "description": "MCP server for Evolution API \u2014 WhatsApp messaging, instances, contacts",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

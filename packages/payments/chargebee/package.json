@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-chargebee",
-  "version": "0.1.0",
-  "description": "MCP server for Chargebee — global subscription billing, recurring revenue orchestration",
+  "version": "0.1.1",
+  "description": "MCP server for Chargebee \u2014 global subscription billing, recurring revenue orchestration",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

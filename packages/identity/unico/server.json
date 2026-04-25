@@ -7,12 +7,12 @@
     "source": "github",
     "subfolder": "packages/identity/unico"
   },
-  "version": "0.2.0-alpha.1",
+  "version": "0.2.0-alpha.2",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "@codespar/mcp-unico",
-      "version": "0.2.0-alpha.1",
+      "version": "0.2.0-alpha.2",
       "transport": {
         "type": "stdio"
       },

@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-braintree",
-  "version": "0.2.0",
-  "description": "MCP server for Braintree (PayPal) — global payment processor via the Braintree GraphQL API. Authorize, charge, capture, refund, void; vault payment methods; manage customers; mint client tokens.",
+  "version": "0.2.1",
+  "description": "MCP server for Braintree (PayPal) \u2014 global payment processor via the Braintree GraphQL API. Authorize, charge, capture, refund, void; vault payment methods; manage customers; mint client tokens.",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

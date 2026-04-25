@@ -7,12 +7,12 @@
     "source": "github",
     "subfolder": "packages/payments/inter-bank"
   },
-  "version": "0.2.0",
+  "version": "0.2.1",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "@codespar/mcp-inter-bank",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "transport": { "type": "stdio" },
       "environmentVariables": [
         {

@@ -7,12 +7,12 @@
     "source": "github",
     "subfolder": "packages/payments/transbank"
   },
-  "version": "0.2.0-alpha.1",
+  "version": "0.2.0-alpha.2",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "@codespar/mcp-transbank",
-      "version": "0.2.0-alpha.1",
+      "version": "0.2.0-alpha.2",
       "transport": {
         "type": "stdio"
       },

@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-cielo",
-  "version": "0.2.0",
-  "description": "MCP server for Cielo — credit card, debit, boleto, recurrent payments",
+  "version": "0.2.1",
+  "description": "MCP server for Cielo \u2014 credit card, debit, boleto, recurrent payments",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

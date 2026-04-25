@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-culqi",
-  "version": "0.2.0",
-  "description": "MCP server for Culqi — Peru's default PSP (the Stripe of Peru). Charges, subscriptions, customers, cards, Yape / PagoEfectivo orders.",
+  "version": "0.2.1",
+  "description": "MCP server for Culqi \u2014 Peru's default PSP (the Stripe of Peru). Charges, subscriptions, customers, cards, Yape / PagoEfectivo orders.",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-airwallex",
-  "version": "0.2.0",
-  "description": "MCP server for Airwallex — embedded finance for cross-border collection and payouts. LatAm sellers collect USD/EUR abroad and settle locally.",
+  "version": "0.2.1",
+  "description": "MCP server for Airwallex \u2014 embedded finance for cross-border collection and payouts. LatAm sellers collect USD/EUR abroad and settle locally.",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

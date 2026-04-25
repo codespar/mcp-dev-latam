@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-wise",
-  "version": "0.1.0",
-  "description": "MCP server for Wise — global multi-currency accounts, FX, and international transfers via the Wise Platform API.",
+  "version": "0.1.1",
+  "description": "MCP server for Wise \u2014 global multi-currency accounts, FX, and international transfers via the Wise Platform API.",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

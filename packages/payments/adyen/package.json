@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-adyen",
-  "version": "0.2.0",
-  "description": "MCP server for Adyen Checkout API v71 — global enterprise payments used by iFood, Uber, Spotify in LatAm",
+  "version": "0.2.1",
+  "description": "MCP server for Adyen Checkout API v71 \u2014 global enterprise payments used by iFood, Uber, Spotify in LatAm",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

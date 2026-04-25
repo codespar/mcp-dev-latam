@@ -96,7 +96,7 @@ async function wiseRequest(
 }
 
 const server = new Server(
-  { name: "mcp-wise", version: "0.1.0" },
+  { name: "mcp-wise", version: "0.1.1" },
   { capabilities: { tools: {} } },
 );
 
@@ -625,7 +625,7 @@ async function main() {
             if (t.sessionId) transports.delete(t.sessionId);
           };
           const s = new Server(
-            { name: "mcp-wise", version: "0.1.0" },
+            { name: "mcp-wise", version: "0.1.1" },
             { capabilities: { tools: {} } },
           );
           (server as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.forEach(

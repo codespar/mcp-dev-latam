@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-zenvia",
-  "version": "0.2.0",
-  "description": "MCP server for Zenvia — SMS, WhatsApp, RCS, Email, Voice, Facebook messaging, templates and reports",
+  "version": "0.2.1",
+  "description": "MCP server for Zenvia \u2014 SMS, WhatsApp, RCS, Email, Voice, Facebook messaging, templates and reports",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

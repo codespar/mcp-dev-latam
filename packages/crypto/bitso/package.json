@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-bitso",
-  "version": "0.2.0",
-  "description": "MCP server for Bitso — Latin American crypto exchange, trading, funding, withdrawals",
+  "version": "0.2.1",
+  "description": "MCP server for Bitso \u2014 Latin American crypto exchange, trading, funding, withdrawals",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

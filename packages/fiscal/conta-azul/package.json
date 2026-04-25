@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-conta-azul",
-  "version": "0.2.0",
-  "description": "MCP server for Conta Azul — accounting, invoicing, customers, products",
+  "version": "0.2.1",
+  "description": "MCP server for Conta Azul \u2014 accounting, invoicing, customers, products",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

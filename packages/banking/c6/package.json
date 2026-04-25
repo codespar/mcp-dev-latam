@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-c6",
-  "version": "0.1.0-alpha.1",
-  "description": "MCP server for C6 Bank — top Brazilian digital bank backed by JPMorgan. Pix (cob/cobv), DICT keys, Boleto, account balance, and statement via C6's Developer Portal APIs (OAuth2 + mTLS).",
+  "version": "0.1.0-alpha.2",
+  "description": "MCP server for C6 Bank \u2014 top Brazilian digital bank backed by JPMorgan. Pix (cob/cobv), DICT keys, Boleto, account balance, and statement via C6's Developer Portal APIs (OAuth2 + mTLS).",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

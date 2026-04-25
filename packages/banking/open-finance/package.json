@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-open-finance",
-  "version": "0.2.0",
-  "description": "MCP server for Open Finance Brasil — accounts, transactions, consents, credit cards, loans, financings, investments, payment-initiation, customer qualifications",
+  "version": "0.2.1",
+  "description": "MCP server for Open Finance Brasil \u2014 accounts, transactions, consents, credit cards, loans, financings, investments, payment-initiation, customer qualifications",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

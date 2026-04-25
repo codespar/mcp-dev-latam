@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-iugu",
-  "version": "0.2.0",
-  "description": "MCP server for iugu — invoices, subscriptions, plans, customers, payment methods, marketplace sub-accounts, transfers, webhooks",
+  "version": "0.2.1",
+  "description": "MCP server for iugu \u2014 invoices, subscriptions, plans, customers, payment methods, marketplace sub-accounts, transfers, webhooks",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

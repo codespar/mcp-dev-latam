@@ -1,13 +1,15 @@
 {
   "name": "@codespar/mcp-stp-spei",
-  "version": "0.2.0-alpha.1",
-  "description": "MCP server for STP/SPEI — Mexican instant bank transfers",
+  "version": "0.2.0-alpha.2",
+  "description": "MCP server for STP/SPEI \u2014 Mexican instant bank transfers",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
     "mcp-stp-spei": "dist/index.js"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js"
@@ -20,6 +22,14 @@
     "typescript": "^5.8.0"
   },
   "license": "MIT",
-  "keywords": ["stp", "spei", "transfers", "mexico", "banking", "clabe", "mcp"],
+  "keywords": [
+    "stp",
+    "spei",
+    "transfers",
+    "mexico",
+    "banking",
+    "clabe",
+    "mcp"
+  ],
   "mcpName": "io.github.codespar/mcp-stp-spei"
 }

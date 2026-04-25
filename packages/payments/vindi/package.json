@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-vindi",
-  "version": "0.2.0",
-  "description": "MCP server for Vindi — recurring billing, subscriptions, invoices",
+  "version": "0.2.1",
+  "description": "MCP server for Vindi \u2014 recurring billing, subscriptions, invoices",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

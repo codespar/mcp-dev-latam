@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-efi",
-  "version": "0.2.0",
-  "description": "MCP server for EFI (Gerencianet) — Pix, charges, carnets, cobranças",
+  "version": "0.2.1",
+  "description": "MCP server for EFI (Gerencianet) \u2014 Pix, charges, carnets, cobran\u00e7as",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

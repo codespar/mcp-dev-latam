@@ -831,7 +831,7 @@ async function main() {
           if (t.sessionId) transports.delete(t.sessionId);
         };
         const s = new Server(
-          { name: "mcp-nfe-io", version: "0.2.0" },
+          { name: "mcp-nfe-io", version: "0.2.1" },
           { capabilities: { tools: {} } },
         );
         (server as any)._requestHandlers.forEach((v: any, k: any) =>

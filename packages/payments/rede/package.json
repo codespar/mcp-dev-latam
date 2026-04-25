@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-rede",
-  "version": "0.2.0-alpha.1",
-  "description": "MCP server for Rede — Itaú-owned Brazilian card acquirer. Authorize/capture/refund, zero-auth, card tokens, and native recurrences.",
+  "version": "0.2.0-alpha.2",
+  "description": "MCP server for Rede \u2014 Ita\u00fa-owned Brazilian card acquirer. Authorize/capture/refund, zero-auth, card tokens, and native recurrences.",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

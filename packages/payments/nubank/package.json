@@ -1,13 +1,15 @@
 {
   "name": "@codespar/mcp-nubank",
-  "version": "0.2.0-alpha.1",
-  "description": "MCP server for Nubank — Brazilian neobank via Open Finance, accounts, PIX, transfers",
+  "version": "0.2.0-alpha.2",
+  "description": "MCP server for Nubank \u2014 Brazilian neobank via Open Finance, accounts, PIX, transfers",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
     "mcp-nubank": "dist/index.js"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js"
@@ -20,6 +22,14 @@
     "typescript": "^5.8.0"
   },
   "license": "MIT",
-  "keywords": ["nubank","banking","brazil","open-finance","pix","neobank",  "mcp"],
+  "keywords": [
+    "nubank",
+    "banking",
+    "brazil",
+    "open-finance",
+    "pix",
+    "neobank",
+    "mcp"
+  ],
   "mcpName": "io.github.codespar/mcp-nubank"
 }

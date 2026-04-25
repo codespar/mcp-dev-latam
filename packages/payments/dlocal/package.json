@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-dlocal",
-  "version": "0.2.0",
-  "description": "MCP server for dLocal — LatAm cross-border payments, payouts, refunds across 15+ countries via one API",
+  "version": "0.2.1",
+  "description": "MCP server for dLocal \u2014 LatAm cross-border payments, payouts, refunds across 15+ countries via one API",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

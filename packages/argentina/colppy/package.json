@@ -1,13 +1,15 @@
 {
   "name": "@codespar/mcp-colppy",
-  "version": "0.2.0-alpha.1",
-  "description": "MCP server for Colppy — Argentine cloud accounting + AFIP invoicing",
+  "version": "0.2.0-alpha.2",
+  "description": "MCP server for Colppy \u2014 Argentine cloud accounting + AFIP invoicing",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
     "mcp-colppy": "dist/index.js"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js"
@@ -20,6 +22,13 @@
     "typescript": "^5.8.0"
   },
   "license": "MIT",
-  "keywords": ["colppy", "accounting", "argentina", "afip", "invoicing", "mcp"],
+  "keywords": [
+    "colppy",
+    "accounting",
+    "argentina",
+    "afip",
+    "invoicing",
+    "mcp"
+  ],
   "mcpName": "io.github.codespar/mcp-colppy"
 }

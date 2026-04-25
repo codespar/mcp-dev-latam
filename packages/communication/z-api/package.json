@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-z-api",
-  "version": "0.2.0",
-  "description": "MCP server for Z-API — WhatsApp messaging, contacts, media",
+  "version": "0.2.1",
+  "description": "MCP server for Z-API \u2014 WhatsApp messaging, contacts, media",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

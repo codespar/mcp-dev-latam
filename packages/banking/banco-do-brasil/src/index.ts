@@ -197,7 +197,7 @@ async function bbRequest(method: string, path: string, body?: unknown): Promise<
 }
 
 const server = new Server(
-  { name: "mcp-banco-do-brasil", version: "0.1.0-alpha.1" },
+  { name: "mcp-banco-do-brasil", version: "0.1.0-alpha.2" },
   { capabilities: { tools: {} } }
 );
 

@@ -1,13 +1,15 @@
 {
   "name": "@codespar/mcp-alegra",
-  "version": "0.2.0",
-  "description": "MCP server for Alegra — cloud accounting for LATAM (Colombian-founded)",
+  "version": "0.2.1",
+  "description": "MCP server for Alegra \u2014 cloud accounting for LATAM (Colombian-founded)",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
     "mcp-alegra": "dist/index.js"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js"
@@ -20,6 +22,13 @@
     "typescript": "^5.8.0"
   },
   "license": "MIT",
-  "keywords": ["alegra", "accounting", "colombia", "latam", "invoicing", "mcp"],
+  "keywords": [
+    "alegra",
+    "accounting",
+    "colombia",
+    "latam",
+    "invoicing",
+    "mcp"
+  ],
   "mcpName": "io.github.codespar/mcp-alegra"
 }

@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-jumio",
-  "version": "0.2.0",
-  "description": "MCP server for Jumio — global enterprise identity verification and KYX (accounts, workflow executions, documents, credentials, similarity, liveness, facemap, AML screening, data export, webhooks)",
+  "version": "0.2.1",
+  "description": "MCP server for Jumio \u2014 global enterprise identity verification and KYX (accounts, workflow executions, documents, credentials, similarity, liveness, facemap, AML screening, data export, webhooks)",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

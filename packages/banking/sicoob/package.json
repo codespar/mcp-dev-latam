@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-sicoob",
-  "version": "0.1.0-alpha.1",
-  "description": "MCP server for Sicoob — Brazil's largest cooperative bank network (top 4 in Pix volume). Pix (cob, cobv, DICT), Cobrança (boleto), and SPB via Sicoob's Developers Portal APIs (OAuth2 + mTLS).",
+  "version": "0.1.0-alpha.2",
+  "description": "MCP server for Sicoob \u2014 Brazil's largest cooperative bank network (top 4 in Pix volume). Pix (cob, cobv, DICT), Cobran\u00e7a (boleto), and SPB via Sicoob's Developers Portal APIs (OAuth2 + mTLS).",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

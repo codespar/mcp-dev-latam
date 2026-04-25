@@ -7,12 +7,12 @@
     "source": "github",
     "subfolder": "packages/banking/santander"
   },
-  "version": "0.2.0-alpha.1",
+  "version": "0.2.0-alpha.2",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "@codespar/mcp-santander",
-      "version": "0.2.0-alpha.1",
+      "version": "0.2.0-alpha.2",
       "transport": {
         "type": "stdio"
       },

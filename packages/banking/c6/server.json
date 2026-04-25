@@ -7,12 +7,12 @@
     "source": "github",
     "subfolder": "packages/banking/c6"
   },
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-alpha.2",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "@codespar/mcp-c6",
-      "version": "0.1.0-alpha.1",
+      "version": "0.1.0-alpha.2",
       "transport": {
         "type": "stdio"
       },

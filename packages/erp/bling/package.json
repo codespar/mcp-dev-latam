@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-bling",
-  "version": "0.2.0",
-  "description": "MCP server for Bling — ERP, products, orders, purchase orders, invoices (NF-e/NFS-e), stock, AR/AP, warehouses, webhooks",
+  "version": "0.2.1",
+  "description": "MCP server for Bling \u2014 ERP, products, orders, purchase orders, invoices (NF-e/NFS-e), stock, AR/AP, warehouses, webhooks",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {
