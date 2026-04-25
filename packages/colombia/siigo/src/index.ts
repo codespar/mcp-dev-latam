@@ -7,11 +7,23 @@
  * - create_invoice: Create an invoice (DIAN electronic invoice)
  * - get_invoice: Get invoice by ID
  * - list_invoices: List invoices
+ * - get_invoice_pdf: Get the PDF for an invoice
  * - create_credit_note: Create a credit note
+ * - get_credit_note: Get credit note by ID
+ * - list_credit_notes: List credit notes
  * - list_customers: List customers
  * - create_customer: Create a customer
+ * - update_customer: Update an existing customer
+ * - delete_customer: Delete a customer
  * - list_products: List products
  * - create_product: Create a product
+ * - update_product: Update an existing product
+ * - delete_product: Delete a product
+ * - create_purchase: Create a purchase document
+ * - list_purchases: List purchase documents
+ * - list_document_types: List document types (by document type)
+ * - list_users: List Siigo users
+ * - list_warehouses: List warehouses (bodegas)
  * - list_taxes: List available tax types
  * - list_payment_methods: List payment methods
  *
@@ -52,7 +64,7 @@ async function siigoRequest(method: string, path: string, body?: unknown): Promi
 }
 
 const server = new Server(
-  { name: "mcp-siigo", version: "0.1.0" },
+  { name: "mcp-siigo", version: "0.2.0" },
   { capabilities: { tools: {} } }
 );
 
@@ -281,6 +293,226 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
       },
     },
     {
+      name: "get_invoice_pdf",
+      description: "Get the PDF document for an invoice",
+      inputSchema: {
+        type: "object",
+        properties: { invoiceId: { type: "string", description: "Invoice ID" } },
+        required: ["invoiceId"],
+      },
+    },
+    {
+      name: "get_credit_note",
+      description: "Get a credit note by ID",
+      inputSchema: {
+        type: "object",
+        properties: { creditNoteId: { type: "string", description: "Credit note ID" } },
+        required: ["creditNoteId"],
+      },
+    },
+    {
+      name: "list_credit_notes",
+      description: "List credit notes",
+      inputSchema: {
+        type: "object",
+        properties: {
+          page: { type: "number", description: "Page number" },
+          page_size: { type: "number", description: "Page size (max 100)" },
+          date_start: { type: "string", description: "Start date (YYYY-MM-DD)" },
+          date_end: { type: "string", description: "End date (YYYY-MM-DD)" },
+        },
+      },
+    },
+    {
+      name: "update_customer",
+      description: "Update an existing customer",
+      inputSchema: {
+        type: "object",
+        properties: {
+          customerId: { type: "string", description: "Customer ID" },
+          commercial_name: { type: "string", description: "Commercial/business name" },
+          name: { type: "array", description: "Name array [first_name, last_name]", items: { type: "string" } },
+          contacts: {
+            type: "array",
+            description: "Contact info",
+            items: {
+              type: "object",
+              properties: {
+                first_name: { type: "string", description: "First name" },
+                last_name: { type: "string", description: "Last name" },
+                email: { type: "string", description: "Email" },
+                phone: { type: "string", description: "Phone" },
+              },
+            },
+          },
+          address: {
+            type: "object",
+            description: "Address",
+            properties: {
+              address: { type: "string", description: "Street address" },
+              city: { type: "object", properties: { country_code: { type: "string" }, state_code: { type: "string" }, city_code: { type: "string" } } },
+            },
+          },
+        },
+        required: ["customerId"],
+      },
+    },
+    {
+      name: "delete_customer",
+      description: "Delete a customer",
+      inputSchema: {
+        type: "object",
+        properties: { customerId: { type: "string", description: "Customer ID" } },
+        required: ["customerId"],
+      },
+    },
+    {
+      name: "update_product",
+      description: "Update an existing product",
+      inputSchema: {
+        type: "object",
+        properties: {
+          productId: { type: "string", description: "Product ID" },
+          code: { type: "string", description: "Product code" },
+          name: { type: "string", description: "Product name" },
+          account_group: { type: "number", description: "Account group ID" },
+          type: { type: "string", description: "Product type (Product, Service)" },
+          stock_control: { type: "boolean", description: "Enable stock control" },
+          unit: { type: "string", description: "Unit of measure" },
+          taxes: {
+            type: "array",
+            description: "Tax configuration",
+            items: { type: "object", properties: { id: { type: "number", description: "Tax ID" } } },
+          },
+          prices: {
+            type: "array",
+            description: "Price list",
+            items: {
+              type: "object",
+              properties: {
+                currency_code: { type: "string", description: "Currency (COP)" },
+                price_list: { type: "array", items: { type: "object", properties: { position: { type: "number" }, value: { type: "number" } } } },
+              },
+            },
+          },
+        },
+        required: ["productId"],
+      },
+    },
+    {
+      name: "delete_product",
+      description: "Delete a product",
+      inputSchema: {
+        type: "object",
+        properties: { productId: { type: "string", description: "Product ID" } },
+        required: ["productId"],
+      },
+    },
+    {
+      name: "create_purchase",
+      description: "Create a purchase document",
+      inputSchema: {
+        type: "object",
+        properties: {
+          document: {
+            type: "object",
+            description: "Document type",
+            properties: { id: { type: "number", description: "Document type ID for purchases" } },
+            required: ["id"],
+          },
+          date: { type: "string", description: "Purchase date (YYYY-MM-DD)" },
+          supplier: {
+            type: "object",
+            description: "Supplier reference",
+            properties: { identification: { type: "string", description: "Supplier NIT or CC" } },
+            required: ["identification"],
+          },
+          cost_center: { type: "number", description: "Cost center ID" },
+          provider_invoice: {
+            type: "object",
+            description: "Provider invoice info",
+            properties: {
+              prefix: { type: "string", description: "Invoice prefix" },
+              number: { type: "string", description: "Invoice number" },
+            },
+          },
+          items: {
+            type: "array",
+            description: "Purchase items",
+            items: {
+              type: "object",
+              properties: {
+                code: { type: "string", description: "Product code" },
+                description: { type: "string", description: "Description" },
+                quantity: { type: "number", description: "Quantity" },
+                price: { type: "number", description: "Unit price" },
+                taxes: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: { id: { type: "number" }, name: { type: "string" }, percentage: { type: "number" } },
+                  },
+                },
+              },
+              required: ["code", "quantity", "price"],
+            },
+          },
+          payments: {
+            type: "array",
+            description: "Payment methods",
+            items: {
+              type: "object",
+              properties: {
+                id: { type: "number", description: "Payment method ID" },
+                value: { type: "number", description: "Payment amount" },
+              },
+              required: ["id", "value"],
+            },
+          },
+        },
+        required: ["document", "date", "supplier", "items", "payments"],
+      },
+    },
+    {
+      name: "list_purchases",
+      description: "List purchase documents",
+      inputSchema: {
+        type: "object",
+        properties: {
+          page: { type: "number", description: "Page number" },
+          page_size: { type: "number", description: "Page size (max 100)" },
+          date_start: { type: "string", description: "Start date (YYYY-MM-DD)" },
+          date_end: { type: "string", description: "End date (YYYY-MM-DD)" },
+        },
+      },
+    },
+    {
+      name: "list_document_types",
+      description: "List document types (e.g., FV for invoice, NC for credit note, FC for purchase)",
+      inputSchema: {
+        type: "object",
+        properties: {
+          type: { type: "string", description: "Document type code: FV (invoice), NC (credit note), FC (purchase), RC (receipt), etc." },
+        },
+      },
+    },
+    {
+      name: "list_users",
+      description: "List Siigo users (sellers)",
+      inputSchema: {
+        type: "object",
+        properties: {
+          page: { type: "number", description: "Page number" },
+          page_size: { type: "number", description: "Page size" },
+        },
+      },
+    },
+    {
+      name: "list_warehouses",
+      description: "List warehouses (bodegas)",
+      inputSchema: { type: "object", properties: {} },
+    },
+    {
       name: "list_taxes",
       description: "List available tax types",
       inputSchema: { type: "object", properties: {} },
@@ -360,6 +592,73 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
           taxes: args?.taxes,
           prices: args?.prices,
         }), null, 2) }] };
+      case "get_invoice_pdf":
+        return { content: [{ type: "text", text: JSON.stringify(await siigoRequest("GET", `/invoices/${args?.invoiceId}/pdf`), null, 2) }] };
+      case "get_credit_note":
+        return { content: [{ type: "text", text: JSON.stringify(await siigoRequest("GET", `/credit-notes/${args?.creditNoteId}`), null, 2) }] };
+      case "list_credit_notes": {
+        const params = new URLSearchParams();
+        if (args?.page) params.set("page", String(args.page));
+        if (args?.page_size) params.set("page_size", String(args.page_size));
+        if (args?.date_start) params.set("date_start", args.date_start);
+        if (args?.date_end) params.set("date_end", args.date_end);
+        return { content: [{ type: "text", text: JSON.stringify(await siigoRequest("GET", `/credit-notes?${params}`), null, 2) }] };
+      }
+      case "update_customer":
+        return { content: [{ type: "text", text: JSON.stringify(await siigoRequest("PUT", `/customers/${args?.customerId}`, {
+          commercial_name: args?.commercial_name,
+          name: args?.name,
+          contacts: args?.contacts,
+          address: args?.address,
+        }), null, 2) }] };
+      case "delete_customer":
+        return { content: [{ type: "text", text: JSON.stringify(await siigoRequest("DELETE", `/customers/${args?.customerId}`), null, 2) }] };
+      case "update_product":
+        return { content: [{ type: "text", text: JSON.stringify(await siigoRequest("PUT", `/products/${args?.productId}`, {
+          code: args?.code,
+          name: args?.name,
+          account_group: args?.account_group,
+          type: args?.type,
+          stock_control: args?.stock_control,
+          unit: args?.unit,
+          taxes: args?.taxes,
+          prices: args?.prices,
+        }), null, 2) }] };
+      case "delete_product":
+        return { content: [{ type: "text", text: JSON.stringify(await siigoRequest("DELETE", `/products/${args?.productId}`), null, 2) }] };
+      case "create_purchase":
+        return { content: [{ type: "text", text: JSON.stringify(await siigoRequest("POST", "/purchases", {
+          document: args?.document,
+          date: args?.date,
+          supplier: args?.supplier,
+          cost_center: args?.cost_center,
+          provider_invoice: args?.provider_invoice,
+          items: args?.items,
+          payments: args?.payments,
+        }), null, 2) }] };
+      case "list_purchases": {
+        const params = new URLSearchParams();
+        if (args?.page) params.set("page", String(args.page));
+        if (args?.page_size) params.set("page_size", String(args.page_size));
+        if (args?.date_start) params.set("date_start", args.date_start);
+        if (args?.date_end) params.set("date_end", args.date_end);
+        return { content: [{ type: "text", text: JSON.stringify(await siigoRequest("GET", `/purchases?${params}`), null, 2) }] };
+      }
+      case "list_document_types": {
+        const params = new URLSearchParams();
+        if (args?.type) params.set("type", args.type);
+        const qs = params.toString();
+        return { content: [{ type: "text", text: JSON.stringify(await siigoRequest("GET", qs ? `/document-types?${qs}` : "/document-types"), null, 2) }] };
+      }
+      case "list_users": {
+        const params = new URLSearchParams();
+        if (args?.page) params.set("page", String(args.page));
+        if (args?.page_size) params.set("page_size", String(args.page_size));
+        const qs = params.toString();
+        return { content: [{ type: "text", text: JSON.stringify(await siigoRequest("GET", qs ? `/users?${qs}` : "/users"), null, 2) }] };
+      }
+      case "list_warehouses":
+        return { content: [{ type: "text", text: JSON.stringify(await siigoRequest("GET", "/warehouses"), null, 2) }] };
       case "list_taxes":
         return { content: [{ type: "text", text: JSON.stringify(await siigoRequest("GET", "/taxes"), null, 2) }] };
       case "list_payment_methods":
@@ -386,7 +685,7 @@ async function main() {
       if (!sid && isInitializeRequest(req.body)) {
         const t = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID(), onsessioninitialized: (id) => { transports.set(id, t); } });
         t.onclose = () => { if (t.sessionId) transports.delete(t.sessionId); };
-        const s = new Server({ name: "mcp-siigo", version: "0.1.0" }, { capabilities: { tools: {} } }); (server as any)._requestHandlers.forEach((v: any, k: any) => (s as any)._requestHandlers.set(k, v)); (server as any)._notificationHandlers?.forEach((v: any, k: any) => (s as any)._notificationHandlers.set(k, v)); await s.connect(t);
+        const s = new Server({ name: "mcp-siigo", version: "0.2.0" }, { capabilities: { tools: {} } }); (server as any)._requestHandlers.forEach((v: any, k: any) => (s as any)._requestHandlers.set(k, v)); (server as any)._notificationHandlers?.forEach((v: any, k: any) => (s as any)._notificationHandlers.set(k, v)); await s.connect(t);
         await t.handleRequest(req, res, req.body); return;
       }
       res.status(400).json({ jsonrpc: "2.0", error: { code: -32000, message: "Bad Request" }, id: null });
