@@ -1,0 +1,37 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.codespar/mcp-wise",
+  "description": "MCP server for Wise — global multi-currency accounts, FX, and international transfers. Profiles, quotes, recipients, transfers, balances, webhooks.",
+  "repository": {
+    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "source": "github",
+    "subfolder": "packages/payments/wise"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@codespar/mcp-wise",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "WISE_API_TOKEN",
+          "description": "Wise Platform API token (Bearer). Issued per profile in the Wise dashboard.",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": true
+        },
+        {
+          "name": "WISE_ENV",
+          "description": "Wise environment. 'sandbox' (default, https://api.sandbox.transferwise.tech) or 'live' (https://api.transferwise.com).",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        }
+      ]
+    }
+  ]
+}
