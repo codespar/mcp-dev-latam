@@ -1,6 +1,6 @@
 {
   "name": "@codespar/mcp-bind-erp",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "MCP server for Bind ERP — Mexican cloud ERP",
   "type": "module",
   "main": "dist/index.js",

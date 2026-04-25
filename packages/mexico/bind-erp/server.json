@@ -7,12 +7,12 @@
     "source": "github",
     "subfolder": "packages/mexico/bind-erp"
   },
-  "version": "0.1.0",
+  "version": "0.2.0",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "@codespar/mcp-bind-erp",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "transport": { "type": "stdio" },
       "environmentVariables": [
         {

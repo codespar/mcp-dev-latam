@@ -6,14 +6,24 @@
  * Tools:
  * - list_customers: List customers
  * - create_customer: Create a customer
+ * - update_customer: Update a customer
+ * - delete_customer: Delete a customer
  * - list_products: List products
  * - create_product: Create a product
+ * - update_product: Update a product
+ * - delete_product: Delete a product
  * - list_invoices: List invoices
  * - create_invoice: Create an invoice
+ * - get_invoice: Get an invoice (CFDI)
+ * - cancel_invoice: Cancel an invoice (CFDI)
  * - list_orders: List orders
  * - create_order: Create an order
  * - get_balance: Get account balance
  * - list_accounts: List accounts
+ * - list_suppliers: List suppliers (proveedores)
+ * - create_supplier: Create a supplier (proveedor)
+ * - list_payments: List payments (pagos)
+ * - create_payment: Register a payment (pago)
  *
  * Environment:
  *   BIND_API_KEY — API key for authentication
@@ -48,7 +58,7 @@ async function bindRequest(method: string, path: string, body?: unknown): Promis
 }
 
 const server = new Server(
-  { name: "mcp-bind-erp", version: "0.1.0" },
+  { name: "mcp-bind-erp", version: "0.2.0" },
   { capabilities: { tools: {} } }
 );
 
@@ -215,6 +225,150 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         },
       },
     },
+    {
+      name: "update_customer",
+      description: "Update an existing customer",
+      inputSchema: {
+        type: "object",
+        properties: {
+          customer_id: { type: "string", description: "Customer ID" },
+          name: { type: "string", description: "Customer name" },
+          rfc: { type: "string", description: "RFC (tax ID)" },
+          email: { type: "string", description: "Email address" },
+          phone: { type: "string", description: "Phone number" },
+          address: { type: "string", description: "Street address" },
+          city: { type: "string", description: "City" },
+          state: { type: "string", description: "State" },
+          zip: { type: "string", description: "Postal code" },
+        },
+        required: ["customer_id"],
+      },
+    },
+    {
+      name: "delete_customer",
+      description: "Delete a customer by ID",
+      inputSchema: {
+        type: "object",
+        properties: {
+          customer_id: { type: "string", description: "Customer ID" },
+        },
+        required: ["customer_id"],
+      },
+    },
+    {
+      name: "update_product",
+      description: "Update an existing product",
+      inputSchema: {
+        type: "object",
+        properties: {
+          product_id: { type: "string", description: "Product ID" },
+          name: { type: "string", description: "Product name" },
+          sku: { type: "string", description: "SKU code" },
+          price: { type: "number", description: "Unit price" },
+          cost: { type: "number", description: "Unit cost" },
+          description: { type: "string", description: "Product description" },
+          sat_key: { type: "string", description: "SAT product key" },
+          unit: { type: "string", description: "Unit of measure" },
+          tax_rate: { type: "number", description: "Tax rate (e.g. 0.16 for 16% IVA)" },
+        },
+        required: ["product_id"],
+      },
+    },
+    {
+      name: "delete_product",
+      description: "Delete a product by ID",
+      inputSchema: {
+        type: "object",
+        properties: {
+          product_id: { type: "string", description: "Product ID" },
+        },
+        required: ["product_id"],
+      },
+    },
+    {
+      name: "get_invoice",
+      description: "Get an invoice (CFDI) by ID",
+      inputSchema: {
+        type: "object",
+        properties: {
+          invoice_id: { type: "string", description: "Invoice ID" },
+        },
+        required: ["invoice_id"],
+      },
+    },
+    {
+      name: "cancel_invoice",
+      description: "Cancel an invoice (CFDI) by ID",
+      inputSchema: {
+        type: "object",
+        properties: {
+          invoice_id: { type: "string", description: "Invoice ID" },
+          reason: { type: "string", description: "SAT cancellation reason code (e.g. 01, 02, 03, 04)" },
+          replacement_uuid: { type: "string", description: "UUID of replacement CFDI (required for reason 01)" },
+        },
+        required: ["invoice_id"],
+      },
+    },
+    {
+      name: "list_suppliers",
+      description: "List suppliers (proveedores)",
+      inputSchema: {
+        type: "object",
+        properties: {
+          page: { type: "number", description: "Page number" },
+          per_page: { type: "number", description: "Results per page" },
+          search: { type: "string", description: "Search term" },
+        },
+      },
+    },
+    {
+      name: "create_supplier",
+      description: "Create a supplier (proveedor)",
+      inputSchema: {
+        type: "object",
+        properties: {
+          name: { type: "string", description: "Supplier name" },
+          rfc: { type: "string", description: "RFC (tax ID)" },
+          email: { type: "string", description: "Email address" },
+          phone: { type: "string", description: "Phone number" },
+          address: { type: "string", description: "Street address" },
+          city: { type: "string", description: "City" },
+          state: { type: "string", description: "State" },
+          zip: { type: "string", description: "Postal code" },
+        },
+        required: ["name"],
+      },
+    },
+    {
+      name: "list_payments",
+      description: "List payments (pagos)",
+      inputSchema: {
+        type: "object",
+        properties: {
+          page: { type: "number", description: "Page number" },
+          per_page: { type: "number", description: "Results per page" },
+          date_from: { type: "string", description: "Start date (YYYY-MM-DD)" },
+          date_to: { type: "string", description: "End date (YYYY-MM-DD)" },
+        },
+      },
+    },
+    {
+      name: "create_payment",
+      description: "Register a payment (pago) against an invoice",
+      inputSchema: {
+        type: "object",
+        properties: {
+          invoice_id: { type: "string", description: "Invoice ID being paid" },
+          amount: { type: "number", description: "Payment amount" },
+          payment_date: { type: "string", description: "Payment date (YYYY-MM-DD)" },
+          payment_form: { type: "string", description: "SAT payment form code" },
+          account_id: { type: "string", description: "Receiving account ID" },
+          reference: { type: "string", description: "Payment reference / folio" },
+          notes: { type: "string", description: "Payment notes" },
+        },
+        required: ["invoice_id", "amount"],
+      },
+    },
   ],
 }));
 
@@ -300,6 +454,75 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
         if (args?.per_page) params.set("per_page", String(args.per_page));
         return { content: [{ type: "text", text: JSON.stringify(await bindRequest("GET", `/accounts?${params}`), null, 2) }] };
       }
+      case "update_customer":
+        return { content: [{ type: "text", text: JSON.stringify(await bindRequest("PUT", `/customers/${args?.customer_id}`, {
+          name: args?.name,
+          rfc: args?.rfc,
+          email: args?.email,
+          phone: args?.phone,
+          address: args?.address,
+          city: args?.city,
+          state: args?.state,
+          zip: args?.zip,
+        }), null, 2) }] };
+      case "delete_customer":
+        return { content: [{ type: "text", text: JSON.stringify(await bindRequest("DELETE", `/customers/${args?.customer_id}`), null, 2) }] };
+      case "update_product":
+        return { content: [{ type: "text", text: JSON.stringify(await bindRequest("PUT", `/products/${args?.product_id}`, {
+          name: args?.name,
+          sku: args?.sku,
+          price: args?.price,
+          cost: args?.cost,
+          description: args?.description,
+          sat_key: args?.sat_key,
+          unit: args?.unit,
+          tax_rate: args?.tax_rate,
+        }), null, 2) }] };
+      case "delete_product":
+        return { content: [{ type: "text", text: JSON.stringify(await bindRequest("DELETE", `/products/${args?.product_id}`), null, 2) }] };
+      case "get_invoice":
+        return { content: [{ type: "text", text: JSON.stringify(await bindRequest("GET", `/invoices/${args?.invoice_id}`), null, 2) }] };
+      case "cancel_invoice":
+        return { content: [{ type: "text", text: JSON.stringify(await bindRequest("POST", `/invoices/${args?.invoice_id}/cancel`, {
+          reason: args?.reason,
+          replacement_uuid: args?.replacement_uuid,
+        }), null, 2) }] };
+      case "list_suppliers": {
+        const params = new URLSearchParams();
+        if (args?.page) params.set("page", String(args.page));
+        if (args?.per_page) params.set("per_page", String(args.per_page));
+        if (args?.search) params.set("search", String(args.search));
+        return { content: [{ type: "text", text: JSON.stringify(await bindRequest("GET", `/suppliers?${params}`), null, 2) }] };
+      }
+      case "create_supplier":
+        return { content: [{ type: "text", text: JSON.stringify(await bindRequest("POST", "/suppliers", {
+          name: args?.name,
+          rfc: args?.rfc,
+          email: args?.email,
+          phone: args?.phone,
+          address: args?.address,
+          city: args?.city,
+          state: args?.state,
+          zip: args?.zip,
+        }), null, 2) }] };
+      case "list_payments": {
+        const params = new URLSearchParams();
+        if (args?.page) params.set("page", String(args.page));
+        if (args?.per_page) params.set("per_page", String(args.per_page));
+        if (args?.date_from) params.set("date_from", String(args.date_from));
+        if (args?.date_to) params.set("date_to", String(args.date_to));
+        return { content: [{ type: "text", text: JSON.stringify(await bindRequest("GET", `/payments?${params}`), null, 2) }] };
+      }
+      case "create_payment":
+        return { content: [{ type: "text", text: JSON.stringify(await bindRequest("POST", "/payments", {
+          invoice_id: args?.invoice_id,
+          amount: args?.amount,
+          payment_date: args?.payment_date,
+          payment_form: args?.payment_form,
+          account_id: args?.account_id,
+          reference: args?.reference,
+          notes: args?.notes,
+        }), null, 2) }] };
       default:
         return { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true };
     }
@@ -322,7 +545,7 @@ async function main() {
       if (!sid && isInitializeRequest(req.body)) {
         const t = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID(), onsessioninitialized: (id) => { transports.set(id, t); } });
         t.onclose = () => { if (t.sessionId) transports.delete(t.sessionId); };
-        const s = new Server({ name: "mcp-bind-erp", version: "0.1.0" }, { capabilities: { tools: {} } }); (server as any)._requestHandlers.forEach((v: any, k: any) => (s as any)._requestHandlers.set(k, v)); (server as any)._notificationHandlers?.forEach((v: any, k: any) => (s as any)._notificationHandlers.set(k, v)); await s.connect(t);
+        const s = new Server({ name: "mcp-bind-erp", version: "0.2.0" }, { capabilities: { tools: {} } }); (server as any)._requestHandlers.forEach((v: any, k: any) => (s as any)._requestHandlers.set(k, v)); (server as any)._notificationHandlers?.forEach((v: any, k: any) => (s as any)._notificationHandlers.set(k, v)); await s.connect(t);
         await t.handleRequest(req, res, req.body); return;
       }
       res.status(400).json({ jsonrpc: "2.0", error: { code: -32000, message: "Bad Request" }, id: null });
