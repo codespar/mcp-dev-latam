@@ -3,15 +3,25 @@
 /**
  * MCP Server for Andreani — largest Argentine courier/logistics provider.
  *
- * Tools:
+ * Tools (18):
  * - create_shipment: Create a new shipment
  * - get_shipment: Get shipment details by ID
  * - track_shipment: Track a shipment by tracking number
  * - get_rates: Get shipping rates/quotes
  * - list_branches: List Andreani branches/sucursales
  * - create_label: Generate a shipping label
+ * - get_label_pdf: Download label as PDF (base64)
  * - get_tracking_history: Get full tracking history
+ * - list_tracking_by_date: List tracking events for a date range
  * - cancel_shipment: Cancel a shipment
+ * - validate_postal_code: Validate CP coverage and list available services
+ * - create_pickup: Create a pickup/collection request
+ * - list_pickups: List pickup requests
+ * - cancel_pickup: Cancel a pickup request
+ * - create_return: Create a reverse logistics shipment (return)
+ * - list_returns: List return shipments
+ * - list_products: List contracted products/services
+ * - get_invoice: Get billing/invoice details
  *
  * Environment:
  *   ANDREANI_API_KEY  — API key
@@ -71,7 +81,7 @@ async function andreaniRequest(method: string, path: string, body?: unknown): Pr
 }
 
 const server = new Server(
-  { name: "mcp-andreani", version: "0.1.0" },
+  { name: "mcp-andreani", version: "0.2.0-alpha.1" },
   { capabilities: { tools: {} } }
 );
 
@@ -200,6 +210,176 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         required: ["shipmentId"],
       },
     },
+    {
+      name: "get_label_pdf",
+      description: "Download a shipping label as PDF (base64-encoded)",
+      inputSchema: {
+        type: "object",
+        properties: { shipmentId: { type: "string", description: "Shipment ID" } },
+        required: ["shipmentId"],
+      },
+    },
+    {
+      name: "list_tracking_by_date",
+      description: "List tracking events for a contract within a date range",
+      inputSchema: {
+        type: "object",
+        properties: {
+          contract: { type: "string", description: "Contract/account number" },
+          from_date: { type: "string", description: "Start date (YYYY-MM-DD)" },
+          to_date: { type: "string", description: "End date (YYYY-MM-DD)" },
+        },
+        required: ["contract", "from_date", "to_date"],
+      },
+    },
+    {
+      name: "validate_postal_code",
+      description: "Validate CP coverage and list available services for a postal code",
+      inputSchema: {
+        type: "object",
+        properties: {
+          postal_code: { type: "string", description: "Argentine postal code" },
+        },
+        required: ["postal_code"],
+      },
+    },
+    {
+      name: "create_pickup",
+      description: "Create a pickup/collection request (retiro)",
+      inputSchema: {
+        type: "object",
+        properties: {
+          contract: { type: "string", description: "Contract number" },
+          pickup_date: { type: "string", description: "Pickup date (YYYY-MM-DD)" },
+          address: {
+            type: "object",
+            description: "Pickup address",
+            properties: {
+              postal_code: { type: "string" },
+              street: { type: "string" },
+              number: { type: "string" },
+              city: { type: "string" },
+              province: { type: "string" },
+              contact_name: { type: "string" },
+              contact_phone: { type: "string" },
+            },
+            required: ["postal_code", "contact_name"],
+          },
+          packages_count: { type: "number", description: "Number of packages to pick up" },
+          notes: { type: "string", description: "Additional notes" },
+        },
+        required: ["contract", "pickup_date", "address", "packages_count"],
+      },
+    },
+    {
+      name: "list_pickups",
+      description: "List pickup/collection requests",
+      inputSchema: {
+        type: "object",
+        properties: {
+          contract: { type: "string", description: "Filter by contract" },
+          from_date: { type: "string", description: "Filter from date (YYYY-MM-DD)" },
+          to_date: { type: "string", description: "Filter to date (YYYY-MM-DD)" },
+          status: { type: "string", description: "Filter by status" },
+        },
+      },
+    },
+    {
+      name: "cancel_pickup",
+      description: "Cancel a pickup/collection request",
+      inputSchema: {
+        type: "object",
+        properties: { pickupId: { type: "string", description: "Pickup request ID" } },
+        required: ["pickupId"],
+      },
+    },
+    {
+      name: "create_return",
+      description: "Create a reverse logistics shipment (logística inversa / devolución)",
+      inputSchema: {
+        type: "object",
+        properties: {
+          contract: { type: "string", description: "Contract number" },
+          original_shipment_id: { type: "string", description: "Original shipment ID being returned" },
+          origin: {
+            type: "object",
+            description: "Pickup address (where to collect from)",
+            properties: {
+              postal_code: { type: "string" },
+              street: { type: "string" },
+              number: { type: "string" },
+              city: { type: "string" },
+              province: { type: "string" },
+              contact_name: { type: "string" },
+              contact_phone: { type: "string" },
+            },
+            required: ["postal_code", "contact_name"],
+          },
+          destination: {
+            type: "object",
+            description: "Return destination address",
+            properties: {
+              postal_code: { type: "string" },
+              street: { type: "string" },
+              number: { type: "string" },
+              city: { type: "string" },
+              province: { type: "string" },
+            },
+            required: ["postal_code"],
+          },
+          packages: {
+            type: "array",
+            description: "Packages to return",
+            items: {
+              type: "object",
+              properties: {
+                weight: { type: "number" },
+                height: { type: "number" },
+                width: { type: "number" },
+                length: { type: "number" },
+              },
+              required: ["weight"],
+            },
+          },
+          reason: { type: "string", description: "Return reason" },
+        },
+        required: ["contract", "origin", "destination", "packages"],
+      },
+    },
+    {
+      name: "list_returns",
+      description: "List reverse logistics shipments (returns)",
+      inputSchema: {
+        type: "object",
+        properties: {
+          contract: { type: "string", description: "Filter by contract" },
+          from_date: { type: "string", description: "Filter from date (YYYY-MM-DD)" },
+          to_date: { type: "string", description: "Filter to date (YYYY-MM-DD)" },
+        },
+      },
+    },
+    {
+      name: "list_products",
+      description: "List contracted products/services available on the account",
+      inputSchema: {
+        type: "object",
+        properties: {
+          contract: { type: "string", description: "Contract/account number" },
+        },
+        required: ["contract"],
+      },
+    },
+    {
+      name: "get_invoice",
+      description: "Get billing/invoice details",
+      inputSchema: {
+        type: "object",
+        properties: {
+          invoice_id: { type: "string", description: "Invoice/factura ID or number" },
+        },
+        required: ["invoice_id"],
+      },
+    },
   ],
 }));
 
@@ -244,6 +424,62 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
         return { content: [{ type: "text", text: JSON.stringify(await andreaniRequest("GET", `/envios/${args?.shipmentId}/trazas`), null, 2) }] };
       case "cancel_shipment":
         return { content: [{ type: "text", text: JSON.stringify(await andreaniRequest("DELETE", `/envios/${args?.shipmentId}`), null, 2) }] };
+      case "get_label_pdf":
+        return { content: [{ type: "text", text: JSON.stringify(await andreaniRequest("GET", `/envios/${args?.shipmentId}/etiquetas?formato=pdf`), null, 2) }] };
+      case "list_tracking_by_date": {
+        const params = new URLSearchParams({
+          contrato: args?.contract,
+          fechaDesde: args?.from_date,
+          fechaHasta: args?.to_date,
+        });
+        return { content: [{ type: "text", text: JSON.stringify(await andreaniRequest("GET", `/trazas?${params}`), null, 2) }] };
+      }
+      case "validate_postal_code":
+        return { content: [{ type: "text", text: JSON.stringify(await andreaniRequest("GET", `/cobertura/${args?.postal_code}`), null, 2) }] };
+      case "create_pickup": {
+        const payload = {
+          contrato: args?.contract,
+          fechaRetiro: args?.pickup_date,
+          direccion: args?.address,
+          cantidadBultos: args?.packages_count,
+          observaciones: args?.notes,
+        };
+        return { content: [{ type: "text", text: JSON.stringify(await andreaniRequest("POST", "/retiros", payload), null, 2) }] };
+      }
+      case "list_pickups": {
+        const params = new URLSearchParams();
+        if (args?.contract) params.set("contrato", args.contract);
+        if (args?.from_date) params.set("fechaDesde", args.from_date);
+        if (args?.to_date) params.set("fechaHasta", args.to_date);
+        if (args?.status) params.set("estado", args.status);
+        return { content: [{ type: "text", text: JSON.stringify(await andreaniRequest("GET", `/retiros?${params}`), null, 2) }] };
+      }
+      case "cancel_pickup":
+        return { content: [{ type: "text", text: JSON.stringify(await andreaniRequest("DELETE", `/retiros/${args?.pickupId}`), null, 2) }] };
+      case "create_return": {
+        const payload = {
+          contrato: args?.contract,
+          envioOriginal: args?.original_shipment_id,
+          origen: args?.origin,
+          destino: args?.destination,
+          bultos: args?.packages,
+          motivo: args?.reason,
+        };
+        return { content: [{ type: "text", text: JSON.stringify(await andreaniRequest("POST", "/logistica-inversa", payload), null, 2) }] };
+      }
+      case "list_returns": {
+        const params = new URLSearchParams();
+        if (args?.contract) params.set("contrato", args.contract);
+        if (args?.from_date) params.set("fechaDesde", args.from_date);
+        if (args?.to_date) params.set("fechaHasta", args.to_date);
+        return { content: [{ type: "text", text: JSON.stringify(await andreaniRequest("GET", `/logistica-inversa?${params}`), null, 2) }] };
+      }
+      case "list_products": {
+        const params = new URLSearchParams({ contrato: args?.contract });
+        return { content: [{ type: "text", text: JSON.stringify(await andreaniRequest("GET", `/productos?${params}`), null, 2) }] };
+      }
+      case "get_invoice":
+        return { content: [{ type: "text", text: JSON.stringify(await andreaniRequest("GET", `/facturas/${args?.invoice_id}`), null, 2) }] };
       default:
         return { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true };
     }
@@ -266,7 +502,7 @@ async function main() {
       if (!sid && isInitializeRequest(req.body)) {
         const t = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID(), onsessioninitialized: (id) => { transports.set(id, t); } });
         t.onclose = () => { if (t.sessionId) transports.delete(t.sessionId); };
-        const s = new Server({ name: "mcp-andreani", version: "0.1.0" }, { capabilities: { tools: {} } }); (server as any)._requestHandlers.forEach((v: any, k: any) => (s as any)._requestHandlers.set(k, v)); (server as any)._notificationHandlers?.forEach((v: any, k: any) => (s as any)._notificationHandlers.set(k, v)); await s.connect(t);
+        const s = new Server({ name: "mcp-andreani", version: "0.2.0-alpha.1" }, { capabilities: { tools: {} } }); (server as any)._requestHandlers.forEach((v: any, k: any) => (s as any)._requestHandlers.set(k, v)); (server as any)._notificationHandlers?.forEach((v: any, k: any) => (s as any)._notificationHandlers.set(k, v)); await s.connect(t);
         await t.handleRequest(req, res, req.body); return;
       }
       res.status(400).json({ jsonrpc: "2.0", error: { code: -32000, message: "Bad Request" }, id: null });
