@@ -7,12 +7,12 @@
     "source": "github",
     "subfolder": "packages/communication/evolution-api"
   },
-  "version": "0.1.2",
+  "version": "0.2.0",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "@codespar/mcp-evolution-api",
-      "version": "0.1.2",
+      "version": "0.2.0",
       "transport": {
         "type": "stdio"
       },

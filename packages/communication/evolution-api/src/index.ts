@@ -19,6 +19,16 @@
  * - update_profile: Update instance profile (name, picture, status)
  * - set_presence: Set online/offline presence for an instance
  * - get_chat_history: Get full chat history with pagination
+ * - logout_instance: Logout an instance (disconnects WhatsApp session)
+ * - restart_instance: Restart an instance
+ * - delete_instance: Delete an instance permanently
+ * - connection_state: Get connection state of an instance
+ * - leave_group: Leave a WhatsApp group
+ * - update_group_participants: Add/remove/promote/demote participants in a group
+ * - fetch_group_invite_code: Fetch invite code/link for a group
+ * - mark_message_as_read: Mark messages in a chat as read
+ * - archive_chat: Archive or unarchive a chat
+ * - delete_message: Delete a message (for me or for everyone)
  *
  * Environment:
  *   EVOLUTION_API_URL — Base URL of self-hosted Evolution API
@@ -54,7 +64,7 @@ async function evolutionRequest(method: string, path: string, body?: unknown): P
 }
 
 const server = new Server(
-  { name: "mcp-evolution-api", version: "0.1.0" },
+  { name: "mcp-evolution-api", version: "0.2.0" },
   { capabilities: { tools: {} } }
 );
 
@@ -261,6 +271,148 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         required: ["instance", "remoteJid"],
       },
     },
+    {
+      name: "logout_instance",
+      description: "Logout an instance (disconnects the WhatsApp session without deleting the instance)",
+      inputSchema: {
+        type: "object",
+        properties: {
+          instance: { type: "string", description: "Instance name" },
+        },
+        required: ["instance"],
+      },
+    },
+    {
+      name: "restart_instance",
+      description: "Restart an instance",
+      inputSchema: {
+        type: "object",
+        properties: {
+          instance: { type: "string", description: "Instance name" },
+        },
+        required: ["instance"],
+      },
+    },
+    {
+      name: "delete_instance",
+      description: "Delete an instance permanently",
+      inputSchema: {
+        type: "object",
+        properties: {
+          instance: { type: "string", description: "Instance name" },
+        },
+        required: ["instance"],
+      },
+    },
+    {
+      name: "connection_state",
+      description: "Get the connection state of an instance (open, connecting, close)",
+      inputSchema: {
+        type: "object",
+        properties: {
+          instance: { type: "string", description: "Instance name" },
+        },
+        required: ["instance"],
+      },
+    },
+    {
+      name: "leave_group",
+      description: "Leave a WhatsApp group",
+      inputSchema: {
+        type: "object",
+        properties: {
+          instance: { type: "string", description: "Instance name" },
+          groupJid: { type: "string", description: "Group JID (e.g. 120363000000000000@g.us)" },
+        },
+        required: ["instance", "groupJid"],
+      },
+    },
+    {
+      name: "update_group_participants",
+      description: "Add, remove, promote, or demote participants in a WhatsApp group",
+      inputSchema: {
+        type: "object",
+        properties: {
+          instance: { type: "string", description: "Instance name" },
+          groupJid: { type: "string", description: "Group JID (e.g. 120363000000000000@g.us)" },
+          action: { type: "string", enum: ["add", "remove", "promote", "demote"], description: "Action to take on participants" },
+          participants: {
+            type: "array",
+            items: { type: "string" },
+            description: "Array of phone numbers (with country code)",
+          },
+        },
+        required: ["instance", "groupJid", "action", "participants"],
+      },
+    },
+    {
+      name: "fetch_group_invite_code",
+      description: "Fetch the invite code/link for a WhatsApp group",
+      inputSchema: {
+        type: "object",
+        properties: {
+          instance: { type: "string", description: "Instance name" },
+          groupJid: { type: "string", description: "Group JID (e.g. 120363000000000000@g.us)" },
+        },
+        required: ["instance", "groupJid"],
+      },
+    },
+    {
+      name: "mark_message_as_read",
+      description: "Mark one or more messages in a chat as read",
+      inputSchema: {
+        type: "object",
+        properties: {
+          instance: { type: "string", description: "Instance name" },
+          readMessages: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                remoteJid: { type: "string", description: "Chat JID" },
+                fromMe: { type: "boolean", description: "Whether the message was sent by the instance" },
+                id: { type: "string", description: "Message ID" },
+              },
+              required: ["remoteJid", "fromMe", "id"],
+            },
+            description: "List of messages to mark as read",
+          },
+        },
+        required: ["instance", "readMessages"],
+      },
+    },
+    {
+      name: "archive_chat",
+      description: "Archive or unarchive a chat",
+      inputSchema: {
+        type: "object",
+        properties: {
+          instance: { type: "string", description: "Instance name" },
+          remoteJid: { type: "string", description: "Chat JID" },
+          archive: { type: "boolean", description: "true to archive, false to unarchive" },
+          lastMessage: {
+            type: "object",
+            description: "Last message key reference (optional)",
+          },
+        },
+        required: ["instance", "remoteJid", "archive"],
+      },
+    },
+    {
+      name: "delete_message",
+      description: "Delete a message for me or for everyone in a chat",
+      inputSchema: {
+        type: "object",
+        properties: {
+          instance: { type: "string", description: "Instance name" },
+          remoteJid: { type: "string", description: "Chat JID" },
+          id: { type: "string", description: "Message ID" },
+          fromMe: { type: "boolean", description: "Whether the message was sent by the instance" },
+          participant: { type: "string", description: "Participant JID (required for group messages)" },
+        },
+        required: ["instance", "remoteJid", "id", "fromMe"],
+      },
+    },
   ],
 }));
 
@@ -314,6 +466,39 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         if (args?.fromMe !== undefined) body.where = { ...(body.where as Record<string, unknown>), key: { remoteJid: args?.remoteJid, fromMe: args.fromMe } };
         return { content: [{ type: "text", text: JSON.stringify(await evolutionRequest("POST", `/chat/findMessages/${args?.instance}`, body), null, 2) }] };
       }
+      case "logout_instance":
+        return { content: [{ type: "text", text: JSON.stringify(await evolutionRequest("DELETE", `/instance/logout/${args?.instance}`), null, 2) }] };
+      case "restart_instance":
+        return { content: [{ type: "text", text: JSON.stringify(await evolutionRequest("POST", `/instance/restart/${args?.instance}`), null, 2) }] };
+      case "delete_instance":
+        return { content: [{ type: "text", text: JSON.stringify(await evolutionRequest("DELETE", `/instance/delete/${args?.instance}`), null, 2) }] };
+      case "connection_state":
+        return { content: [{ type: "text", text: JSON.stringify(await evolutionRequest("GET", `/instance/connectionState/${args?.instance}`), null, 2) }] };
+      case "leave_group":
+        return { content: [{ type: "text", text: JSON.stringify(await evolutionRequest("DELETE", `/group/leaveGroup/${args?.instance}?groupJid=${args?.groupJid}`), null, 2) }] };
+      case "update_group_participants":
+        return { content: [{ type: "text", text: JSON.stringify(await evolutionRequest("POST", `/group/updateParticipant/${args?.instance}?groupJid=${args?.groupJid}`, { action: args?.action, participants: args?.participants }), null, 2) }] };
+      case "fetch_group_invite_code":
+        return { content: [{ type: "text", text: JSON.stringify(await evolutionRequest("GET", `/group/inviteCode/${args?.instance}?groupJid=${args?.groupJid}`), null, 2) }] };
+      case "mark_message_as_read":
+        return { content: [{ type: "text", text: JSON.stringify(await evolutionRequest("POST", `/chat/markMessageAsRead/${args?.instance}`, { readMessages: args?.readMessages }), null, 2) }] };
+      case "archive_chat": {
+        const body: Record<string, unknown> = {
+          chat: args?.remoteJid,
+          archive: args?.archive,
+        };
+        if (args?.lastMessage) body.lastMessage = args.lastMessage;
+        return { content: [{ type: "text", text: JSON.stringify(await evolutionRequest("POST", `/chat/archiveChat/${args?.instance}`, body), null, 2) }] };
+      }
+      case "delete_message": {
+        const body: Record<string, unknown> = {
+          id: args?.id,
+          remoteJid: args?.remoteJid,
+          fromMe: args?.fromMe,
+        };
+        if (args?.participant) body.participant = args.participant;
+        return { content: [{ type: "text", text: JSON.stringify(await evolutionRequest("DELETE", `/chat/deleteMessageForEveryone/${args?.instance}`, body), null, 2) }] };
+      }
       default:
         return { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true };
     }
@@ -336,7 +521,7 @@ async function main() {
       if (!sid && isInitializeRequest(req.body)) {
         const t = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID(), onsessioninitialized: (id) => { transports.set(id, t); } });
         t.onclose = () => { if (t.sessionId) transports.delete(t.sessionId); };
-        const s = new Server({ name: "mcp-evolution-api", version: "0.1.0" }, { capabilities: { tools: {} } }); (server as any)._requestHandlers.forEach((v: any, k: any) => (s as any)._requestHandlers.set(k, v)); (server as any)._notificationHandlers?.forEach((v: any, k: any) => (s as any)._notificationHandlers.set(k, v)); await s.connect(t);
+        const s = new Server({ name: "mcp-evolution-api", version: "0.2.0" }, { capabilities: { tools: {} } }); (server as any)._requestHandlers.forEach((v: any, k: any) => (s as any)._requestHandlers.set(k, v)); (server as any)._notificationHandlers?.forEach((v: any, k: any) => (s as any)._notificationHandlers.set(k, v)); await s.connect(t);
         await t.handleRequest(req, res, req.body); return;
       }
       res.status(400).json({ jsonrpc: "2.0", error: { code: -32000, message: "Bad Request" }, id: null });
