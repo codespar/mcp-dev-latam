@@ -4,26 +4,35 @@ MCP server for [PicPay Business](https://developers-business.picpay.com) — Bra
 
 PicPay's Checkout API lets merchants create a payment intent that the buyer completes inside the PicPay app, returning a redirect URL plus a Pix-style QR code. The Recurrency API adds subscription plans on top.
 
-## Tools
+## Tools (20)
 
 | Tool | Purpose |
-|------|---------|
-| `create_payment` | Create a checkout (`POST /payments`). Returns `paymentUrl` + `qrcode`. |
-| `get_payment_status` | `GET /payments/{referenceId}/status` |
-| `cancel_payment` | `POST /payments/{referenceId}/cancellations` (voids unpaid, refunds paid) |
-| `create_plan` | `POST /recurrency/plans` |
-| `list_plans` | `GET /recurrency/plans` |
-| `update_plan` | `PUT /recurrency/plans/{planId}` |
-| `delete_plan` | `DELETE /recurrency/plans/{planId}` |
-| `create_subscription` | `POST /recurrency/subscriptions` |
-| `get_subscription` | `GET /recurrency/subscriptions/{subscriptionId}` |
-| `cancel_subscription` | `POST /recurrency/subscriptions/{subscriptionId}/cancel` |
-| `validate_notification` | Verify an incoming webhook against `PICPAY_SELLER_TOKEN` |
+|---|---|
+| `create_payment` | Create a PicPay checkout payment. |
+| `get_payment_status` | Get the status of a payment by referenceId. |
+| `cancel_payment` | Cancel a PicPay order. |
+| `create_plan` | Create a subscription plan (Recurrency API). |
+| `list_plans` | List all subscription plans registered for this merchant. |
+| `update_plan` | Update an existing subscription plan. |
+| `delete_plan` | Delete a subscription plan. |
+| `create_subscription` | Enroll a buyer in a subscription plan. |
+| `get_subscription` | Retrieve a subscription by id. |
+| `cancel_subscription` | Cancel an active subscription. |
+| `validate_notification` | Verify that an incoming webhook callback came from PicPay by comparing the x-seller-token header against PI... |
+| `refund_payment` | Refund a paid PicPay order, optionally partially. |
+| `create_b2p_transfer` | Create a Business-to-Person (B2P) transfer: push funds from the merchant wallet to a PicPay user identified... |
+| `get_b2p_transfer` | Get the status of a B2P transfer by referenceId. |
+| `create_batch_payment` | Submit a batch of B2P transfers in a single request. |
+| `list_transactions` | List merchant transactions (payments and transfers) within a date range. |
+| `get_wallet_balance` | Retrieve the merchant's current PicPay wallet balance (available and blocked amounts in BRL). |
+| `generate_static_qrcode` | Generate a static PicPay Pay QR code for in-store / reusable use. |
+| `generate_dynamic_qrcode` | Generate a dynamic PicPay Pay QR code with a fixed amount and optional expiration. |
+| `create_payment_link` | Create a shareable PicPay payment link. |
 
 ## Install
 
 ```bash
-npm install @codespar/mcp-picpay
+npm install @codespar/mcp-picpay@alpha
 ```
 
 ## Environment

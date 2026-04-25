@@ -49,18 +49,28 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (18)
 
-| Tool | Description |
-|------|-------------|
+| Tool | Purpose |
+|---|---|
 | `send_sms` | Send an SMS message |
 | `send_whatsapp` | Send a WhatsApp message |
 | `send_rcs` | Send an RCS (Rich Communication Services) message |
+| `send_email` | Send a transactional email |
+| `send_voice` | Send a voice message via TTS or pre-recorded audio URL |
+| `send_facebook_message` | Send a Facebook Messenger message |
 | `get_message_status` | Get message delivery status by ID |
 | `list_channels` | List available messaging channels |
 | `create_subscription` | Create a webhook subscription for message events |
+| `list_subscriptions` | List all webhook subscriptions |
+| `delete_subscription` | Delete a webhook subscription by ID |
 | `list_contacts` | List contacts from the contact base |
+| `create_contact` | Create a contact in the contact base |
+| `delete_contact` | Delete a contact by ID |
 | `send_template` | Send a WhatsApp template message (pre-approved) |
+| `list_templates` | List approved message templates (WhatsApp/SMS/RCS) |
+| `get_report_entries` | Get message report entries within a date range |
+| `add_opt_out` | Add a phone number to the opt-out list (suppresses future messages) |
 
 ## Authentication
 

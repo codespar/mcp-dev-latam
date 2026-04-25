@@ -51,10 +51,10 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (18)
 
-| Tool | Description |
-|------|-------------|
+| Tool | Purpose |
+|---|---|
 | `calculate_shipping` | Calculate shipping rates from multiple carriers |
 | `create_shipment` | Create a shipment order |
 | `track_shipment` | Track a shipment by order ID |
@@ -63,6 +63,16 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 | `cancel_shipment` | Cancel a shipment order |
 | `get_balance` | Get current account balance |
 | `add_cart` | Add shipment orders to cart for batch checkout |
+| `checkout_cart` | Checkout all items in the cart and pay |
+| `preview_label` | Preview a shipping label before generating |
+| `print_label` | Print/download label PDF |
+| `get_shipment` | Get shipment order details by ID |
+| `list_shipments` | List all shipment orders with filters |
+| `get_store` | Get store/company information |
+| `search_agencies` | Search pickup agencies by service and location |
+| `create_address` | Create a stored address for sender/recipient |
+| `list_services_available` | List available shipping services for a route |
+| `get_tracking_history` | Get complete tracking history with events |
 
 ## Authentication
 

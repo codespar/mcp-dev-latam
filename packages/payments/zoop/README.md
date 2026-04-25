@@ -51,10 +51,10 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (28)
 
-| Tool | Description |
-|------|-------------|
+| Tool | Purpose |
+|---|---|
 | `create_transaction` | Create a transaction in Zoop (Pix, boleto, or credit card) |
 | `get_transaction` | Get transaction details by ID |
 | `list_transactions` | List transactions with optional filters |
@@ -65,6 +65,24 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 | `create_buyer` | Create a buyer in the marketplace |
 | `get_balance` | Get balance for a seller or the marketplace |
 | `create_transfer` | Create a transfer to a seller's bank account |
+| `refund_transaction` | Refund a transaction (full or partial) |
+| `get_receivables` | Get receivables for a transaction |
+| `create_token_card` | Tokenize a credit card for secure payments |
+| `create_bank_account` | Create a bank account token for a seller |
+| `get_seller_balance` | Get detailed balance for a specific seller |
+| `update_seller` | Update seller information |
+| `list_transfers` | List marketplace transfers with filters |
+| `get_transfer` | Get transfer details by ID |
+| `create_subscription` | Create a recurring subscription |
+| `list_receivables` | List all receivables for the marketplace |
+| `create_pix_payment` | Create a PIX payment transaction |
+| `get_pix_payment` | Get PIX payment details including QR code and copy-paste payload |
+| `cancel_subscription` | Cancel a recurring subscription |
+| `list_subscriptions` | List subscriptions in the marketplace |
+| `list_disputes` | List disputes/chargebacks in the marketplace |
+| `get_marketplace` | Get marketplace information and settings |
+| `get_dispute` | Get dispute details by ID |
+| `get_subscription` | Get subscription details by ID |
 
 ## Authentication
 

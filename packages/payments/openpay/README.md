@@ -4,22 +4,33 @@ MCP server for [Openpay](https://www.openpay.mx) — the BBVA-owned Mexican paym
 
 Openpay is the main BBVA-backed alternative to Conekta for Mexican online merchants. Adding it to the catalog alongside `@codespar/mcp-conekta` closes the "big two" MX gateway story and opens the BBVA rails (SPEI, OXXO, domestic cards) to agents. Differentiators in this catalog: native subscriptions (plans + per-customer recurring billing) and marketplace payouts.
 
-## Tools
+## Tools (23)
 
 | Tool | Purpose |
-|------|---------|
-| `create_charge` | Charge via card, bank_account (SPEI), or store (OXXO). Customer-scoped or merchant-scoped. |
-| `get_charge` | Retrieve a charge |
-| `capture_charge` | Capture a previously authorized charge (delayed capture) |
-| `refund_charge` | Refund a captured charge (full or partial) |
-| `create_customer` | Create a customer record, optionally with a wallet account |
-| `get_customer` | Retrieve a customer |
-| `list_customers` | List customers with filters |
-| `create_card` | Tokenize a card at merchant or customer scope |
-| `delete_card` | Delete a tokenized card |
-| `create_plan` | Create a subscription plan template |
-| `create_subscription` | Subscribe a customer to a plan using a stored card |
-| `create_payout` | Pay out MXN to a bank account (marketplace seller payouts) |
+|---|---|
+| `create_charge` | Create a charge. |
+| `get_charge` | Retrieve a charge. |
+| `capture_charge` | Capture a previously authorized charge (when the original charge used capture=false). |
+| `refund_charge` | Refund a captured charge. |
+| `create_customer` | Create a customer record. |
+| `get_customer` | Retrieve a customer by Openpay customer id. |
+| `list_customers` | List customers with optional filters. |
+| `create_card` | Tokenize a card. |
+| `delete_card` | Delete a tokenized card. |
+| `create_plan` | Create a subscription plan. |
+| `create_subscription` | Subscribe a customer to a plan. |
+| `create_payout` | Pay out MXN to a bank account. |
+| `update_customer` | Update a stored customer (PUT /customers/{id}). |
+| `delete_customer` | Delete a customer (DELETE /customers/{id}). |
+| `get_card` | Retrieve a tokenized card. |
+| `list_cards` | List tokenized cards. |
+| `create_bank_account` | Store a customer bank account (POST /customers/{customer_id}/bankaccounts). |
+| `delete_bank_account` | Delete a stored customer bank account (DELETE /customers/{customer_id}/bankaccounts/{id}). |
+| `cancel_subscription` | Cancel a customer's subscription (DELETE /customers/{customer_id}/subscriptions/{id}). |
+| `list_payouts` | List payouts. |
+| `create_webhook` | Register a webhook endpoint (POST /webhooks). |
+| `list_webhooks` | List configured webhook subscriptions (GET /webhooks). |
+| `delete_webhook` | Delete a webhook subscription (DELETE /webhooks/{id}). |
 
 ## Install
 

@@ -4,22 +4,32 @@ MCP server for [Twilio](https://www.twilio.com) — the global standard for prog
 
 SMS, WhatsApp, and Voice across 180+ countries. Verify (2FA) and Lookup (phone validation) included. Fills the global messaging gap in a catalog otherwise tilted to Brazil-specific providers (Z-API, Take Blip, Zenvia, Evolution API).
 
-## Tools
+## Tools (22)
 
 | Tool | Purpose |
-|------|---------|
-| `send_message` | Send an SMS or WhatsApp message (prefix `To` with `whatsapp:+E164` for WhatsApp) |
-| `get_message` | Retrieve a message by SID |
-| `list_messages` | List messages with optional filters (To, From, DateSent) |
-| `delete_message` | Delete a message from history |
-| `make_call` | Place an outbound voice call driven by a TwiML `Url` |
-| `get_call` | Retrieve a call by SID |
-| `update_call` | Hang up or redirect an in-progress call |
-| `start_verification` | Send a Verify (2FA) code via sms / whatsapp / call |
-| `check_verification` | Check a Verify (2FA) code |
-| `lookup_phone` | Validate + format + classify a phone number (Lookups v2) |
-| `list_incoming_numbers` | List your Twilio-provisioned phone numbers |
-| `buy_phone_number` | Provision a new phone number |
+|---|---|
+| `send_message` | Send an SMS or WhatsApp message. |
+| `get_message` | Retrieve a message resource by SID (SM... |
+| `list_messages` | List messages with optional filters. |
+| `delete_message` | Delete a message from history. |
+| `make_call` | Place an outbound voice call. |
+| `get_call` | Retrieve a call resource by SID (CA...). |
+| `update_call` | Modify an in-progress call. |
+| `start_verification` | Start a Verify (2FA) challenge. |
+| `check_verification` | Check a Verify (2FA) code against a Service SID. |
+| `lookup_phone` | Validate and normalize a phone number via Lookups v2. |
+| `list_incoming_numbers` | List Twilio-provisioned phone numbers on this account. |
+| `buy_phone_number` | Provision a new phone number. |
+| `list_recordings` | List call recordings on this account. |
+| `create_verify_service` | Create a Verify Service (VA...). |
+| `create_conversation` | Create a Twilio Conversation. |
+| `list_conversations` | List Conversations. |
+| `add_conversation_participant` | Add a participant to a Conversation. |
+| `send_conversation_message` | Post a message into a Conversation. |
+| `list_messaging_services` | List Messaging Services (MG...). |
+| `execute_studio_flow` | Trigger a Studio Flow Execution for a contact. |
+| `create_taskrouter_task` | Create a TaskRouter Task on a Workspace. |
+| `list_taskrouter_workers` | List Workers on a TaskRouter Workspace. |
 
 ## Install
 

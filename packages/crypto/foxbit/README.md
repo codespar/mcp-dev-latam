@@ -51,20 +51,31 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (21)
 
-| Tool | Description |
-|------|-------------|
-| `list_markets` | List all available trading pairs |
-| `get_ticker` | Get 24h ticker data for a market |
-| `get_orderbook` | Get order book for a market |
-| `get_account_balances` | Get account balances |
-| `create_order` | Create a buy or sell order (limit/market) |
+| Tool | Purpose |
+|---|---|
+| `list_markets` | List all available trading pairs / markets on Foxbit |
+| `list_currencies` | List all supported currencies (crypto and fiat) on Foxbit |
+| `get_currency` | Get details of a specific currency (precision, min/max amounts, type) |
+| `get_ticker` | Get 24h ticker data for a market (price, volume, high/low) |
+| `get_orderbook` | Get order book (bids and asks) for a market |
+| `get_market_trades` | Get recent public trades for a market (trade history / tape) |
+| `get_candles` | Get OHLC candlestick data for a market |
+| `get_account_balances` | Get account balances for all currencies |
+| `get_balance` | Get account balance for a single currency |
+| `create_order` | Create a buy or sell order (limit or market) |
 | `get_order` | Get order details by ID |
-| `list_orders` | List orders with filters |
-| `cancel_order` | Cancel an open order |
-| `list_trades` | List executed trades |
-| `list_deposits_withdrawals` | List deposits and withdrawals for a currency |
+| `list_orders` | List orders with optional filters |
+| `cancel_order` | Cancel an open order by ID |
+| `list_trades` | List user's executed trades (private trade history) |
+| `list_deposits_withdrawals` | List deposits and withdrawals (transactions) for a currency |
+| `create_pix_deposit` | Create a Pix instant deposit (BRL). |
+| `list_pix_deposits` | List Pix deposit history (BRL instant deposits) |
+| `create_pix_withdrawal` | Create a Pix withdrawal (BRL) to a Pix key |
+| `list_pix_withdrawals` | List Pix withdrawal history (BRL fiat withdrawals) |
+| `create_crypto_withdrawal` | Create a crypto withdrawal to an external wallet address |
+| `get_trading_fees` | Get current trading fees and limits (maker/taker per pair, withdrawal limits) |
 
 ## Authentication
 

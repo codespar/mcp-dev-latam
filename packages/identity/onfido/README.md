@@ -6,21 +6,30 @@ Onfido is the identity verification layer behind Revolut, N26, Uber, and hundred
 
 Second entry in CodeSpar's `identity` category alongside [Unico](../unico) (BR-first KYC). Pair them: **Unico for Brazilian users (CPF + Receita Federal biometric pool), Onfido when the flow touches non-LatAm users**.
 
-## Tools
+## Tools (20)
 
 | Tool | Purpose |
-|------|---------|
-| `create_applicant` | Create the person record (required before anything else) |
-| `retrieve_applicant` | Fetch an applicant by id |
-| `update_applicant` | Update applicant fields |
-| `upload_document` | Upload an ID document image (multipart) |
-| `retrieve_document` | Fetch a document by id |
-| `upload_live_photo` | Upload a selfie / live photo (multipart) |
-| `retrieve_live_photo` | Fetch a live photo by id |
-| `create_check` | Run verification (document, facial_similarity_photo, watchlist, etc) |
-| `retrieve_check` | Poll a check — returns overall status + per-report ids |
-| `list_checks` | List all checks for an applicant |
-| `retrieve_report` | Fetch an individual report with its full breakdown |
+|---|---|
+| `create_applicant` | Create an Onfido applicant — the person record that documents, live photos, and checks attach to. |
+| `retrieve_applicant` | Retrieve an applicant by id. |
+| `update_applicant` | Update fields on an existing applicant. |
+| `upload_document` | Upload an identity document image for an applicant. |
+| `retrieve_document` | Retrieve document metadata by id. |
+| `upload_live_photo` | Upload a live photo (selfie) for an applicant, used by facial_similarity_photo reports. |
+| `retrieve_live_photo` | Retrieve a live photo record by id. |
+| `create_check` | Run a verification check on an applicant. |
+| `retrieve_check` | Retrieve a check by id. |
+| `list_checks` | List all checks for a given applicant. |
+| `retrieve_report` | Retrieve an individual report by id. |
+| `delete_applicant` | Soft-delete an applicant. |
+| `list_documents` | List all documents uploaded for a given applicant. |
+| `download_document` | Download the raw binary of an uploaded document. |
+| `list_live_photos` | List all live photos (selfies) uploaded for a given applicant. |
+| `resume_check` | Resume a check that was paused (typically awaiting_applicant or paused states). |
+| `list_reports` | List the reports contained within a given check. |
+| `create_workflow_run` | Start an Onfido Studio workflow run. |
+| `retrieve_workflow_run` | Retrieve a workflow run by id. |
+| `generate_sdk_token` | Mint a short-lived SDK token for embedding the Onfido Web / iOS / Android SDKs in your frontend. |
 
 ## Flow
 

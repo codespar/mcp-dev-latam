@@ -15,23 +15,33 @@ Fourth entry in the CodeSpar `fraud` category, after [`@codespar/mcp-clearsale`]
 
 BR merchants frequently bundle 2-3 of these for best-of-breed scoring — Legiti for its ticketing-specific signals, ClearSale or Konduto for the generalist fraud layer, Sift for cross-border flows.
 
-## Tools
+## Tools (18)
 
 | Tool | Purpose |
-|------|---------|
-| `evaluate_order` | `POST /v2/order` — submit an order and receive a synchronous decision |
-| `update_order` | `PUT /v2/order` — notify Legiti of order status transitions |
-| `mark_order_fraudulent` | `POST /v2/order/mark_fraudulent` — chargeback feedback |
-| `evaluate_sale` | `POST /evaluation` — legacy single-shot sale evaluation |
-| `track_account` | `POST /account` — account create/update/delete |
-| `track_event` | `POST /event` — event (concert/show) create/update/delete |
-| `track_sale` | `POST /sale` — sale create/update |
-| `track_auth` | `POST /auth` — login/logout/password recovery/reset |
+|---|---|
+| `evaluate_order` | Submit an order to Legiti for real-time fraud evaluation via the v2 order endpoint. |
+| `update_order` | Notify Legiti of a status change on an existing order (e.g. |
+| `mark_order_fraudulent` | Report a confirmed chargeback / fraud outcome back to Legiti. |
+| `evaluate_sale` | Legacy single-shot sale evaluation via POST /evaluation. |
+| `track_account` | Notify Legiti of an account lifecycle event (created / updated / deleted). |
+| `track_event` | Notify Legiti of an Event (concert, show, match, session) lifecycle change. |
+| `track_sale` | Notify Legiti of a Sale state change (created / updated). |
+| `track_auth` | Notify Legiti of an authentication or password event (login attempt, logout, password recovery request, pas... |
+| `track_login` | Notify Legiti of a login attempt (successful or failed). |
+| `track_logout` | Notify Legiti of a logout event. |
+| `track_signup` | Notify Legiti of a new account creation. |
+| `track_account_update` | Notify Legiti of an account profile change (email, phone, CPF, address). |
+| `track_password_recovery` | Notify Legiti of a password recovery request (the 'forgot password' click). |
+| `track_event_view` | Notify Legiti that a user viewed an event/show page. |
+| `track_payment` | Notify Legiti of a payment-method-level event (authorization attempt, capture, refund, void). |
+| `get_decision` | Fetch the latest Legiti decision for an order. |
+| `update_decision_status` | Manually override Legiti's decision for an order — typically used to accept or decline a sale that landed i... |
+| `mark_dispute_resolution` | Report the outcome of a chargeback dispute back to Legiti — i.e. |
 
 ## Install
 
 ```bash
-npm install @codespar/mcp-legiti
+npm install @codespar/mcp-legiti@alpha
 ```
 
 ## Environment

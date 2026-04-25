@@ -10,21 +10,32 @@ Bradesco's Developer Portal is **contract-gated** — the full OpenAPI specs for
 
 Pin to exact versions during `0.1.x`; paths will be corrected to match the portal spec once an onboarded merchant can validate.
 
-## Tools
+## Tools (22)
 
 | Tool | Purpose |
 |---|---|
-| `get_oauth_token` | Mint / inspect a cached OAuth2 bearer |
-| `send_pix` | Initiate an outbound Pix payment |
-| `create_pix_qr` | Create a dynamic Pix charge with QR (cob) |
-| `get_pix` | Retrieve a Pix by `endToEndId` |
-| `resolve_dict_key` | Resolve a DICT key (CPF/CNPJ/email/phone/EVP) to an account |
-| `refund_pix` | Refund (devolução) a received Pix |
-| `create_boleto` | Issue a boleto via Bradesco Cobrança |
-| `get_boleto` | Retrieve a boleto |
-| `cancel_boleto` | Cancel (baixa) an outstanding boleto |
-| `get_statement` | Account statement transactions |
-| `arrecadacao_pay` | Pay utility / tax / concessionária bills |
+| `get_oauth_token` | Mint or return a cached OAuth2 client_credentials bearer token for the Bradesco Developer Portal. |
+| `send_pix` | Initiate an outbound Pix payment from the merchant's Bradesco account. |
+| `create_pix_qr` | Create a dynamic Pix charge with QR code (cob). |
+| `get_pix` | Retrieve a Pix transaction by its BCB endToEndId (E<ispb><yyyymmddhhmm><sequence>). |
+| `resolve_dict_key` | Resolve a DICT key (CPF, CNPJ, email, phone, EVP) to the owner's account data before sending a Pix. |
+| `refund_pix` | Refund (devolução) a previously received Pix. |
+| `create_boleto` | Issue a boleto via Bradesco Cobrança. |
+| `get_boleto` | Retrieve a boleto by its Bradesco identifier (id or nosso_numero). |
+| `cancel_boleto` | Cancel (baixa) an outstanding boleto before payment. |
+| `get_statement` | Retrieve account statement transactions for a given period. |
+| `arrecadacao_pay` | Pay a utility, tax, or concessionária bill via Bradesco Arrecadação. |
+| `list_pix_received` | List Pix transactions received by the merchant during a period. |
+| `create_pix_due_charge` | Create a Pix charge with a due date (cobv) — commonly used for installments and scheduled invoices. |
+| `get_pix_due_charge` | Retrieve a Pix due charge (cobv) by txid. |
+| `update_pix_due_charge` | Patch a Pix due charge (cobv) — revise amount, due date, discount, or debtor before payment. |
+| `register_dict_key` | Register a DICT key (CPF, CNPJ, email, phone, or EVP) pointing to a merchant account at Bradesco. |
+| `delete_dict_key` | Delete (unlink) a DICT key that points to a merchant account at Bradesco. |
+| `list_boletos` | List boletos issued by the merchant filtered by status and issue/due period. |
+| `get_boleto_pdf` | Download the boleto PDF as base64. |
+| `get_account_balance` | Retrieve the current available balance (saldo disponível) for a merchant account. |
+| `transfer_ted` | Execute a TED (or TEF when intra-Bradesco) transfer from the merchant's account to a beneficiary bank account. |
+| `pay_tax_darf` | Pay a federal tax (DARF) or union fee (GRU) via Bradesco Arrecadação. |
 
 ## Install
 

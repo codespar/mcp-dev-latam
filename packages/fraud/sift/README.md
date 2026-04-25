@@ -24,27 +24,35 @@ Sift is built around three APIs that work together:
 2. **Score API** (`/v205/users/{user_id}/score`) — you GET the latest ML score for a user, or POST to force a rescore. Scores are floats in `[0, 1]` per abuse type (`payment_abuse`, `account_abuse`, `content_abuse`, `promotion_abuse`).
 3. **Decisions API v3** (`/v3/accounts/{account_id}/...`) — workflows in the Sift console turn scores into Decisions (`block_user_payment_abuse`, `approve_order_payment_abuse`, etc). You can apply a decision directly, read the current decisions on a user/order, or fetch the status of a workflow run.
 
-## Tools
+## Tools (20)
 
-| Tool | Endpoint |
-|------|----------|
-| `send_event` | `POST /v205/events` |
-| `get_user_score` | `GET /v205/users/{user_id}/score` |
-| `rescore_user` | `POST /v205/users/{user_id}/score` |
-| `label_user` | `POST /v205/users/{user_id}/labels` |
-| `unlabel_user` | `DELETE /v205/users/{user_id}/labels` |
-| `apply_decision_to_user` | `POST /v3/accounts/{account_id}/users/{user_id}/decisions` |
-| `apply_decision_to_order` | `POST /v3/accounts/{account_id}/users/{user_id}/orders/{order_id}/decisions` |
-| `get_user_decisions` | `GET /v3/accounts/{account_id}/users/{user_id}/decisions` |
-| `get_order_decisions` | `GET /v3/accounts/{account_id}/orders/{order_id}/decisions` |
-| `get_workflow_run` | `GET /v3/accounts/{account_id}/workflows/runs/{run_id}` |
-
-Note: the order-level **apply** path includes `user_id`, while the order-level **GET** path does not. Both are verified against Sift's official Ruby SDK.
+| Tool | Purpose |
+|---|---|
+| `send_event` | Send a fraud signal to Sift's Events API (POST /v205/events). |
+| `get_user_score` | Fetch the latest Sift score(s) for a user (GET /v205/users/{user_id}/score). |
+| `rescore_user` | Force Sift to recompute a user's score right now (POST /v205/users/{user_id}/score). |
+| `label_user` | Label a user as fraud or not-fraud via the legacy Labels API (POST /v205/users/{user_id}/labels). |
+| `unlabel_user` | Remove any existing label on a user (DELETE /v205/users/{user_id}/labels). |
+| `apply_decision_to_user` | Apply a workflow Decision to a user (POST /v3/accounts/{account_id}/users/{user_id}/decisions). |
+| `apply_decision_to_order` | Apply a workflow Decision to a specific order (POST /v3/accounts/{account_id}/users/{user_id}/orders/{order... |
+| `get_user_decisions` | Fetch the decisions currently applied to a user (GET /v3/accounts/{account_id}/users/{user_id}/decisions). |
+| `get_order_decisions` | Fetch the decisions currently applied to an order (GET /v3/accounts/{account_id}/orders/{order_id}/decisions). |
+| `get_workflow_run` | Fetch the status of a Sift Workflow run (GET /v3/accounts/{account_id}/workflows/runs/{run_id}). |
+| `send_chargeback` | Send a $chargeback event to Sift's Events API (POST /v205/events). |
+| `send_login` | Send a $login event to Sift's Events API (POST /v205/events). |
+| `send_logout` | Send a $logout event to Sift's Events API (POST /v205/events). |
+| `send_content_status` | Send a $content_status event to Sift's Events API (POST /v205/events). |
+| `link_session_to_user` | Send a $link_session_to_user event to Sift's Events API (POST /v205/events). |
+| `send_custom_event` | Send a custom (merchant-defined) event to Sift's Events API (POST /v205/events). |
+| `apply_decision_to_session` | Apply a workflow Decision to a session (POST /v3/accounts/{account_id}/users/{user_id}/sessions/{session_id... |
+| `apply_decision_to_content` | Apply a workflow Decision to a content item (POST /v3/accounts/{account_id}/users/{user_id}/content/{conten... |
+| `get_session_decisions` | Fetch the decisions currently applied to a session (GET /v3/accounts/{account_id}/users/{user_id}/sessions/... |
+| `get_content_decisions` | Fetch the decisions currently applied to a content item (GET /v3/accounts/{account_id}/users/{user_id}/cont... |
 
 ## Install
 
 ```bash
-npm install @codespar/mcp-sift
+npm install @codespar/mcp-sift@alpha
 ```
 
 ## Environment

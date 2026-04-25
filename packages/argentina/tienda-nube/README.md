@@ -25,10 +25,10 @@ npx tsx packages/argentina/tienda-nube/src/index.ts --http
 | `MCP_HTTP` | No | Set to `"true"` to enable HTTP transport |
 | `MCP_PORT` | No | HTTP port (default: 3000) |
 
-## Tools
+## Tools (24)
 
-| Tool | Description |
-|------|-------------|
+| Tool | Purpose |
+|---|---|
 | `list_products` | List products from the store |
 | `get_product` | Get product details by ID |
 | `create_product` | Create a new product |
@@ -39,6 +39,20 @@ npx tsx packages/argentina/tienda-nube/src/index.ts --http
 | `get_customer` | Get customer details by ID |
 | `list_categories` | List product categories |
 | `update_order_status` | Update order fulfillment/shipping status |
+| `delete_product` | Delete a product by ID |
+| `list_product_variants` | List variants of a product |
+| `update_product_variant` | Update a product variant (price, stock, sku, weight) |
+| `close_order` | Close an order (mark as fulfilled/closed) |
+| `cancel_order` | Cancel an order, optionally restocking and refunding |
+| `create_category` | Create a product category |
+| `update_category` | Update a product category |
+| `delete_category` | Delete a product category by ID |
+| `list_webhooks` | List configured webhooks |
+| `create_webhook` | Subscribe to a webhook event |
+| `delete_webhook` | Delete a webhook by ID |
+| `list_discount_coupons` | List discount coupons |
+| `create_discount_coupon` | Create a discount coupon |
+| `list_abandoned_carts` | List abandoned checkouts |
 
 ## Auth
 

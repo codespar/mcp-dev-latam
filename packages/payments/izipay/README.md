@@ -35,25 +35,35 @@ This is **0.1.0-alpha.1**. Izipay's developer portal at `developers.izipay.pe` i
 | `list_transactions` | `GET` | `/v1/transactions` |
 | `get_settlement` | `GET` | `/v1/settlements/{date}` |
 
-## Tools
+## Tools (20)
 
 | Tool | Purpose |
 |---|---|
-| `create_charge` | Authorize a card payment (3DS supported) |
-| `capture_charge` | Capture a previously authorized charge |
-| `cancel_charge` | Void an authorized-but-uncaptured charge |
-| `refund_charge` | Full or partial refund |
-| `get_charge` | Retrieve a charge by id |
-| `tokenize_card` | PCI-safe card tokenization |
-| `delete_token` | Delete a stored card token |
-| `create_installment_plan` | Peruvian cuotas plan (with/without interest) |
-| `list_transactions` | Reconciliation: transactions by date + status |
-| `get_settlement` | Daily settlement batch (liquidación) for a date |
+| `create_charge` | Authorize a card payment. |
+| `capture_charge` | Capture a previously authorized charge (when capture=false was used in create_charge). |
+| `cancel_charge` | Void an authorized-but-uncaptured charge. |
+| `refund_charge` | Refund a captured charge. |
+| `get_charge` | Retrieve a charge by Izipay charge id. |
+| `tokenize_card` | Tokenize a card for PCI-safe reuse. |
+| `delete_token` | Delete a stored card token. |
+| `create_installment_plan` | Create a Peruvian cuotas (installment) plan on a charge. |
+| `list_transactions` | List transactions for reconciliation. |
+| `get_settlement` | Get the daily settlement batch (liquidación) for a given date. |
+| `get_charge_by_order` | Retrieve a charge by the merchant-side orderNumber (order_id passed to create_charge). |
+| `list_installment_options` | Query available cuota programs for a given card BIN and amount. |
+| `list_settlements` | List settlement batches across a date range. |
+| `create_payment_link` | Create a hosted payment link (pay-by-link). |
+| `get_payment_link` | Retrieve a payment link by id. |
+| `pay_yape` | Initiate a Yape direct payment. |
+| `pay_plin` | Initiate a Plin direct payment. |
+| `authenticate_3ds` | Complete a 3-D Secure challenge. |
+| `create_subscription` | Start a recurring card charge (subscription). |
+| `cancel_subscription` | Cancel an active subscription. |
 
 ## Install
 
 ```bash
-npm install @codespar/mcp-izipay
+npm install @codespar/mcp-izipay@alpha
 ```
 
 ## Environment

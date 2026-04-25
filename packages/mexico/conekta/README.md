@@ -23,20 +23,31 @@ npx tsx packages/mexico/conekta/src/index.ts --http
 | `MCP_HTTP` | No | Set to `"true"` to enable HTTP transport |
 | `MCP_PORT` | No | HTTP port (default: 3000) |
 
-## Tools
+## Tools (21)
 
-| Tool | Description |
-|------|-------------|
-| `create_order` | Create a new order (items, customer, charges) |
+| Tool | Purpose |
+|---|---|
+| `create_order` | Create a new order |
 | `get_order` | Get order details by ID |
-| `list_orders` | List orders with filters and pagination |
-| `create_customer` | Create a customer (name, email, phone) |
+| `list_orders` | List orders with filters |
+| `create_customer` | Create a customer |
 | `get_customer` | Get customer by ID |
-| `list_customers` | List customers with pagination |
+| `list_customers` | List customers |
 | `create_charge` | Create a charge for an existing order |
-| `refund_charge` | Refund a charge (full or partial) |
+| `refund_charge` | Refund a charge |
 | `list_payment_sources` | List payment sources for a customer |
-| `get_webhook_events` | Get webhook events |
+| `get_webhook_events` | List webhook events (Conekta Events) |
+| `get_webhook_event` | Retrieve a single webhook event by ID |
+| `update_customer` | Update a customer |
+| `delete_customer` | Delete a customer |
+| `create_payment_source` | Create a payment source (card token) for a customer |
+| `delete_payment_source` | Delete a payment source from a customer |
+| `update_order` | Update an order (line_items, metadata, etc.) |
+| `cancel_order` | Cancel an order |
+| `capture_charge` | Capture a pre-authorized order (pre_authorized → paid) |
+| `create_webhook` | Create a webhook endpoint |
+| `update_webhook` | Update a webhook endpoint |
+| `delete_webhook` | Delete a webhook endpoint |
 
 ## Auth
 

@@ -10,28 +10,39 @@ For LatAm sellers, Amazon rounds out the marketplace trio already in this catalo
 
 Together these three cover essentially every marketplace where a LatAm merchant transacts meaningful GMV.
 
-## Tools
+## Tools (24)
 
-| Tool | Endpoint | Purpose |
-|------|----------|---------|
-| `list_orders` | GET `/orders/v0/orders` | List orders by marketplace, time window, status |
-| `get_order` | GET `/orders/v0/orders/{id}` | One order |
-| `get_order_items` | GET `/orders/v0/orders/{id}/orderItems` | Order line items (ASIN, SKU, qty, price) |
-| `get_listings_item` | GET `/listings/2021-08-01/items/{sellerId}/{sku}` | Read a listing |
-| `put_listings_item` | PUT `/listings/2021-08-01/items/{sellerId}/{sku}` | Create/replace a listing |
-| `delete_listings_item` | DELETE `/listings/2021-08-01/items/{sellerId}/{sku}` | Delete a listing |
-| `search_catalog_items` | GET `/catalog/2022-04-01/items` | Catalog reference search by identifier/keyword |
-| `get_inventory_summary` | GET `/fba/inventory/v1/summaries` | FBA inventory (fulfillable, inbound, reserved) |
-| `create_report` | POST `/reports/2021-06-30/reports` | Request an async report |
-| `get_report` | GET `/reports/2021-06-30/reports/{id}` | Poll report status |
-| `list_financial_events` | GET `/finances/v0/financialEvents` | Financial events for reconciliation |
-| `get_order_shipment_status` | GET `/shipping/v1/shipments/{id}` | Shipment status (Amazon Shipping) |
-| `create_subscription` | POST `/notifications/v1/subscriptions/{type}` | Event subscription (webhook-equivalent via SQS/EventBridge) |
+| Tool | Purpose |
+|---|---|
+| `list_orders` | List orders from Amazon SP-API. |
+| `get_order` | Get one order by AmazonOrderId (e.g. |
+| `get_order_items` | Get the line items for an order by AmazonOrderId. |
+| `get_listings_item` | Get a single listing item for the seller by SKU. |
+| `put_listings_item` | Create or fully replace a listing item for the seller by SKU. |
+| `delete_listings_item` | Delete a listing item for the seller by SKU. |
+| `search_catalog_items` | Search the Amazon catalog for reference product data (ASIN, title, brand, images) by identifiers or keywords. |
+| `get_inventory_summary` | Get FBA inventory summaries (fulfillable, inbound, reserved, researching, unfulfillable quantities) for the... |
+| `create_report` | Request an SP-API report. |
+| `get_report` | Get a report's status and (when DONE) its reportDocumentId, which can then be fetched from the Reports docu... |
+| `list_financial_events` | List financial events (shipment, refund, service fee, adjustment, etc.) for reconciliation. |
+| `get_order_shipment_status` | Get shipment status for a shipment id via the Shipping API (Amazon Shipping / Buy Shipping labels). |
+| `create_subscription` | Create a Notifications API subscription for a given notificationType (webhook-equivalent for SP-API events,... |
+| `patch_listings_item` | Partially update a listing item for the seller by SKU using a JSON Patch list of operations. |
+| `confirm_shipment` | Confirm shipment of an order's items (Orders API v0). |
+| `update_shipment_status` | Update the shipment status of an order (Orders API v0). |
+| `list_reports` | List reports the seller has requested. |
+| `cancel_report` | Cancel a report that is IN_QUEUE and has not yet started processing. |
+| `create_feed` | Submit a feed to SP-API (e.g. |
+| `get_feed` | Get a feed's status and (when DONE) its resultFeedDocumentId — fetch the result from the Feed Document API... |
+| `list_financial_events_by_order` | List financial events scoped to a single order (shipment, refund, service fee, adjustment). |
+| `get_my_fees_estimate_for_asin` | Estimate referral fee + FBA fees for selling an ASIN at a given price. |
+| `list_subscriptions` | Get the current subscription for a notificationType (one subscription per notificationType per app). |
+| `get_marketplace_participations` | List all marketplaces the seller is registered to sell in (Sellers API). |
 
 ## Install
 
 ```bash
-npm install @codespar/mcp-amazon
+npm install @codespar/mcp-amazon@alpha
 ```
 
 ## Environment

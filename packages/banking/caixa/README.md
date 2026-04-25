@@ -10,22 +10,33 @@ Caixa's Developer Portal is **contract-gated**, and as a state-owned institution
 
 Pin to exact versions during `0.1.x`; paths will be corrected to match the portal spec once an onboarded merchant can validate.
 
-## Tools
+## Tools (23)
 
 | Tool | Purpose |
 |---|---|
-| `get_oauth_token` | Mint / inspect a cached OAuth2 bearer |
-| `send_pix` | Initiate an outbound Pix payment |
-| `create_pix_qr` | Create a dynamic Pix charge with QR (cob) |
-| `get_pix` | Retrieve a Pix by `endToEndId` |
-| `resolve_dict_key` | Resolve a DICT key (CPF/CNPJ/email/phone/EVP) to an account |
-| `refund_pix` | Refund (devolução) a received Pix |
-| `create_boleto` | Issue a boleto via Caixa Cobrança (SICOB) |
-| `get_boleto` | Retrieve a boleto |
-| `cancel_boleto` | Cancel (baixa) an outstanding boleto |
-| `get_statement` | Account statement transactions |
-
-Arrecadação (utility/tax bill payment) is intentionally omitted in this alpha — Caixa's arrecadação surface is largely oriented around government convênios rather than merchant-initiated payments. Open an issue if you need it.
+| `get_oauth_token` | Mint or return a cached OAuth2 client_credentials bearer token for the Caixa Developer Portal. |
+| `send_pix` | Initiate an outbound Pix payment from the merchant's Caixa account. |
+| `create_pix_qr` | Create a dynamic Pix charge with QR code (cob). |
+| `get_pix` | Retrieve a Pix transaction by its BCB endToEndId (E<ispb><yyyymmddhhmm><sequence>). |
+| `resolve_dict_key` | Resolve a DICT key (CPF, CNPJ, email, phone, EVP) to the owner's account data before sending a Pix. |
+| `refund_pix` | Refund (devolução) a previously received Pix. |
+| `create_boleto` | Issue a boleto via Caixa Cobrança (SICOB). |
+| `get_boleto` | Retrieve a boleto by its Caixa identifier (id or nosso_numero). |
+| `cancel_boleto` | Cancel (baixa) an outstanding boleto before payment. |
+| `get_statement` | Retrieve account statement transactions for a given period. |
+| `get_pix_charge` | Retrieve a Pix immediate charge (cob) by its BCB txid. |
+| `update_pix_charge` | Update (PATCH) a Pix immediate charge (cob) — e.g. |
+| `list_pix_charges` | List Pix immediate charges (cob) filtered by date range and optional status / CPF / CNPJ. |
+| `create_pix_due_charge` | Create a Pix due-date charge (cobv) with mandatory payer data and due date. |
+| `get_pix_due_charge` | Retrieve a Pix due-date charge (cobv) by its BCB txid. |
+| `list_pix_received` | List received Pix transactions (pix recebidos) by date range. |
+| `register_dict_key` | Register a DICT key (CPF, CNPJ, email, phone, or EVP) to an account owned by the merchant. |
+| `delete_dict_key` | Delete (unregister) a DICT key owned by the merchant. |
+| `download_boleto_pdf` | Fetch the rendered boleto PDF for an issued boleto. |
+| `get_account_balance` | Return the current balance for a Caixa merchant account, including available, blocked, and overdraft limit... |
+| `transfer_ted` | Initiate an outbound TED transfer from a Caixa merchant account to an external bank account. |
+| `consult_fgts` | Query FGTS balance / extrato. |
+| `pay_tribute` | Pay a federal tribute (DARF, GPS, GRU) or other guia de arrecadação via Caixa. |
 
 ## Why Caixa (vs. a private bank)
 

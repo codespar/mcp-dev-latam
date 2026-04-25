@@ -36,47 +36,30 @@ UCP works alongside **AP2** (payment processing) and **A2A** (agent-to-agent int
 claude mcp add ucp -- npx @codespar/mcp-ucp
 ```
 
-## Tools (21)
+## Tools (20)
 
-### Discovery
-| Tool | Description |
-|------|-------------|
-| `search_products` | Search merchant product catalog |
-| `get_product` | Get product details, pricing, variants |
-| `check_availability` | Check stock and delivery availability |
-| `list_merchants` | List UCP-compatible merchants |
-
-### Cart
-| Tool | Description |
-|------|-------------|
-| `create_cart` | Create a shopping cart |
-| `add_to_cart` | Add item to cart |
-| `remove_from_cart` | Remove item from cart |
-| `get_cart` | Get cart contents and totals |
-| `clear_cart` | Clear all cart items |
-
-### Checkout
-| Tool | Description |
-|------|-------------|
-| `get_delivery_options` | Get shipping options |
-| `initiate_checkout` | Start checkout session |
-| `apply_payment` | Apply payment (card, AP2, x402, Pix) |
-| `confirm_order` | Place the order |
-
-### Orders
-| Tool | Description |
-|------|-------------|
-| `get_order` | Get order details and status |
-| `list_orders` | List orders with filters |
-| `cancel_order` | Cancel a pending order |
-| `request_return` | Request return/refund |
-| `track_shipment` | Track shipment in real-time |
-
-### Identity
-| Tool | Description |
-|------|-------------|
-| `link_identity` | Link buyer identity |
-| `get_profile` | Get buyer profile and preferences |
+| Tool | Purpose |
+|---|---|
+| `search_products` | Search merchant product catalog. |
+| `get_product` | Get detailed product information including pricing, variants, availability, and reviews |
+| `check_availability` | Check product stock and delivery availability for a specific location |
+| `list_merchants` | List UCP-compatible merchants with optional category and region filters |
+| `create_cart` | Create a new shopping cart for a merchant |
+| `add_to_cart` | Add an item to the shopping cart |
+| `remove_from_cart` | Remove an item from the shopping cart |
+| `get_cart` | Get cart contents, item totals, taxes, and shipping estimates |
+| `clear_cart` | Remove all items from the cart |
+| `get_delivery_options` | Get available shipping and delivery options for a cart |
+| `initiate_checkout` | Start the checkout process for a cart. |
+| `apply_payment` | Apply a payment method to the checkout session. |
+| `confirm_order` | Confirm and place the order. |
+| `get_order` | Get order details including items, status, payment, and shipping info |
+| `list_orders` | List orders with optional filters |
+| `cancel_order` | Cancel a pending or confirmed order |
+| `request_return` | Request a return or refund for a delivered order |
+| `track_shipment` | Get real-time shipment tracking details for an order |
+| `link_identity` | Link buyer identity for personalization and order history across merchants |
+| `get_profile` | Get buyer profile, preferences, and linked merchants |
 
 ## UCP + AP2 + A2A — The Full Stack
 

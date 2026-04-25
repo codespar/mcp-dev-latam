@@ -27,20 +27,34 @@ npx tsx packages/mexico/belvo/src/index.ts --http
 | `MCP_HTTP` | No | Set to `"true"` to enable HTTP transport |
 | `MCP_PORT` | No | HTTP port (default: 3000) |
 
-## Tools
+## Tools (24)
 
-| Tool | Description |
-|------|-------------|
-| `list_institutions` | List available financial institutions (banks, fiscal) |
+| Tool | Purpose |
+|---|---|
+| `list_institutions` | List available financial institutions |
 | `create_link` | Create a link to a financial institution |
 | `list_links` | List existing links |
 | `get_accounts` | Get accounts for a link |
-| `get_balances` | Get balances for a link (date range) |
-| `get_transactions` | Get transactions for a link (date range) |
+| `get_balances` | Get balances for a link |
+| `get_transactions` | Get transactions for a link |
 | `get_owners` | Get owner information for a link |
 | `get_incomes` | Get income data for a link |
 | `get_tax_returns` | Get tax returns for a link (fiscal institutions) |
 | `get_investments` | Get investment portfolios for a link |
+| `get_link` | Retrieve details of a specific link by ID |
+| `delete_link` | Delete a link (and all its associated data) by ID |
+| `patch_link` | Update a link's credentials or resume after MFA (PATCH /api/links/) |
+| `list_accounts` | List stored accounts (GET /api/accounts/) with optional filters |
+| `get_account_detail` | Retrieve a stored account by account ID |
+| `list_transactions` | List stored transactions (GET /api/transactions/) with optional filters |
+| `get_transaction_detail` | Retrieve a stored transaction by transaction ID |
+| `list_balances` | List stored balances (GET /api/balances/) with optional filters |
+| `list_owners` | List stored owners (GET /api/owners/) |
+| `list_incomes` | List stored incomes (GET /api/incomes/) |
+| `get_employment_records` | Get employment records for a link (employment institutions) |
+| `get_invoices` | Get invoices for a link (BR/MX fiscal institutions) |
+| `get_receivables_transactions` | Get receivables transactions for a link (payment rails / acquirer data) |
+| `create_widget_token` | Create a short-lived access token for the Belvo Connect Widget |
 
 ## Auth
 

@@ -64,35 +64,32 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (22)
 
-### Payments (Transaction API)
-| Tool | Description |
-|------|-------------|
-| `create_sale` | Create a sale (CreditCard, DebitCard, Boleto, Pix, EletronicTransfer) |
-| `capture_sale` | Capture a pre-authorized sale (full or partial, with optional `serviceTaxAmount`) |
-| `void_sale` | Void / cancel a sale (full or partial) |
-| `create_recurrent` | Create a Braspag-managed recurrent payment |
-| `disable_recurrent` | Deactivate a recurrent payment |
-| `update_recurrent_amount` | Change the amount charged on a recurrent payment |
-
-### Queries (Query API)
-| Tool | Description |
-|------|-------------|
-| `get_sale` | Get sale detail by PaymentId |
-| `get_sale_by_order_id` | Look up sale(s) by MerchantOrderId |
-| `get_recurrent` | Get recurrent payment config and history |
-
-### Cartão Protegido (Token Vault — Transaction API)
-| Tool | Description |
-|------|-------------|
-| `tokenize_card` | Tokenize a card into the Braspag vault |
-| `get_card_token` | Retrieve masked card data by vault token |
-
-### Split (Transaction API)
-| Tool | Description |
-|------|-------------|
-| `create_split_sale` | Create a sale with `Payment.SplitPayments` rules (marketplace split across sub-merchants) |
+| Tool | Purpose |
+|---|---|
+| `create_sale` | Create a sale on the Braspag Transaction API (POST /sales). |
+| `capture_sale` | Capture a pre-authorized sale (PUT /sales/{paymentId}/capture). |
+| `void_sale` | Void / cancel a sale (PUT /sales/{paymentId}/void). |
+| `create_recurrent` | Create a recurrent payment schedule (POST /recurrentPayments). |
+| `disable_recurrent` | Deactivate a recurrent payment (PUT /recurrentPayments/{recurrentPaymentId}/Deactivate). |
+| `update_recurrent_amount` | Update the charged amount on a recurrent payment (PUT /recurrentPayments/{recurrentPaymentId}/Amount). |
+| `get_sale` | Get sale detail by PaymentId (GET /sales/{paymentId} — Query API). |
+| `get_sale_by_order_id` | Look up sale(s) by MerchantOrderId (GET /sales?merchantOrderId=X — Query API). |
+| `get_recurrent` | Get a recurrent payment's configuration and history (GET /recurrentPayments/{recurrentPaymentId} — Query API). |
+| `tokenize_card` | Tokenize a card into the Braspag vault / Cartão Protegido (POST /card). |
+| `get_card_token` | Retrieve the stored card data associated with a Cartão Protegido token (GET /card/{token}). |
+| `create_split_sale` | Create a sale with marketplace split rules (POST /sales with Payment.SplitPayments). |
+| `create_sale_3ds` | Create a 3DS-authenticated credit sale (POST /sales). |
+| `create_zero_auth` | Zero-dollar authorization / card validation (POST /zeroauth). |
+| `create_boleto_sale` | Convenience wrapper to create a Boleto sale (POST /sales with Payment.Type=Boleto). |
+| `create_pix_sale` | Convenience wrapper to create a Pix sale (POST /sales with Payment.Type=Pix). |
+| `reactivate_recurrent` | Reactivate a previously deactivated recurrent payment (PUT /recurrentPayments/{recurrentPaymentId}/Reactiva... |
+| `update_recurrent_next_payment` | Update the NextPaymentDate on a recurrent payment (PUT /recurrentPayments/{recurrentPaymentId}/NextPaymentD... |
+| `update_recurrent_payment` | Update the Payment (CreditCard + Customer) on a recurrent schedule (PUT /recurrentPayments/{recurrentPaymen... |
+| `create_antifraud_analysis` | Submit a standalone Antifraud analysis (POST /fraudanalysis) through Braspag's antifraud orchestration (Cyb... |
+| `delete_card_token` | Delete a Cartão Protegido vault token (DELETE /card/{token}). |
+| `create_split_capture` | Capture a previously authorized split sale with overridden per-sub-merchant amounts (PUT /sales/{paymentId}... |
 
 ## Authentication
 

@@ -49,19 +49,32 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (23)
 
-| Tool | Description |
-|------|-------------|
-| `create_wallet` | Create a new Circle wallet |
+| Tool | Purpose |
+|---|---|
+| `create_wallet` | Create a new Circle business-account wallet |
 | `get_wallet` | Get wallet details by ID |
+| `list_wallets` | List all Circle wallets |
 | `create_payment` | Accept a USDC payment via Circle |
 | `get_payment` | Get payment details by ID |
 | `create_payout` | Create a payout from Circle (USDC to fiat) |
 | `get_payout` | Get payout details by ID |
-| `create_transfer` | Create a USDC transfer between Circle wallets |
+| `list_payouts` | List payouts with optional filters |
+| `create_transfer` | Create a USDC transfer between Circle wallets (or to blockchain address) |
 | `get_transfer` | Get transfer details by ID |
-| `get_balance` | Get account balance |
+| `list_transfers` | List transfers with optional filters |
+| `create_card` | Register card data for on-ramp payments |
+| `get_card` | Get card details by ID |
+| `list_cards` | List registered cards |
+| `list_settlements` | List settlements (card payment batches) |
+| `get_settlement` | Get settlement details by ID |
+| `list_chargebacks` | List chargebacks |
+| `get_chargeback` | Get chargeback details by ID |
+| `create_subscription` | Register a notification subscription (webhook) |
+| `list_subscriptions` | List notification subscriptions (webhooks) |
+| `delete_subscription` | Delete a notification subscription |
+| `get_balance` | Get business-account balance |
 | `list_transactions` | List transactions with optional filters |
 
 ## Authentication

@@ -53,75 +53,42 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (33)
 
-### Catalog
-| Tool | Description |
-|------|-------------|
+| Tool | Purpose |
+|---|---|
 | `list_products` | List products from VTEX catalog |
 | `get_product` | Get product details by ID |
-| `create_product` | Create a new product |
-| `update_product` | Update product details |
+| `create_product` | Create a new product in the VTEX catalog |
+| `update_product` | Update an existing product in the VTEX catalog |
 | `list_skus` | List SKUs for a product |
-| `create_sku` | Create a new SKU |
-| `list_categories` | List categories with pagination |
-| `create_category` | Create a new category |
+| `create_sku` | Create a new SKU for a product |
+| `list_categories` | List all categories with pagination |
+| `create_category` | Create a new category in the catalog |
 | `get_catalog` | Get the catalog category tree |
-
-### Orders (OMS)
-| Tool | Description |
-|------|-------------|
 | `list_orders` | List orders with optional filters |
 | `get_order` | Get full OMS order details by ID |
-| `update_order_status` | Start handling (fulfillment) on an order |
+| `update_order_status` | Transition an order to the handling state (start fulfillment) |
 | `invoice_order` | Issue a fiscal invoice (nota fiscal) for an order |
-| `track_order_invoice` | Update tracking info on an issued invoice |
+| `track_order_invoice` | Update tracking info for a previously issued invoice |
 | `cancel_order` | Cancel an order |
-| `list_customer_orders` | List order history for a customer email |
-
-### Pricing
-| Tool | Description |
-|------|-------------|
-| `get_sku_price` | Get base / list / cost price and fixed prices for an SKU |
-| `update_sku_price` | Update pricing for an SKU |
-| `list_price_tables` | List configured price tables (trade policies) |
-
-### Inventory & Shipping
-| Tool | Description |
-|------|-------------|
+| `list_customer_orders` | List order history for a customer (filtered by email) |
+| `get_sku_price` | Get pricing details for an SKU (base price, list price, markup, cost, fixed prices per trade policy) |
+| `update_sku_price` | Update base/list/cost price for an SKU |
+| `list_price_tables` | List all configured price tables (trade policies) |
 | `get_inventory` | Get inventory/stock for a SKU across warehouses |
-| `update_inventory` | Update inventory quantity at a warehouse |
+| `update_inventory` | Update inventory quantity for a SKU at a specific warehouse |
 | `get_shipping_rates` | Simulate shipping rates for items to a postal code |
-
-### Logistics
-| Tool | Description |
-|------|-------------|
-| `list_warehouses` | List all warehouses |
+| `list_warehouses` | List all warehouses configured in the account |
 | `create_warehouse` | Register a new warehouse (fulfillment center) |
-
-### Promotions & Coupons
-| Tool | Description |
-|------|-------------|
-| `create_promotion` | Create a promotion/discount |
-| `list_coupons` | List promotion coupons |
-| `create_coupon` | Create a coupon code |
-
-### Subscriptions
-| Tool | Description |
-|------|-------------|
+| `create_promotion` | Create a promotion/discount in VTEX |
+| `list_coupons` | List all promotion coupons |
+| `create_coupon` | Create a promotion coupon code |
 | `list_subscriptions` | List customer subscriptions |
-| `create_subscription` | Create a recurring subscription |
-
-### Master Data (customer profiles & custom entities)
-| Tool | Description |
-|------|-------------|
-| `get_masterdata_document` | Get a document from a data entity |
-| `search_masterdata` | Search documents with filters |
-
-### Giftcards
-| Tool | Description |
-|------|-------------|
-| `create_giftcard` | Issue a gift card for a customer |
+| `create_subscription` | Create a recurring subscription for a customer (VTEX Subscriptions) |
+| `get_masterdata_document` | Get a document (customer profile, custom entity) from VTEX Master Data v2 |
+| `search_masterdata` | Search documents in a Master Data entity |
+| `create_giftcard` | Create a gift card for a customer (GiftCard Hub) |
 | `get_giftcard` | Get gift card details by ID |
 
 ## Authentication

@@ -10,24 +10,24 @@ C6's Developer Portal is **contract-gated** — full OpenAPI specs for Pix, Cobr
 
 Pin to exact versions during `0.1.x`; paths will be corrected to match the portal spec once an onboarded merchant can validate.
 
-## Tools
+## Tools (14)
 
 | Tool | Purpose |
 |---|---|
-| `get_oauth_token` | Mint / inspect a cached OAuth2 bearer |
-| `create_pix_cob` | Create a Pix immediate charge (cob) with QR |
-| `get_pix_cob` | Retrieve a Pix immediate charge by txid |
-| `list_pix_cob` | List Pix immediate charges by date range |
-| `create_pix_cobv` | Create a Pix charge with due date (cobv) |
-| `get_pix_cobv` | Retrieve a Pix due-date charge by txid |
-| `resolve_dict_key` | Resolve a DICT key (CPF/CNPJ/email/phone/EVP) |
-| `register_pix_key` | Register a DICT key on a C6 account |
-| `delete_pix_key` | Delete a DICT key owned by the merchant |
-| `create_boleto` | Issue a boleto via C6 Cobrança |
-| `get_boleto` | Retrieve a boleto |
-| `cancel_boleto` | Cancel (baixa) an outstanding boleto |
-| `get_account_balance` | Account balance snapshot |
-| `get_statement` | Account statement transactions |
+| `get_oauth_token` | Mint or return a cached OAuth2 client_credentials bearer token for the C6 Developer Portal. |
+| `create_pix_cob` | Create a Pix immediate charge (cob) with QR code. |
+| `get_pix_cob` | Retrieve a Pix immediate charge (cob) by its txid. |
+| `list_pix_cob` | List Pix immediate charges (cob) registered by the merchant within a date range. |
+| `create_pix_cobv` | Create a Pix charge with due date (cobv) — used for boleto-like Pix where the payer can pay at or after a d... |
+| `get_pix_cobv` | Retrieve a Pix due-date charge (cobv) by its txid. |
+| `resolve_dict_key` | Resolve a DICT key (CPF, CNPJ, email, phone, EVP) to the owner's account data before sending a Pix. |
+| `register_pix_key` | Register a DICT key (CPF, CNPJ, email, phone, or EVP) on a C6 account owned by the merchant. |
+| `delete_pix_key` | Delete a DICT key owned by the merchant. |
+| `create_boleto` | Issue a boleto via C6 Cobrança. |
+| `get_boleto` | Retrieve a boleto by its C6 identifier (id or nosso_numero). |
+| `cancel_boleto` | Cancel (baixa) an outstanding boleto before payment. |
+| `get_account_balance` | Retrieve the current balance snapshot for a merchant account. |
+| `get_statement` | Retrieve account statement transactions for a given period. |
 
 ## Install
 

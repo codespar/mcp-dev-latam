@@ -29,24 +29,32 @@
 claude mcp add mercado-libre -- npx @codespar/mcp-mercado-libre
 ```
 
-## Tools
+## Tools (22)
 
-| Tool | Description |
-|------|-------------|
-| `search_products` | Search products in Mercado Libre |
-| `get_product` | Get product details by item ID |
-| `get_product_description` | Get product description text |
-| `list_categories` | List marketplace categories |
-| `get_category` | Get category details |
+| Tool | Purpose |
+|---|---|
+| `search_products` | Search products in Mercado Libre marketplace |
+| `get_product` | Get detailed product information by item ID |
+| `get_product_description` | Get product description text by item ID |
+| `list_categories` | List all marketplace categories for the site |
+| `get_category` | Get category details and children |
+| `predict_category` | Predict the best category for a product title (domain_discovery) |
+| `get_trends` | Get trending searches in the marketplace |
+| `list_listings` | List seller's active product listings |
+| `update_item` | Update item fields such as available_quantity (stock), status (active/paused/closed), price, or title |
 | `get_seller` | Get seller information and reputation |
 | `list_orders` | List seller orders with filters |
-| `get_order` | Get order details |
-| `get_shipment` | Get shipment tracking |
-| `list_questions` | List product questions |
-| `answer_question` | Answer a product question |
-| `get_user` | Get authenticated user info |
-| `list_listings` | List seller's active listings |
-| `get_trends` | Get trending searches |
+| `get_order` | Get order details by ID |
+| `get_user` | Get authenticated user information |
+| `get_shipment` | Get shipment details |
+| `get_shipment_history` | Get tracking history (status changes) for a shipment |
+| `get_shipping_label` | Get shipping labels (PDF or ZPL) for one or more shipments. |
+| `list_questions` | List questions on a product listing |
+| `answer_question` | Answer a question on a product listing |
+| `list_messages` | List post-sale conversation messages between seller and buyer for an order pack |
+| `send_message` | Send a post-sale message to the buyer associated with an order pack |
+| `list_reviews` | List reviews and rating average for a product |
+| `create_promotion` | Create a price discount promotion for an item (PRICE_DISCOUNT) |
 
 ## Authentication
 

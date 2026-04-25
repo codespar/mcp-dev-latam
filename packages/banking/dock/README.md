@@ -73,20 +73,30 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (20)
 
-| Tool | Description |
-|------|-------------|
-| `create_account` | Open a digital account for an end user |
-| `get_account` | Retrieve account balance, status, coordinates |
-| `send_pix` | Outbound Pix transfer from a Dock account |
-| `get_pix` | Retrieve Pix payment by endToEndId |
-| `create_pix_qr_static` | Reusable Pix QR (points-of-sale, donations) |
-| `create_pix_qr_dynamic` | Single-use expiring Pix QR (e-commerce checkouts) |
-| `refund_pix` | Refund (devolução) a Pix payment |
-| `resolve_dict_key` | DICT lookup — resolve Pix key to account holder |
-| `issue_card` | Issue debit / credit / prepaid / virtual card — Dock's differentiator |
-| `get_card` | Retrieve card status, masked PAN, limits |
+| Tool | Purpose |
+|---|---|
+| `create_account` | Create a digital account for an end user (CPF holder) on Dock. |
+| `get_account` | Retrieve a Dock account by id. |
+| `send_pix` | Initiate an outbound Pix transfer from a Dock account to any Pix key in BR. |
+| `get_pix` | Retrieve an outbound Pix payment by endToEndId. |
+| `create_pix_qr_static` | Create a static Pix QR (reusable, tied to a merchant Pix key). |
+| `create_pix_qr_dynamic` | Create a dynamic Pix QR (single-use, expiring). |
+| `refund_pix` | Refund (devolução) a Pix payment. |
+| `resolve_dict_key` | Resolve a Pix DICT key to the account holder's identity and ISPB/branch/account. |
+| `issue_card` | Issue a card (debit / credit / prepaid / virtual) against a Dock account. |
+| `get_card` | Retrieve a card by id. |
+| `list_accounts` | List Dock accounts under the merchant. |
+| `freeze_account` | Freeze (block) a Dock account. |
+| `unfreeze_account` | Unfreeze a previously frozen Dock account, restoring Pix and card operations. |
+| `block_card` | Block a card temporarily (reversible). |
+| `unblock_card` | Unblock a card that was previously blocked (reversible). |
+| `change_card_status` | Change a card's lifecycle status: ACTIVE / BLOCKED / CANCELED. |
+| `list_transactions` | List transactions on a Dock account (Pix in/out, card auths, fees, transfers). |
+| `get_transaction` | Retrieve a single transaction by id. |
+| `create_webhook` | Register a webhook endpoint to receive Dock event notifications (account.*, pix.*, card.*, transaction.*). |
+| `list_webhooks` | List all webhook endpoints registered for the merchant. |
 
 ## Authentication
 

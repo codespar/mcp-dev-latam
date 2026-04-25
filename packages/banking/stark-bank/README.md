@@ -51,10 +51,10 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (27)
 
-| Tool | Description |
-|------|-------------|
+| Tool | Purpose |
+|---|---|
 | `create_transfer` | Create a bank transfer (Pix or TED) |
 | `get_transfer` | Get transfer details by ID |
 | `list_transfers` | List transfers with optional filters |
@@ -65,6 +65,23 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 | `list_invoices` | List invoices with optional filters |
 | `create_pix_request` | Create a Pix payment request |
 | `get_webhook_events` | Get webhook events (payment confirmations, transfers, etc.) |
+| `create_payment_request` | Create a payment request for approval workflow |
+| `get_payment_request` | Get payment request details by ID |
+| `list_payment_requests` | List payment requests with optional filters |
+| `create_brcode_payment` | Pay a BR Code (Pix QR code / copia-e-cola) |
+| `get_deposit` | Get deposit details by ID (incoming Pix or TED) |
+| `create_boleto_issue` | Issue a boleto receivable (generates barcode/digitable line to collect payment) |
+| `get_boleto` | Get an issued boleto by ID |
+| `list_boletos` | List issued boletos with optional filters |
+| `delete_boleto` | Cancel an issued boleto (only allowed while unpaid / in 'created' or 'registered' state) |
+| `create_pix_key` | Register a Pix key (CPF/CNPJ, email, phone, or EVP/random) |
+| `get_pix_key` | Get Pix key details by ID |
+| `list_pix_keys` | List registered Pix keys with optional filters |
+| `delete_pix_key` | Cancel / deregister a Pix key |
+| `list_deposits` | List deposits (incoming Pix or TED) with optional filters |
+| `create_utility_payment` | Pay a utility bill (e.g. |
+| `create_tax_payment` | Pay a tax (DARF, GPS, GRU, etc.) by barcode / digitable line |
+| `list_workspaces` | List workspaces the organization has access to (multi-tenant subaccounts) |
 
 ## Authentication
 

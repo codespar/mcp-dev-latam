@@ -49,10 +49,10 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (20)
 
-| Tool | Description |
-|------|-------------|
+| Tool | Purpose |
+|---|---|
 | `create_subscription` | Create a recurring subscription in Vindi |
 | `get_subscription` | Get subscription details by ID |
 | `list_subscriptions` | List subscriptions with optional filters |
@@ -63,6 +63,16 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 | `get_customer` | Get customer details by ID |
 | `create_plan` | Create a billing plan in Vindi |
 | `list_plans` | List available billing plans |
+| `update_customer` | Update a customer's details |
+| `create_product` | Create a product (catalog item that can be attached to plans or bills) |
+| `list_products` | List products in the catalog |
+| `cancel_subscription` | Cancel a subscription immediately |
+| `reactivate_subscription` | Reactivate a canceled subscription |
+| `cancel_bill` | Cancel a pending bill |
+| `charge_bill` | Retry charging a pending bill (runs the billing workflow) |
+| `refund_charge` | Refund a charge (full or partial). |
+| `create_payment_profile` | Create a payment profile (tokenized card / saved payment method) for a customer |
+| `list_payment_profiles` | List payment profiles, optionally filtered by customer |
 
 ## Authentication
 

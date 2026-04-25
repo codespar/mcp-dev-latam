@@ -15,23 +15,33 @@ Second entry in the CodeSpar `fraud` category after [`@codespar/mcp-clearsale`](
 
 Merchants commonly run both in parallel: Konduto for the fast behavioral signal, ClearSale for the long-tail chargeback history. When one flags `review` and the other flags `approved`, the merchant routes the order to manual inspection.
 
-## Tools
+## Tools (18)
 
 | Tool | Purpose |
-|------|---------|
-| `send_order_for_analysis` | Submit an order; returns decision (approved/declined/review) + score |
-| `get_order` | Retrieve the current decision state for an order |
-| `update_order_status` | Feed merchant's final status back (approved / declined / fraud / canceled / not_authorized / new) |
-| `add_to_blocklist` | Add a known-bad value (email, phone, ip, name, bin_last4, zip, tax_id) |
-| `query_blocklist` | Check whether a value is on the blocklist |
-| `remove_from_blocklist` | Remove a value from the blocklist |
-| `add_to_allowlist` | Add a trusted value (auto-approve) |
-| `add_to_reviewlist` | Add a value to force manual review |
+|---|---|
+| `send_order_for_analysis` | Submit an order to Konduto for fraud analysis. |
+| `get_order` | Retrieve the current analysis state of an order. |
+| `update_order_status` | Notify Konduto of the merchant's final status for an order. |
+| `report_chargeback` | Report a confirmed chargeback for an order. |
+| `report_order_approved` | Report that an order was ultimately approved by the merchant. |
+| `report_order_declined` | Report that an order was ultimately declined by the merchant. |
+| `add_to_blocklist` | Add a value to the Konduto blocklist. |
+| `query_blocklist` | Check whether a value is currently on the Konduto blocklist. |
+| `update_blocklist_entry` | Update an existing blocklist entry — typically used to extend or shorten the expiration window (expires_at)... |
+| `remove_from_blocklist` | Remove a value from the Konduto blocklist. |
+| `add_to_allowlist` | Add a value to the Konduto allowlist (trusted). |
+| `query_allowlist` | Check whether a value is currently on the Konduto allowlist. |
+| `update_allowlist_entry` | Update an existing allowlist entry — typically to extend or shorten the expiration window. |
+| `remove_from_allowlist` | Remove a value from the Konduto allowlist. |
+| `add_to_reviewlist` | Add a value to the Konduto reviewlist. |
+| `query_reviewlist` | Check whether a value is currently on the Konduto reviewlist. |
+| `update_reviewlist_entry` | Update an existing reviewlist entry — typically to extend or shorten the expiration window without removing... |
+| `remove_from_reviewlist` | Remove a value from the Konduto reviewlist. |
 
 ## Install
 
 ```bash
-npm install @codespar/mcp-konduto
+npm install @codespar/mcp-konduto@alpha
 ```
 
 ## Environment

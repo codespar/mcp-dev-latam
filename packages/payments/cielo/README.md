@@ -53,10 +53,10 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (22)
 
-| Tool | Description |
-|------|-------------|
+| Tool | Purpose |
+|---|---|
 | `create_sale` | Create a credit/debit card sale in Cielo |
 | `get_sale` | Get sale details by PaymentId |
 | `capture_sale` | Capture a pre-authorized sale |
@@ -65,6 +65,20 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 | `get_recurrent` | Get recurrent payment details |
 | `tokenize_card` | Tokenize a credit card for future use |
 | `create_boleto` | Create a boleto payment in Cielo |
+| `create_pix` | Create a Pix payment in Cielo (generates QR code) |
+| `get_pix` | Get Pix payment details and QR code by PaymentId |
+| `create_debit` | Create a debit card sale in Cielo (requires 3DS authentication) |
+| `create_ewallet` | Create a digital wallet payment (Google Pay, Samsung Pay, Apple Pay) |
+| `get_antifraud` | Get anti-fraud analysis details for a payment |
+| `create_sale_with_token` | Create a credit card sale using a previously stored CardToken (avoids re-entering card data) |
+| `update_recurrent_amount` | Update the amount of an existing recurrent payment |
+| `update_recurrent_next_date` | Update the next charge date of an existing recurrent payment |
+| `deactivate_recurrent` | Deactivate (pause) a recurrent payment so it stops charging |
+| `reactivate_recurrent` | Reactivate a previously deactivated recurrent payment |
+| `create_payment_link` | Create a Cielo Link de Pagamento (shareable checkout URL) |
+| `get_payment_link` | Get a Cielo Link de Pagamento by its id |
+| `zero_auth` | Zero-dollar authorization to validate a card without charging (card or CardToken) |
+| `create_sale_with_3ds` | Create a credit card sale using 3DS 2.0 authentication data (from 3DS flow) |
 
 ## Authentication
 

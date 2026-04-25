@@ -17,19 +17,28 @@ This MCP server focuses on the **Partner API** (server-to-server), not the widge
 
 `0.1.0-alpha.1`. The public currency, payment-method, and quote endpoints were verified live against `api-stg.transak.com`. The partner-order endpoint paths (`/api/v2/orders`, `/api/v2/orders/{id}`, `/cancel`, `/api/v2/partner/me`) follow the documented conventions but a few are only fully visible inside Transak's partner dashboard — expect minor tweaks once you pair this against a real key.
 
-## Tools
+## Tools (18)
 
-| Tool | Description |
-|------|-------------|
-| `create_order` | Create a BUY (fiat→crypto) or SELL (crypto→fiat) order |
-| `get_order` | Get an order by Transak id |
-| `list_orders` | List orders (filter by status / wallet / partnerOrderId) |
-| `cancel_order` | Cancel a pending order |
-| `get_quote` | Public price quote (fee + rate + net cryptoAmount) |
-| `list_fiat_currencies` | Supported fiat currencies + methods per currency |
-| `list_crypto_currencies` | Supported crypto assets + networks + restrictions |
-| `list_payment_methods` | Methods available for a given fiat currency |
-| `get_partner_account` | Authenticated partner profile (debug / sanity check) |
+| Tool | Purpose |
+|---|---|
+| `create_order` | Create a Transak order. |
+| `get_order` | Get a Transak order by its Transak order id. |
+| `list_orders` | List Transak orders for the partner account. |
+| `update_order` | Update a Transak order after creation. |
+| `cancel_order` | Cancel a Transak order. |
+| `get_quote` | Get a fiat↔crypto price quote (public, no auth). |
+| `get_order_limits` | Get the min and max trade amount for a fiat+crypto+country combination — what's the smallest USD a US buyer... |
+| `list_fiat_currencies` | List all fiat currencies Transak supports, with per-currency payment methods, limits, and country restricti... |
+| `list_crypto_currencies` | List all crypto assets Transak supports, including network, decimals, pay-in/pay-out eligibility, and juris... |
+| `list_payment_methods` | List payment methods available for a given fiat currency (card, Apple Pay, Google Pay, SEPA, UPI, Pix, wire... |
+| `list_countries` | List the countries Transak serves, with allowed fiat currencies, payment methods, and KYC requirements per... |
+| `list_network_fees` | List the network/gas fees Transak charges (or estimates) per crypto+network combination. |
+| `get_partner_account` | Get the authenticated partner's account profile (name, api key info, configured webhooks, default currencies). |
+| `get_partner_balance` | Get the partner's settlement balance(s) — Transak holds partner liquidity per fiat to fund SELL payouts and... |
+| `refresh_access_token` | Mint a fresh short-lived access-token from the partner api-secret. |
+| `get_kyc_status` | Get the KYC status of a buyer the partner has previously sent through Transak. |
+| `get_user_limits` | Get the current per-user transaction limits granted by Transak based on the user's KYC tier and country (da... |
+| `verify_webhook_signature` | Locally verify the HMAC-SHA256 signature on a Transak webhook delivery. |
 
 ## Environment
 
@@ -43,7 +52,7 @@ This MCP server focuses on the **Partner API** (server-to-server), not the widge
 ## Install
 
 ```bash
-npm install @codespar/mcp-transak
+npm install @codespar/mcp-transak@alpha
 ```
 
 ## Run (stdio)

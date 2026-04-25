@@ -6,23 +6,36 @@ Khipu lets a payer pay from their Chilean bank account in real time: the merchan
 
 Chilean agents typically bundle Khipu with [`@codespar/mcp-transbank`](../transbank): Webpay for cards, Khipu for bank transfers. Together they cover the vast majority of Chilean checkout preferences.
 
-## Tools
+## Tools (21)
 
 | Tool | Purpose |
-|------|---------|
-| `create_payment` | Create a bank-transfer charge — returns `payment_url`, `simplified_transfer_url`, `transfer_url` |
-| `get_payment` | Retrieve a payment by `payment_id` or by `notification_token` (webhook lookup) |
-| `delete_payment` | Cancel a pending (unpaid) payment |
-| `confirm_payment` | Manually confirm a payment (when manual confirmation is enabled) |
-| `refund_payment` | Refund a paid payment (full or partial, before settlement) |
-| `get_merchants` | List receiver accounts accessible with the current API key |
-| `get_banks` | List Chilean banks supported by Khipu (useful for bank-selection UI) |
-| `create_automatic_payment` | Charge against an enrolled subscription (recurring) |
+|---|---|
+| `create_payment` | Create a Khipu payment (bank-transfer charge). |
+| `get_payment` | Retrieve a Khipu payment. |
+| `delete_payment` | Delete (cancel) a pending Khipu payment. |
+| `confirm_payment` | Manually confirm a Khipu payment. |
+| `refund_payment` | Refund a paid Khipu payment (full or partial). |
+| `list_payments` | List Khipu payments for the current merchant, optionally filtered by date range and status. |
+| `predict_payment` | Predict whether a payment is likely to succeed for a given payer+amount+bank, and recommend the best bank/r... |
+| `get_merchants` | List the merchant receiver accounts accessible with the current API key. |
+| `get_merchant` | Fetch a single merchant by id. |
+| `list_merchant_accounts` | List the bank accounts registered for a merchant to collect into. |
+| `create_receiver` | Create (onboard) a new receiver under an integrator account. |
+| `list_receivers` | List receivers onboarded under the current integrator account. |
+| `list_conciliations` | List settlement / conciliation records for a date range. |
+| `list_reviews` | List payer reviews / opinions left after a Khipu payment. |
+| `register_webhook` | Register a webhook endpoint to receive Khipu notifications (payment.paid, payment.refunded, etc). |
+| `list_webhooks` | List registered webhook endpoints for the current merchant. |
+| `delete_webhook` | Delete (unregister) a webhook endpoint by id. |
+| `create_terminal_session` | Create a Khipu terminal session for in-person / POS bank-transfer checkout. |
+| `get_terminal_session` | Retrieve the current status of a terminal (POS) session — whether the payer has scanned, paid, or the sessi... |
+| `get_banks` | List Chilean banks supported by Khipu for bank-transfer payments. |
+| `create_automatic_payment` | Create a Khipu automatic payment (recurring / subscription charge against a previously enrolled subscriptio... |
 
 ## Install
 
 ```bash
-npm install @codespar/mcp-khipu
+npm install @codespar/mcp-khipu@alpha
 ```
 
 ## Environment

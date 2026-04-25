@@ -14,24 +14,33 @@ Unico sells three separately-contracted products. This server exposes tools for 
 | IDPay    | Face match + liveness for login and payment authentication              |
 | IDCheck  | PEP, sanctions watchlists, Brazilian court records                      |
 
-## Tools
+## Tools (18)
 
-| Tool | Product | Purpose |
-|---|---|---|
-| `validate_cpf` | IDCloud | CPF status (REGULAR / SUSPENSA / TITULAR FALECIDO) + name |
-| `validate_cnpj` | IDCloud | CNPJ status, partners (QSA), address, CNAE |
-| `extract_document` | IDCloud | OCR + field extraction for RG / CNH / Passport / CPF / RNE / CTPS |
-| `verify_document_authenticity` | IDCloud | Tamper detection + authenticity score |
-| `face_match` | IDPay | 1:1 biometric comparison (selfie vs document) |
-| `liveness_check` | IDPay | Passive / active liveness (anti-spoof) |
-| `check_pep` | IDCheck | Politically Exposed Person lookup |
-| `check_watchlists` | IDCheck | OFAC, UN, EU, HMT, Interpol, adverse media |
-| `court_records_search` | IDCheck | Federal / state / labor / superior Brazilian courts |
+| Tool | Purpose |
+|---|---|
+| `validate_cpf` | IDCloud: validate a Brazilian CPF with Receita Federal. |
+| `validate_cnpj` | IDCloud: validate a Brazilian CNPJ with Receita Federal. |
+| `extract_document` | IDCloud: OCR + structured field extraction from a Brazilian ID document image. |
+| `verify_document_authenticity` | IDCloud: tamper / forgery detection on a document image. |
+| `face_match` | IDPay: biometric 1:1 comparison between a live selfie and a document photo. |
+| `liveness_check` | IDPay: passive liveness detection. |
+| `check_pep` | IDCheck: Politically Exposed Person screening. |
+| `check_watchlists` | IDCheck: global sanctions / adverse-media screening. |
+| `court_records_search` | IDCheck: Brazilian judicial-records search. |
+| `get_process_status` | IDCheck: poll the status of a verification process previously created via the Unico Web/Mobile SDK or API. |
+| `batch_get_process_status` | IDCheck: batch status lookup. |
+| `upload_process_document` | IDCheck: upload a captured image to a running verification process. |
+| `get_extracted_data` | IDCheck: fetch the structured OCR result for a finished process — typed fields (name, document number, issu... |
+| `get_unico_score` | IDCheck: Unico Score — Brazil's identity-fraud risk score (0-1000, higher = lower risk) computed from Unico... |
+| `connect_portability_check` | Connect: cross-tenant portability check. |
+| `register_webhook` | Webhooks: subscribe a callback URL to receive Unico process events (process.created, process.finished, proc... |
+| `list_webhooks` | Webhooks: list all webhook subscriptions registered for this tenant. |
+| `delete_webhook` | Webhooks: remove a webhook subscription. |
 
 ## Install
 
 ```bash
-npm install @codespar/mcp-unico
+npm install @codespar/mcp-unico@alpha
 ```
 
 ## Environment

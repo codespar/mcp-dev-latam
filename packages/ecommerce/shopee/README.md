@@ -4,27 +4,37 @@ MCP server for [Shopee](https://open.shopee.com) — the Shopee Open Platform Pa
 
 Shopee is one of the two marketplaces where LatAm merchants concentrate the bulk of their online GMV (dominant in Brazil, rapidly expanding across the region). Paired with `@codespar/mcp-mercadolibre`, this package gives agents full reach across LatAm's major ecommerce marketplaces — each has its own seller ecosystem, so merchants typically operate on both.
 
-## Tools
+## Tools (22)
 
 | Tool | Purpose |
-|------|---------|
-| `get_shop_info` | Basic info about the authorized shop |
-| `list_orders` | List orders in a time window (max 15 days), optional status filter |
-| `get_order_detail` | Full detail for up to 50 order_sn values |
-| `ship_order` | Arrange shipment (pickup, dropoff, or non-integrated tracking) |
-| `cancel_order` | Cancel an unshipped order with a reason |
-| `list_products` | List shop items with status and update_time filters |
-| `get_product_detail` | Base info for up to 50 items |
-| `update_product_stock` | Update stock per model (0 for single-SKU) |
-| `update_product_price` | Update price per model (0 for single-SKU) |
-| `get_shipment_list` | Orders currently in shipment |
-| `get_return_list` | Return/refund requests with status filters |
-| `confirm_return` | Accept a buyer-initiated return |
+|---|---|
+| `get_shop_info` | Get basic information about the authorized Shopee shop (shop_name, region, status, auth expiry). |
+| `list_orders` | List orders within a time window, optionally filtered by order_status. |
+| `get_order_detail` | Get full detail for one or more orders by order_sn (comma-separated, up to 50). |
+| `ship_order` | Arrange shipment for an order — either request pickup, drop off, or pass a tracking number depending on the... |
+| `cancel_order` | Cancel an order that has not yet shipped. |
+| `list_products` | List items (products) in the shop with optional status filter. |
+| `get_product_detail` | Get detailed base info for up to 50 items by item_id. |
+| `update_product_stock` | Update stock levels for an item (or its models/variants). |
+| `update_product_price` | Update prices for an item (or its models/variants). |
+| `get_shipment_list` | List orders currently in shipment (status SHIPPED or in-transit). |
+| `get_return_list` | List return/refund requests on the shop, optionally filtered by status and time window. |
+| `confirm_return` | Confirm (accept) a buyer-initiated return request by return_sn. |
+| `add_item` | Create a new product (item) in the shop. |
+| `update_item` | Update an existing product. |
+| `delete_item` | Delete an item (product) from the shop by item_id. |
+| `get_shipping_parameter` | Fetch the required shipping parameters for an order before calling ship_order. |
+| `get_tracking_number` | Get the tracking number (and courier info when available) for a shipped order. |
+| `download_shipping_document` | Request the shipping label / air waybill PDF for one or more orders. |
+| `accept_return_offer` | Accept the buyer's return offer (proposed solution) for a return_sn, ending negotiation in the buyer's favor. |
+| `add_discount` | Create a new shop-level discount (promotion) with a time window. |
+| `add_bundle_deal` | Create a bundle-deal promotion (e.g. |
+| `send_chat_message` | Send a text or sticker message to a buyer in Shopee's seller chat. |
 
 ## Install
 
 ```bash
-npm install @codespar/mcp-shopee
+npm install @codespar/mcp-shopee@alpha
 ```
 
 ## Environment

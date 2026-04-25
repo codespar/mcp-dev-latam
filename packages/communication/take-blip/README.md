@@ -51,10 +51,10 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (18)
 
-| Tool | Description |
-|------|-------------|
+| Tool | Purpose |
+|---|---|
 | `send_message` | Send a message to a contact via Take Blip |
 | `get_contacts` | List contacts in Take Blip |
 | `create_contact` | Create a contact in Take Blip |
@@ -63,6 +63,16 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 | `get_analytics` | Get chatbot analytics and metrics |
 | `create_broadcast` | Create a broadcast distribution list and send messages |
 | `get_chatbot_flow` | Get chatbot flow/builder configuration |
+| `update_contact` | Merge/update fields on an existing contact |
+| `delete_contact` | Delete a contact by identity |
+| `get_contact` | Get a single contact by identity |
+| `get_thread` | Get the message thread between the bot and a specific identity |
+| `create_ticket` | Open a support ticket / human handoff for a contact |
+| `close_ticket` | Close an open support ticket |
+| `list_tickets` | List tickets, optionally filtering by status |
+| `track_event` | Track a custom analytics event in the bot event tracker |
+| `set_bot_resource` | Set a bot resource value (used as bot variables / state via /resources bucket) |
+| `get_bot_resource` | Get a bot resource value by name (variable / state) |
 
 ## Authentication
 

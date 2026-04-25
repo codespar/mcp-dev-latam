@@ -51,28 +51,32 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (22)
 
-### Service invoices (NFS-e)
-
-- `create_nfse` — issue a service invoice
-- `get_nfse` — fetch one by id
-- `cancel_nfse` — cancel (subject to municipal window)
-- `list_nfse` — paginated list with optional `flowStatus` filter
-- `email_nfse` — email the PDF to a recipient
-
-### Product invoices (NF-e)
-
-- `create_nfe` — issue a product invoice
-- `get_nfe` — fetch one by id
-- `cancel_nfe` — cancel (requires 15+ char justification)
-- `list_nfe` — paginated list with optional `status` filter
-- `get_nfe_pdf` — resolve the DANFE PDF URL
-
-### Lookups
-
-- `consult_cnpj` — Brazilian company data by CNPJ
-- `consult_cep` — full address by postal code
+| Tool | Purpose |
+|---|---|
+| `create_nfse` | Issue an NFS-e (service invoice). |
+| `get_nfse` | Fetch a single NFS-e by id. |
+| `cancel_nfse` | Cancel an NFS-e. |
+| `list_nfse` | List NFS-e with pagination + optional flowStatus filter. |
+| `email_nfse` | Email the PDF of an already-issued NFS-e to a recipient. |
+| `create_nfe` | Issue an NF-e (product invoice). |
+| `get_nfe` | Fetch a single NF-e by id. |
+| `cancel_nfe` | Cancel an NF-e. |
+| `list_nfe` | List NF-e with pagination + optional status filter. |
+| `get_nfe_pdf` | Return the DANFE PDF URL for an issued NF-e. |
+| `consult_cnpj` | Look up Brazilian company data (razão social, status, address) by CNPJ. |
+| `consult_cep` | Resolve a Brazilian postal code (CEP) to a full address. |
+| `correct_nfe` | Issue a Carta de Correção (CC-e) for an authorized NF-e. |
+| `get_nfe_xml` | Return the authorized XML URL for an NF-e. |
+| `get_nfse_pdf` | Return the PDF URL for an issued NFS-e. |
+| `get_nfse_xml` | Return the XML URL for an issued NFS-e. |
+| `list_companies` | List companies registered on the NFe.io account. |
+| `get_company` | Fetch a single company by id or CNPJ. |
+| `create_company` | Provision a new company on NFe.io. |
+| `list_webhooks` | List webhook endpoints registered for a company (invoice event callbacks). |
+| `create_webhook` | Register a webhook endpoint. |
+| `delete_webhook` | Remove a webhook endpoint by id. |
 
 ## Environment
 

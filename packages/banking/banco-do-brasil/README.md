@@ -8,23 +8,23 @@ BB exposes one of the broadest public-bank API surfaces in the country across Pi
 
 BB's Developer Portal is **contract-gated** — the full OpenAPI specs are visible only after merchant onboarding. Pix paths follow the BACEN Pix v2 standard; boleto, account, and statement paths are best-guesses based on BB's public marketing pages and conventions shared with peers (Itaú, Santander, Bradesco). Every unverified path is flagged `TODO(verify)` in `src/index.ts`. Pin to exact versions during `0.1.x`.
 
-## Tools (10)
+## Tools (13)
 
 | Tool | Purpose |
 |---|---|
-| `create_pix_cob` | Create immediate Pix charge (cob) |
-| `get_pix_cob` | Get an immediate Pix charge by txid |
-| `list_pix_cob` | List immediate Pix charges by date range |
-| `create_pix_devolucao` | Refund a received Pix (devolução) |
-| `get_pix_devolucao` | Retrieve a devolução by id |
-| `resolve_dict_key` | Resolve a DICT key to account data |
-| `register_dict_key` | Register a DICT key on a BB account |
-| `delete_dict_key` | Delete a DICT key owned by the merchant |
-| `register_boleto` | Issue a boleto via BB Cobranças |
-| `get_boleto` | Retrieve a boleto by nosso_numero |
-| `cancel_boleto` | Cancel (baixa) an outstanding boleto |
-| `get_account_balance` | Conta-corrente balance |
-| `get_statement` | Account statement transactions |
+| `create_pix_cob` | Create an immediate Pix charge (cob) with QR code. |
+| `get_pix_cob` | Retrieve an immediate Pix charge by its txid. |
+| `list_pix_cob` | List immediate Pix charges (cob) by date range. |
+| `create_pix_devolucao` | Refund (devolução) a previously received Pix. |
+| `get_pix_devolucao` | Retrieve a Pix devolução by its endToEndId + refund id. |
+| `resolve_dict_key` | Resolve a DICT key (CPF, CNPJ, email, phone, EVP) to the owner's account data before sending a Pix. |
+| `register_dict_key` | Register a DICT key on a BB account owned by the merchant. |
+| `delete_dict_key` | Delete a DICT key owned by the merchant. |
+| `register_boleto` | Issue a boleto via BB Cobranças. |
+| `get_boleto` | Retrieve a boleto by nosso_numero. |
+| `cancel_boleto` | Cancel (baixa) an outstanding boleto before payment. |
+| `get_account_balance` | Retrieve the current balance of a BB conta-corrente (checking) account. |
+| `get_statement` | Retrieve account statement transactions for a BB conta-corrente over a date range. |
 
 ## Install
 

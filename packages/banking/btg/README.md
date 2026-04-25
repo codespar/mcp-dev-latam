@@ -10,22 +10,22 @@ BTG's Developer Portal is **contract-gated** — the full OpenAPI specs are only
 
 Pin to exact versions during `0.1.x`; paths will be corrected to match the portal spec once an onboarded counterparty can validate.
 
-## Tools
+## Tools (12)
 
 | Tool | Purpose |
 |---|---|
-| `get_oauth_token` | Mint / inspect a cached OAuth2 bearer |
-| `create_pix_cob` | Create an immediate Pix charge (cob) |
-| `get_pix_cob` | Retrieve a Pix immediate charge by `txid` |
-| `create_boleto` | Issue a boleto via BTG Cobrança |
-| `get_boleto` | Retrieve a boleto |
-| `get_account_balance` | Account balance (BTG+ checking account) |
-| `get_account_statement` | Account statement transactions |
-| `list_investment_positions` | List CDB / LCI / LCA / debêntures positions |
-| `get_portfolio_summary` | Consolidated portfolio summary across asset classes |
-| `list_funds_available` | List funds available on BTG's distribution platform |
-| `subscribe_to_fund` | Subscribe (aplicar) to a fund |
-| `redeem_from_fund` | Redeem (resgatar) from a fund |
+| `get_oauth_token` | Mint or return a cached OAuth2 client_credentials bearer token for the BTG Developer Portal. |
+| `create_pix_cob` | Create an immediate Pix charge (cob) with QR code. |
+| `get_pix_cob` | Retrieve an immediate Pix charge (cob) by its txid. |
+| `create_boleto` | Issue a boleto via BTG Cobrança. |
+| `get_boleto` | Retrieve a boleto by its BTG identifier (id or nosso_numero). |
+| `get_account_balance` | Retrieve the available balance for a BTG+ checking account (conta corrente). |
+| `get_account_statement` | Retrieve account statement transactions for a given period. |
+| `list_investment_positions` | List the counterparty's investment positions held at BTG, scoped to fixed-income asset classes (CDB, LCI, L... |
+| `get_portfolio_summary` | Consolidated portfolio summary across all asset classes held at BTG (fixed income, funds, equities, treasur... |
+| `list_funds_available` | List funds available for distribution on BTG's platform. |
+| `subscribe_to_fund` | Subscribe (aplicar) to a fund on BTG's distribution platform. |
+| `redeem_from_fund` | Redeem (resgatar) from a fund. |
 
 ## Install
 

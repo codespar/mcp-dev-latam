@@ -57,20 +57,20 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (10)
 
-| Tool | Description |
-|------|-------------|
-| `pay_request` | Pay for a 402-protected resource and return its content |
+| Tool | Purpose |
+|---|---|
+| `pay_request` | Pay for a 402-protected resource. |
 | `verify_payment` | Verify if a x402 payment was received and settled on-chain |
-| `create_paywall` | Create a x402 paywall configuration for an endpoint |
-| `get_paywall` | Get paywall configuration for a URL |
-| `list_paywalls` | List all configured paywalls |
-| `delete_paywall` | Remove a paywall from an endpoint |
+| `create_paywall` | Create a x402 paywall configuration for an endpoint. |
+| `get_paywall` | Get paywall configuration for a specific URL |
+| `list_paywalls` | List all configured x402 paywalls |
+| `delete_paywall` | Remove a x402 paywall from an endpoint |
 | `get_balance` | Get available USDC balance for x402 payments |
-| `list_payments` | List x402 payment history with filters |
+| `list_payments` | List x402 payment history with optional filters |
 | `get_payment` | Get details of a specific x402 payment |
-| `get_supported_networks` | List supported blockchain networks and tokens |
+| `get_supported_networks` | List supported blockchain networks, tokens, and facilitators for x402 payments |
 
 ## Authentication
 

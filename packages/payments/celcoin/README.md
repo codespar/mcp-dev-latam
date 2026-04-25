@@ -53,12 +53,22 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (18)
 
-| Tool | Description |
-|------|-------------|
+| Tool | Purpose |
+|---|---|
 | `create_pix_payment` | Create a Pix payment via Celcoin |
 | `get_pix_payment` | Get Pix payment details by transaction ID |
+| `create_pix_cob` | Create a Pix immediate charge (cob) — generates QR code / copia-e-cola for payer |
+| `get_pix_cob` | Get a Pix immediate charge by transactionId or txid |
+| `create_pix_cobv` | Create a Pix due charge (cobv) — boleto-like Pix with due date |
+| `lookup_pix_dict` | Lookup a Pix DICT key — resolves a Pix key to account holder + bank info |
+| `create_pix_devolution` | Create a Pix devolução (refund) — refund a received Pix transaction |
+| `cancel_boleto` | Cancel an issued boleto by transactionId |
+| `read_barcode` | Read a boleto / concessionária barcode (digitable line) — returns due date, amount, beneficiary |
+| `pay_bill` | Pay a bill (boleto bancário or concessionária) by barcode / digitable line |
+| `get_statement` | Get account statement (extrato) for a date range |
+| `list_topup_providers` | List telecom top-up providers (operadoras) available for recargas |
 | `create_boleto` | Create a boleto payment via Celcoin |
 | `get_boleto` | Get boleto details by transaction ID |
 | `create_transfer` | Create a bank transfer (TED/DOC) via Celcoin |

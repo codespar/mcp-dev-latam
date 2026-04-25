@@ -14,21 +14,32 @@ MCP server for the [WhatsApp Cloud API](https://developers.facebook.com/docs/wha
 | take-blip | Brazilian BSP wrapper | Enterprise Brazil, CCaaS features |
 | zenvia | Brazilian BSP wrapper | Brazil omnichannel (SMS + WhatsApp) |
 
-## Tools
+## Tools (22)
 
 | Tool | Purpose |
-|------|---------|
-| `send_text_message` | Send a plain text message |
-| `send_template_message` | Send an approved template (required for business-initiated > 24h) |
-| `send_media_message` | Send image, video, document, or audio (link or media_id) |
-| `send_interactive_message` | Send reply buttons or list |
-| `send_location_message` | Send a latitude/longitude pin |
-| `mark_message_as_read` | Mark an inbound message as read |
-| `upload_media` | Upload a file and get a reusable media_id (multipart) |
-| `retrieve_media_url` | Resolve a media_id to a downloadable URL |
-| `delete_media` | Delete an uploaded media asset |
-| `list_templates` | List templates on the WABA |
-| `create_template` | Submit a new template for Meta review |
+|---|---|
+| `send_text_message` | Send a plain text message. |
+| `send_template_message` | Send an approved message template. |
+| `send_media_message` | Send an image, video, document, or audio. |
+| `send_interactive_message` | Send an interactive message (reply buttons or list). |
+| `send_interactive_cta_url` | Send an interactive message with a single CTA URL button. |
+| `send_interactive_flow` | Send a WhatsApp Flow message. |
+| `send_location_message` | Send a location pin with latitude/longitude and optional name/address. |
+| `send_contacts_message` | Send one or more contact cards (vCard-like). |
+| `send_reaction_message` | Send an emoji reaction on a previously received/sent message. |
+| `send_typing_indicator` | Show a typing indicator on a received message. |
+| `mark_message_as_read` | Mark an incoming message as read so the sender sees the blue double-check. |
+| `upload_media` | Upload a media file and get back a media_id reusable in send_media_message. |
+| `retrieve_media_url` | Resolve a media_id to a short-lived downloadable URL. |
+| `delete_media` | Delete an uploaded media asset by id. |
+| `list_templates` | List message templates on the WhatsApp Business Account. |
+| `create_template` | Submit a new template for Meta review. |
+| `delete_template` | Delete a message template from the WABA by name. |
+| `get_business_profile` | Read the WhatsApp business profile (about, description, email, websites, vertical, address) for the configu... |
+| `update_business_profile` | Update the business profile on the configured phone number. |
+| `list_phone_numbers` | List all phone numbers registered under the WhatsApp Business Account, including display name, quality rati... |
+| `request_verification_code` | Request Meta to send a verification code to the configured phone number via SMS or voice. |
+| `verify_code` | Submit the verification code received via SMS/voice after request_verification_code. |
 
 ## Install
 

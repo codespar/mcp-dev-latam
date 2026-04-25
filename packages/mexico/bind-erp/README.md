@@ -23,20 +23,30 @@ npx tsx packages/mexico/bind-erp/src/index.ts --http
 | `MCP_HTTP` | No | Set to `"true"` to enable HTTP transport |
 | `MCP_PORT` | No | HTTP port (default: 3000) |
 
-## Tools
+## Tools (20)
 
-| Tool | Description |
-|------|-------------|
-| `list_customers` | List customers with search and pagination |
-| `create_customer` | Create a customer (name, RFC, address) |
-| `list_products` | List products with search and pagination |
-| `create_product` | Create a product (name, SKU, price, SAT key) |
-| `list_invoices` | List invoices with status and date filters |
-| `create_invoice` | Create an invoice (customer, items, CFDI settings) |
-| `list_orders` | List orders with status filter |
-| `create_order` | Create an order (customer, items) |
+| Tool | Purpose |
+|---|---|
+| `list_customers` | List customers |
+| `create_customer` | Create a customer |
+| `list_products` | List products |
+| `create_product` | Create a product |
+| `list_invoices` | List invoices |
+| `create_invoice` | Create an invoice |
+| `list_orders` | List orders |
+| `create_order` | Create an order |
 | `get_balance` | Get account balance summary |
-| `list_accounts` | List accounts (bank, cash, etc.) |
+| `list_accounts` | List accounts (bank accounts, cash, etc.) |
+| `update_customer` | Update an existing customer |
+| `delete_customer` | Delete a customer by ID |
+| `update_product` | Update an existing product |
+| `delete_product` | Delete a product by ID |
+| `get_invoice` | Get an invoice (CFDI) by ID |
+| `cancel_invoice` | Cancel an invoice (CFDI) by ID |
+| `list_suppliers` | List suppliers (proveedores) |
+| `create_supplier` | Create a supplier (proveedor) |
+| `list_payments` | List payments (pagos) |
+| `create_payment` | Register a payment (pago) against an invoice |
 
 ## Auth
 

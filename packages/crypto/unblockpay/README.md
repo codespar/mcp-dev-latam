@@ -49,10 +49,10 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 }
 ```
 
-## Tools
+## Tools (20)
 
-| Tool | Description |
-|------|-------------|
+| Tool | Purpose |
+|---|---|
 | `create_wallet` | Create a new wallet in UnblockPay |
 | `get_wallet` | Get wallet details by ID |
 | `list_wallets` | List all wallets |
@@ -63,6 +63,16 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 | `get_exchange_rate` | Get current exchange rate for a currency pair |
 | `create_transfer` | Create a stablecoin transfer between wallets |
 | `get_balance` | Get wallet balance |
+| `submit_corporate_kyc` | Submit a corporate KYC application (business onboarding) |
+| `get_corporate_kyc_status` | Get the status of a corporate KYC application |
+| `submit_individual_kyc` | Submit an individual KYC application (personal onboarding) |
+| `get_individual_kyc_status` | Get the status of an individual KYC application |
+| `add_bank_account` | Register a fiat bank account for offramp payouts |
+| `list_bank_accounts` | List registered fiat bank accounts |
+| `delete_bank_account` | Delete a registered bank account by ID |
+| `simulate_swap_quote` | Simulate a fiat<->crypto swap quote without executing it |
+| `list_supported_assets` | List supported crypto assets / stablecoins on UnblockPay |
+| `register_webhook` | Register a webhook endpoint for transaction lifecycle events |
 
 ## Authentication
 
