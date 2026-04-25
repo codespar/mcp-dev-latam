@@ -9,11 +9,21 @@
  * - create_order: Create a buy or sell order
  * - get_order: Get order details by ID
  * - cancel_order: Cancel an open order
+ * - cancel_all_orders: Cancel all open orders for a symbol
  * - list_orders: List orders with filters
  * - get_balance: Get account balances
- * - list_trades: List executed trades
+ * - list_trades: List executed trades (public market trades)
+ * - list_account_trades: List authenticated account fills/trades
  * - get_candles: Get candlestick/OHLCV data
  * - withdraw: Create a withdrawal request
+ * - get_withdrawal: Get withdrawal details by ID
+ * - list_withdrawals: List withdrawals (crypto + fiat)
+ * - list_deposits: List deposits (crypto + fiat)
+ * - list_symbols: List available trading symbols
+ * - list_assets: List supported assets/coins
+ * - list_networks: List supported blockchain networks for an asset
+ * - get_fees: Query trading fees for a symbol
+ * - list_positions: List margin/futures positions (if applicable)
  *
  * Environment:
  *   MB_API_KEY — API key from https://www.mercadobitcoin.com.br/
@@ -51,7 +61,7 @@ async function mbRequest(method: string, path: string, body?: unknown): Promise<
 }
 
 const server = new Server(
-  { name: "mcp-mercado-bitcoin", version: "0.1.0" },
+  { name: "mcp-mercado-bitcoin", version: "0.2.0" },
   { capabilities: { tools: {} } }
 );
 
@@ -181,6 +191,118 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         required: ["symbol", "quantity", "address"],
       },
     },
+    {
+      name: "cancel_all_orders",
+      description: "Cancel all open orders for a symbol",
+      inputSchema: {
+        type: "object",
+        properties: {
+          symbol: { type: "string", description: "Trading pair symbol (e.g. BTC-BRL)" },
+        },
+        required: ["symbol"],
+      },
+    },
+    {
+      name: "list_account_trades",
+      description: "List authenticated account fills/trades for a symbol",
+      inputSchema: {
+        type: "object",
+        properties: {
+          symbol: { type: "string", description: "Trading pair symbol" },
+          from: { type: "string", description: "Start timestamp (ISO 8601 or unix)" },
+          to: { type: "string", description: "End timestamp (ISO 8601 or unix)" },
+          limit: { type: "number", description: "Number of results" },
+        },
+        required: ["symbol"],
+      },
+    },
+    {
+      name: "list_deposits",
+      description: "List deposits (crypto + fiat) for the authenticated account",
+      inputSchema: {
+        type: "object",
+        properties: {
+          symbol: { type: "string", description: "Filter by asset symbol (optional, e.g. BTC, BRL)" },
+          status: { type: "string", description: "Filter by status (e.g. confirmed, pending)" },
+          from: { type: "string", description: "Start timestamp (ISO 8601)" },
+          to: { type: "string", description: "End timestamp (ISO 8601)" },
+          limit: { type: "number", description: "Number of results" },
+        },
+      },
+    },
+    {
+      name: "list_withdrawals",
+      description: "List withdrawals (crypto + fiat) for the authenticated account",
+      inputSchema: {
+        type: "object",
+        properties: {
+          symbol: { type: "string", description: "Filter by asset symbol (optional, e.g. BTC, BRL)" },
+          status: { type: "string", description: "Filter by status (e.g. completed, pending)" },
+          from: { type: "string", description: "Start timestamp (ISO 8601)" },
+          to: { type: "string", description: "End timestamp (ISO 8601)" },
+          limit: { type: "number", description: "Number of results" },
+        },
+      },
+    },
+    {
+      name: "get_withdrawal",
+      description: "Get withdrawal details by ID",
+      inputSchema: {
+        type: "object",
+        properties: {
+          symbol: { type: "string", description: "Asset symbol (e.g. BTC, BRL)" },
+          withdrawalId: { type: "string", description: "Withdrawal ID" },
+        },
+        required: ["symbol", "withdrawalId"],
+      },
+    },
+    {
+      name: "list_symbols",
+      description: "List available trading symbols (pairs) on the exchange",
+      inputSchema: {
+        type: "object",
+        properties: {
+          symbols: { type: "string", description: "Optional comma-separated symbols filter (e.g. BTC-BRL,ETH-BRL)" },
+        },
+      },
+    },
+    {
+      name: "list_assets",
+      description: "List supported assets/coins on the exchange",
+      inputSchema: { type: "object", properties: {} },
+    },
+    {
+      name: "list_networks",
+      description: "List supported blockchain networks for a given asset",
+      inputSchema: {
+        type: "object",
+        properties: {
+          symbol: { type: "string", description: "Asset symbol (e.g. BTC, ETH, USDC)" },
+        },
+        required: ["symbol"],
+      },
+    },
+    {
+      name: "get_fees",
+      description: "Query trading fees (maker/taker) for a symbol",
+      inputSchema: {
+        type: "object",
+        properties: {
+          symbol: { type: "string", description: "Trading pair symbol (e.g. BTC-BRL)" },
+        },
+        required: ["symbol"],
+      },
+    },
+    {
+      name: "list_positions",
+      description: "List open margin/futures positions (if applicable to the account)",
+      inputSchema: {
+        type: "object",
+        properties: {
+          symbol: { type: "string", description: "Optional trading pair symbol filter" },
+        },
+      },
+    },
   ],
 }));
 
@@ -228,6 +350,51 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
       case "withdraw":
         return { content: [{ type: "text", text: JSON.stringify(await mbRequest("POST", "/withdrawals", args), null, 2) }] };
+      case "cancel_all_orders":
+        return { content: [{ type: "text", text: JSON.stringify(await mbRequest("DELETE", `/${args?.symbol}/orders`), null, 2) }] };
+      case "list_account_trades": {
+        const params = new URLSearchParams();
+        if (args?.from) params.set("from", String(args.from));
+        if (args?.to) params.set("to", String(args.to));
+        if (args?.limit) params.set("limit", String(args.limit));
+        return { content: [{ type: "text", text: JSON.stringify(await mbRequest("GET", `/accounts/${args?.symbol}/trades?${params}`), null, 2) }] };
+      }
+      case "list_deposits": {
+        const params = new URLSearchParams();
+        if (args?.symbol) params.set("symbol", String(args.symbol));
+        if (args?.status) params.set("status", String(args.status));
+        if (args?.from) params.set("from", String(args.from));
+        if (args?.to) params.set("to", String(args.to));
+        if (args?.limit) params.set("limit", String(args.limit));
+        return { content: [{ type: "text", text: JSON.stringify(await mbRequest("GET", `/accounts/deposits?${params}`), null, 2) }] };
+      }
+      case "list_withdrawals": {
+        const params = new URLSearchParams();
+        if (args?.symbol) params.set("symbol", String(args.symbol));
+        if (args?.status) params.set("status", String(args.status));
+        if (args?.from) params.set("from", String(args.from));
+        if (args?.to) params.set("to", String(args.to));
+        if (args?.limit) params.set("limit", String(args.limit));
+        return { content: [{ type: "text", text: JSON.stringify(await mbRequest("GET", `/accounts/withdrawals?${params}`), null, 2) }] };
+      }
+      case "get_withdrawal":
+        return { content: [{ type: "text", text: JSON.stringify(await mbRequest("GET", `/accounts/withdraw/${args?.symbol}/${args?.withdrawalId}`), null, 2) }] };
+      case "list_symbols": {
+        const params = new URLSearchParams();
+        if (args?.symbols) params.set("symbols", String(args.symbols));
+        return { content: [{ type: "text", text: JSON.stringify(await mbRequest("GET", `/symbols?${params}`), null, 2) }] };
+      }
+      case "list_assets":
+        return { content: [{ type: "text", text: JSON.stringify(await mbRequest("GET", "/assets"), null, 2) }] };
+      case "list_networks":
+        return { content: [{ type: "text", text: JSON.stringify(await mbRequest("GET", `/assets/${args?.symbol}/networks`), null, 2) }] };
+      case "get_fees":
+        return { content: [{ type: "text", text: JSON.stringify(await mbRequest("GET", `/${args?.symbol}/fees`), null, 2) }] };
+      case "list_positions": {
+        const params = new URLSearchParams();
+        if (args?.symbol) params.set("symbol", String(args.symbol));
+        return { content: [{ type: "text", text: JSON.stringify(await mbRequest("GET", `/accounts/positions?${params}`), null, 2) }] };
+      }
       default:
         return { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true };
     }
@@ -250,7 +417,7 @@ async function main() {
       if (!sid && isInitializeRequest(req.body)) {
         const t = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID(), onsessioninitialized: (id) => { transports.set(id, t); } });
         t.onclose = () => { if (t.sessionId) transports.delete(t.sessionId); };
-        const s = new Server({ name: "mcp-mercado-bitcoin", version: "0.1.0" }, { capabilities: { tools: {} } }); (server as any)._requestHandlers.forEach((v: any, k: any) => (s as any)._requestHandlers.set(k, v)); (server as any)._notificationHandlers?.forEach((v: any, k: any) => (s as any)._notificationHandlers.set(k, v)); await s.connect(t);
+        const s = new Server({ name: "mcp-mercado-bitcoin", version: "0.2.0" }, { capabilities: { tools: {} } }); (server as any)._requestHandlers.forEach((v: any, k: any) => (s as any)._requestHandlers.set(k, v)); (server as any)._notificationHandlers?.forEach((v: any, k: any) => (s as any)._notificationHandlers.set(k, v)); await s.connect(t);
         await t.handleRequest(req, res, req.body); return;
       }
       res.status(400).json({ jsonrpc: "2.0", error: { code: -32000, message: "Bad Request" }, id: null });
