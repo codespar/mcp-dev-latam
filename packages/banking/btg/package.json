@@ -1,0 +1,38 @@
+{
+  "name": "@codespar/mcp-btg",
+  "version": "0.1.0-alpha.1",
+  "description": "MCP server for BTG Pactual — Brazil's largest investment bank. Pix, Boleto, Account, and Investments (CDB, LCI, LCA, debêntures, funds) via BTG's Developer Portal APIs (OAuth2 + mTLS).",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "mcp-btg": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "typescript": "^5.8.0"
+  },
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "btg",
+    "btg-pactual",
+    "banking",
+    "investments",
+    "pix",
+    "boleto",
+    "cdb",
+    "lci",
+    "lca",
+    "debentures",
+    "funds",
+    "brazil"
+  ],
+  "mcpName": "io.github.codespar/mcp-btg"
+}

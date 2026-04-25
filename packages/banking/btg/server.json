@@ -1,0 +1,58 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.codespar/mcp-btg",
+  "description": "MCP server for BTG Pactual — Brazil's largest investment bank. Pix, Boleto, Account, and Investments (CDB, LCI, LCA, debêntures, funds) via BTG's Developer Portal APIs (OAuth2 + mTLS).",
+  "repository": {
+    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "source": "github",
+    "subfolder": "packages/banking/btg"
+  },
+  "version": "0.1.0-alpha.1",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@codespar/mcp-btg",
+      "version": "0.1.0-alpha.1",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "BTG_CLIENT_ID",
+          "description": "BTG OAuth client_id issued via the Developer Portal after contract onboarding.",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "BTG_CLIENT_SECRET",
+          "description": "BTG OAuth client_secret.",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": true
+        },
+        {
+          "name": "BTG_CERT_PATH",
+          "description": "Absolute path to the mTLS client certificate (.crt or .pem). BACEN mandates mTLS for Pix v2; BTG enforces it across product families.",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "BTG_KEY_PATH",
+          "description": "Absolute path to the mTLS private key (.key or .pem).",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": true
+        },
+        {
+          "name": "BTG_ENV",
+          "description": "Environment: 'sandbox' or 'production'. Defaults to 'sandbox'.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        }
+      ]
+    }
+  ]
+}
