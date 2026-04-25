@@ -1,0 +1,44 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.codespar/paypal",
+  "description": "MCP server for PayPal — global payments and payouts via REST API. Orders v2, Payments v2, Payouts, Subscriptions, Disputes, Webhooks.",
+  "repository": {
+    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "source": "github",
+    "subfolder": "packages/payments/paypal"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@codespar/mcp-paypal",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "PAYPAL_CLIENT_ID",
+          "description": "PayPal REST app client id (from developer.paypal.com Apps & Credentials).",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "PAYPAL_CLIENT_SECRET",
+          "description": "PayPal REST app client secret (OAuth2 client_credentials password).",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": true
+        },
+        {
+          "name": "PAYPAL_ENV",
+          "description": "PayPal environment. 'sandbox' (default, https://api-m.sandbox.paypal.com) or 'live' (https://api-m.paypal.com).",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        }
+      ]
+    }
+  ]
+}

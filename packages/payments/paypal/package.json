@@ -1,0 +1,33 @@
+{
+  "name": "@codespar/mcp-paypal",
+  "version": "0.1.0",
+  "description": "MCP server for PayPal — global payments and payouts via the PayPal REST API. Orders v2 (create/authorize/capture), Payments v2 (capture/refund/void), Payouts, Subscriptions, Disputes, Webhooks.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "mcp-paypal": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "typescript": "^5.8.0"
+  },
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "paypal",
+    "payments",
+    "payouts",
+    "subscriptions",
+    "rest",
+    "global",
+    "latam"
+  ],
+  "mcpName": "io.github.codespar/mcp-paypal"
+}
