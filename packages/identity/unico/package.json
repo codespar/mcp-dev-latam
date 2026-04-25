@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-unico",
-  "version": "0.1.0-alpha.1",
-  "description": "MCP server for Unico — Brazilian identity verification & KYC (IDCloud, IDPay, IDCheck). CPF/CNPJ validation, document OCR, face match, liveness, PEP/watchlists.",
+  "version": "0.2.0-alpha.1",
+  "description": "MCP server for Unico — Brazilian identity verification & KYC (IDCloud, IDPay, IDCheck, Sign). CPF/CNPJ, document OCR, face match, liveness, PEP/watchlists, processes, webhooks, Unico Score.",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

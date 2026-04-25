@@ -8,7 +8,7 @@
  *   - IDPay    — face biometrics (match, liveness) for login / payment auth
  *   - IDCheck  — KYC-as-a-service (PEP, watchlists, court records)
  *
- * Tools (9):
+ * Tools (18):
  *   validate_cpf                  — IDCloud: CPF status (REGULAR/SUSPENSA/TITULAR FALECIDO) + name
  *   validate_cnpj                 — IDCloud: CNPJ status, partners, situation
  *   extract_document              — IDCloud: OCR + field extraction from RG/CNH/Passport/CPF image
@@ -18,6 +18,15 @@
  *   check_pep                     — IDCheck: Politically Exposed Person lookup
  *   check_watchlists              — IDCheck: OFAC, Interpol, sanctions screening
  *   court_records_search          — IDCheck: Brazilian judicial records
+ *   get_process_status            — IDCheck: poll a single verification-process status / verdict
+ *   batch_get_process_status      — IDCheck: batch status lookup (up to 100 process_ids per call)
+ *   upload_process_document       — IDCheck: upload front/back/selfie image to a running process
+ *   get_extracted_data            — IDCheck: fetch the OCR + structured fields produced by a process
+ *   get_unico_score               — IDCheck: Unico Score (fraud risk score 0-1000) for a CPF
+ *   connect_portability_check     — Connect: cross-tenant portability — has this CPF been verified elsewhere?
+ *   register_webhook              — Webhooks: subscribe a callback URL for process events
+ *   list_webhooks                 — Webhooks: list registered webhook subscriptions
+ *   delete_webhook                — Webhooks: remove a subscription
  *
  * Not every merchant has every product. Agents should call only what's enabled
  * on the merchant's Unico contract; disabled products return 403 from the API.
@@ -103,11 +112,18 @@ async function unicoRequest(method: string, path: string, body?: unknown): Promi
   if (!res.ok) {
     throw new Error(`Unico API ${res.status}: ${await res.text()}`);
   }
-  return res.json();
+  if (res.status === 204) return { ok: true };
+  const text = await res.text();
+  if (!text) return { ok: true };
+  try {
+    return JSON.parse(text);
+  } catch {
+    return { raw: text };
+  }
 }
 
 const server = new Server(
-  { name: "mcp-unico", version: "0.1.0-alpha.1" },
+  { name: "mcp-unico", version: "0.2.0-alpha.1" },
   { capabilities: { tools: {} } }
 );
 
@@ -232,6 +248,120 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         },
       },
     },
+    {
+      name: "get_process_status",
+      description: "IDCheck: poll the status of a verification process previously created via the Unico Web/Mobile SDK or API. Returns { status (CREATED | IN_PROGRESS | FINISHED | EXPIRED | CANCELED), verdict, finished_at, score, reasons[] }. Use this to drive your KYC state machine after the user finishes the SDK capture flow.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          process_id: { type: "string", description: "The process identifier returned by Unico when the verification was created (also called id_processo)." },
+        },
+        required: ["process_id"],
+      },
+    },
+    {
+      name: "batch_get_process_status",
+      description: "IDCheck: batch status lookup. Send up to 100 process_ids per call and receive the same status payload as get_process_status for each. Use this for nightly reconciliation jobs or backfill, not for hot-path polling.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          process_ids: {
+            type: "array",
+            items: { type: "string" },
+            description: "Array of Unico process_ids (max 100). Order is preserved in the response.",
+            maxItems: 100,
+          },
+        },
+        required: ["process_ids"],
+      },
+    },
+    {
+      name: "upload_process_document",
+      description: "IDCheck: upload a captured image to a running verification process. Use the appropriate document_side (FRONT, BACK, SELFIE) to match the process template. The image is consumed by Unico's OCR + biometric pipeline; results show up via get_process_status / get_extracted_data once processing finishes.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          process_id: { type: "string", description: "Target verification process_id" },
+          document_side: {
+            type: "string",
+            enum: ["FRONT", "BACK", "SELFIE"],
+            description: "Which slot this image fills: document front, document back, or selfie capture.",
+          },
+          image_base64: { type: "string", description: "Base64-encoded JPEG/PNG image (max 8 MB)." },
+        },
+        required: ["process_id", "document_side", "image_base64"],
+      },
+    },
+    {
+      name: "get_extracted_data",
+      description: "IDCheck: fetch the structured OCR result for a finished process — typed fields (name, document number, issuer, birthdate, etc.) plus per-field confidence and the raw text blocks. Returns 409 if the process has not yet reached FINISHED.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          process_id: { type: "string", description: "Verification process_id whose OCR output you want." },
+        },
+        required: ["process_id"],
+      },
+    },
+    {
+      name: "get_unico_score",
+      description: "IDCheck: Unico Score — Brazil's identity-fraud risk score (0-1000, higher = lower risk) computed from Unico's cross-tenant graph of biometric and document events. Returns { score, band (VERY_LOW | LOW | MEDIUM | HIGH | VERY_HIGH), reasons[], computed_at }. Score availability requires a Score-tier contract.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          cpf: { type: "string", description: "CPF digits only or formatted XXX.XXX.XXX-XX" },
+        },
+        required: ["cpf"],
+      },
+    },
+    {
+      name: "connect_portability_check",
+      description: "Connect: cross-tenant portability check. Asks Unico's network whether the given CPF has already completed a high-assurance verification at another participating tenant within the lookback window. Lets you skip a full KYC re-capture when a prior verification is recent enough. Returns { has_prior_verification, last_verified_at, assurance_level, source_anonymized_id }.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          cpf: { type: "string", description: "CPF digits only" },
+          max_age_days: { type: "number", description: "Optional. Reject prior verifications older than this many days (default 90)." },
+        },
+        required: ["cpf"],
+      },
+    },
+    {
+      name: "register_webhook",
+      description: "Webhooks: subscribe a callback URL to receive Unico process events (process.created, process.finished, process.expired, score.updated). Returns the webhook_id to use with delete_webhook. The endpoint must be HTTPS and respond 2xx within 10 s.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          url: { type: "string", description: "HTTPS callback URL (must be publicly reachable)." },
+          events: {
+            type: "array",
+            items: { type: "string", enum: ["process.created", "process.finished", "process.expired", "score.updated"] },
+            description: "Event types to subscribe to. Defaults to all if omitted.",
+          },
+          secret: { type: "string", description: "Optional shared secret. Unico will sign each delivery with HMAC-SHA256 in the X-Unico-Signature header." },
+        },
+        required: ["url"],
+      },
+    },
+    {
+      name: "list_webhooks",
+      description: "Webhooks: list all webhook subscriptions registered for this tenant. Returns each webhook's id, url, subscribed events, created_at, and last_delivery_status.",
+      inputSchema: {
+        type: "object",
+        properties: {},
+      },
+    },
+    {
+      name: "delete_webhook",
+      description: "Webhooks: remove a webhook subscription. Idempotent — deleting an unknown id returns 204.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          webhook_id: { type: "string", description: "The webhook_id returned by register_webhook / list_webhooks." },
+        },
+        required: ["webhook_id"],
+      },
+    },
   ],
 }));
 
@@ -258,6 +388,32 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return { content: [{ type: "text", text: JSON.stringify(await unicoRequest("POST", "/idcheck/v1/watchlists", args), null, 2) }] };
       case "court_records_search":
         return { content: [{ type: "text", text: JSON.stringify(await unicoRequest("POST", "/idcheck/v1/judicial", args), null, 2) }] };
+      case "get_process_status": {
+        const pid = encodeURIComponent(String((args as { process_id: string }).process_id));
+        return { content: [{ type: "text", text: JSON.stringify(await unicoRequest("GET", `/idcheck/v1/processes/${pid}`), null, 2) }] };
+      }
+      case "batch_get_process_status":
+        return { content: [{ type: "text", text: JSON.stringify(await unicoRequest("POST", "/idcheck/v1/processes/batch-status", args), null, 2) }] };
+      case "upload_process_document": {
+        const pid = encodeURIComponent(String((args as { process_id: string }).process_id));
+        return { content: [{ type: "text", text: JSON.stringify(await unicoRequest("POST", `/idcheck/v1/processes/${pid}/documents`, args), null, 2) }] };
+      }
+      case "get_extracted_data": {
+        const pid = encodeURIComponent(String((args as { process_id: string }).process_id));
+        return { content: [{ type: "text", text: JSON.stringify(await unicoRequest("GET", `/idcheck/v1/processes/${pid}/extracted-data`), null, 2) }] };
+      }
+      case "get_unico_score":
+        return { content: [{ type: "text", text: JSON.stringify(await unicoRequest("POST", "/idcheck/v1/score", args), null, 2) }] };
+      case "connect_portability_check":
+        return { content: [{ type: "text", text: JSON.stringify(await unicoRequest("POST", "/connect/v1/portability/check", args), null, 2) }] };
+      case "register_webhook":
+        return { content: [{ type: "text", text: JSON.stringify(await unicoRequest("POST", "/v1/webhooks", args), null, 2) }] };
+      case "list_webhooks":
+        return { content: [{ type: "text", text: JSON.stringify(await unicoRequest("GET", "/v1/webhooks"), null, 2) }] };
+      case "delete_webhook": {
+        const wid = encodeURIComponent(String((args as { webhook_id: string }).webhook_id));
+        return { content: [{ type: "text", text: JSON.stringify(await unicoRequest("DELETE", `/v1/webhooks/${wid}`), null, 2) }] };
+      }
       default:
         return { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true };
     }
@@ -280,7 +436,7 @@ async function main() {
       if (!sid && isInitializeRequest(req.body)) {
         const t = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID(), onsessioninitialized: (id) => { transports.set(id, t); } });
         t.onclose = () => { if (t.sessionId) transports.delete(t.sessionId); };
-        const s = new Server({ name: "mcp-unico", version: "0.1.0-alpha.1" }, { capabilities: { tools: {} } });
+        const s = new Server({ name: "mcp-unico", version: "0.2.0-alpha.1" }, { capabilities: { tools: {} } });
         (server as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.forEach((v, k) => (s as unknown as { _requestHandlers: Map<unknown, unknown> })._requestHandlers.set(k, v));
         (server as unknown as { _notificationHandlers?: Map<unknown, unknown> })._notificationHandlers?.forEach((v, k) => (s as unknown as { _notificationHandlers: Map<unknown, unknown> })._notificationHandlers.set(k, v));
         await s.connect(t);

@@ -1,18 +1,18 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.codespar/mcp-unico",
-  "description": "MCP server for Unico — Brazilian identity verification & KYC (IDCloud, IDPay, IDCheck). CPF/CNPJ validation, document OCR, face match, liveness, PEP/watchlists.",
+  "description": "MCP server for Unico — Brazilian identity verification & KYC (IDCloud, IDPay, IDCheck, Sign). CPF/CNPJ, document OCR, face match, liveness, PEP/watchlists, processes, webhooks, Unico Score.",
   "repository": {
     "url": "https://github.com/codespar/mcp-dev-brasil",
     "source": "github",
     "subfolder": "packages/identity/unico"
   },
-  "version": "0.1.0-alpha.1",
+  "version": "0.2.0-alpha.1",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "@codespar/mcp-unico",
-      "version": "0.1.0-alpha.1",
+      "version": "0.2.0-alpha.1",
       "transport": {
         "type": "stdio"
       },
