@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-conta-azul",
   "description": "MCP server for Conta Azul — accounting, invoicing, customers, products",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/fiscal/conta-azul"
   },
@@ -26,5 +26,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.contaazul.com",
+    "logoUrl": "https://logo.clearbit.com/contaazul.com",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=contaazul.com&sz=128",
+    "docsUrl": "https://developers.contaazul.com",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

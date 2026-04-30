@@ -13,7 +13,9 @@
       "registryType": "npm",
       "identifier": "@codespar/mcp-andreani",
       "version": "0.2.0-alpha.2",
-      "transport": { "type": "stdio" },
+      "transport": {
+        "type": "stdio"
+      },
       "environmentVariables": [
         {
           "name": "ANDREANI_API_KEY",
@@ -38,5 +40,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.andreani.com",
+    "logoUrl": "https://logo.clearbit.com/andreani.com",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=andreani.com&sz=128",
+    "docsUrl": "https://developers.andreani.com",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

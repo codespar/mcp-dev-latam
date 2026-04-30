@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-wise",
   "description": "MCP server for Wise — global multi-currency accounts, FX, and international transfers. Profiles, quotes, recipients, transfers, balances, webhooks.",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/payments/wise"
   },
@@ -33,5 +33,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.wise.com",
+    "logoUrl": "https://logo.clearbit.com/wise.com",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=wise.com&sz=128",
+    "docsUrl": "https://api-docs.wise.com",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-vindi",
   "description": "MCP server for Vindi — recurring billing, subscriptions, invoices",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/payments/vindi"
   },
@@ -26,5 +26,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.vindi.com.br",
+    "logoUrl": "https://logo.clearbit.com/vindi.com.br",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=vindi.com.br&sz=128",
+    "docsUrl": "https://vindi.github.io/api-docs",
+    "sandbox": {
+      "available": false
+    }
+  }
 }

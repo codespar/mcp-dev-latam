@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-paypal",
   "description": "MCP server for PayPal — global payments and payouts via REST API. Orders v2, Payments v2, Payouts, Subscriptions, Disputes, Webhooks.",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/payments/paypal"
   },
@@ -40,5 +40,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.paypal.com",
+    "logoUrl": "https://logo.clearbit.com/paypal.com",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=paypal.com&sz=128",
+    "docsUrl": "https://developer.paypal.com/api",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

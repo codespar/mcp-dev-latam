@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-c6",
   "description": "MCP server for C6 Bank — top Brazilian digital bank backed by JPMorgan. Pix (cob/cobv), DICT keys, Boleto, account balance, and statement via C6's Developer Portal APIs (OAuth2 + mTLS).",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/banking/c6"
   },
@@ -54,5 +54,13 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.c6bank.com.br",
+    "logoUrl": "https://logo.clearbit.com/c6bank.com.br",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=c6bank.com.br&sz=128",
+    "sandbox": {
+      "available": false
+    }
+  }
 }

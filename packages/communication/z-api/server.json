@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-z-api",
   "description": "MCP server for Z-API — WhatsApp messaging, contacts, media",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/communication/z-api"
   },
@@ -26,5 +26,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.z-api.io",
+    "logoUrl": "https://logo.clearbit.com/z-api.io",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=z-api.io&sz=128",
+    "docsUrl": "https://developer.z-api.io",
+    "sandbox": {
+      "available": false
+    }
+  }
 }

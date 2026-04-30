@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-amazon",
   "description": "MCP server for Amazon Selling Partner API (SP-API) — the global marketplace, including Amazon BR/MX/US. Orders, listings, catalog, inventory, reports, finances, fulfillment, notifications.",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/ecommerce/amazon"
   },
@@ -61,5 +61,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.developer.amazonservices.com",
+    "logoUrl": "https://logo.clearbit.com/developer.amazonservices.com",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=developer.amazonservices.com&sz=128",
+    "docsUrl": "https://developer-docs.amazon.com/sp-api",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

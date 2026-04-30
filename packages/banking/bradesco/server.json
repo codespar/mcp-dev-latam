@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-bradesco",
   "description": "MCP server for Bradesco — Brazil's 2nd largest private bank. Pix, Cobrança (boleto), Arrecadação, and Extrato via Bradesco's Developer Portal APIs (OAuth2 + mTLS).",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/banking/bradesco"
   },
@@ -54,5 +54,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.bradesco.com.br",
+    "logoUrl": "https://logo.clearbit.com/bradesco.com.br",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=bradesco.com.br&sz=128",
+    "docsUrl": "https://developers.bradesco.com.br",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

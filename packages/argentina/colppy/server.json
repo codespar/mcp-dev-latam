@@ -13,7 +13,9 @@
       "registryType": "npm",
       "identifier": "@codespar/mcp-colppy",
       "version": "0.2.0-alpha.2",
-      "transport": { "type": "stdio" },
+      "transport": {
+        "type": "stdio"
+      },
       "environmentVariables": [
         {
           "name": "COLPPY_API_KEY",
@@ -31,5 +33,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.colppy.com",
+    "logoUrl": "https://logo.clearbit.com/colppy.com",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=colppy.com&sz=128",
+    "docsUrl": "https://api.colppy.com/",
+    "sandbox": {
+      "available": false
+    }
+  }
 }

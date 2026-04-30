@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-getnet",
   "description": "MCP server for Getnet — Santander-owned Brazilian acquirer. Credit, debit, Pix, boleto + marketplace seller onboarding and split.",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/payments/getnet"
   },
@@ -47,5 +47,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.getnet.com.br",
+    "logoUrl": "https://logo.clearbit.com/getnet.com.br",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=getnet.com.br&sz=128",
+    "docsUrl": "https://developers.getnet.com.br",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

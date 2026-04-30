@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-moonpay",
   "description": "MCP server for MoonPay — fiat-to-crypto on/off-ramp across 100+ crypto assets and multiple geographies. Pix supported for Brazil onramp.",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/crypto/moonpay"
   },
@@ -61,5 +61,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.moonpay.com",
+    "logoUrl": "https://logo.clearbit.com/moonpay.com",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=moonpay.com&sz=128",
+    "docsUrl": "https://dev.moonpay.com",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

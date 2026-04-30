@@ -13,7 +13,9 @@
       "registryType": "npm",
       "identifier": "@codespar/mcp-afip",
       "version": "0.2.0-alpha.2",
-      "transport": { "type": "stdio" },
+      "transport": {
+        "type": "stdio"
+      },
       "environmentVariables": [
         {
           "name": "AFIP_CERT_PATH",
@@ -38,5 +40,15 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.afip.gob.ar",
+    "logoUrl": "https://logo.clearbit.com/afip.gob.ar",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=afip.gob.ar&sz=128",
+    "docsUrl": "https://www.afip.gob.ar/ws",
+    "sandbox": {
+      "available": true,
+      "url": "https://wswhomo.afip.gov.ar"
+    }
+  }
 }

@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-pix-bcb",
   "description": "MCP server for Pix BCB API — official Banco Central do Brasil Pix standard",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/payments/pix-bcb"
   },
@@ -26,5 +26,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.bcb.gov.br",
+    "logoUrl": "https://logo.clearbit.com/bcb.gov.br",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=bcb.gov.br&sz=128",
+    "docsUrl": "https://www.bcb.gov.br/estabilidadefinanceira/pix",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

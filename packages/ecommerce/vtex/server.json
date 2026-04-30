@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-vtex",
   "description": "MCP server for VTEX — e-commerce, orders, products, inventory, shipping",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/ecommerce/vtex"
   },
@@ -26,5 +26,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.vtex.com",
+    "logoUrl": "https://logo.clearbit.com/vtex.com",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=vtex.com&sz=128",
+    "docsUrl": "https://developers.vtex.com",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

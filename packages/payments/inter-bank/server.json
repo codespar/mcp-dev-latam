@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-inter-bank",
   "description": "Banco Inter — digital bank, boleto, PIX, statements, transfers",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/payments/inter-bank"
   },
@@ -13,7 +13,9 @@
       "registryType": "npm",
       "identifier": "@codespar/mcp-inter-bank",
       "version": "0.2.1",
-      "transport": { "type": "stdio" },
+      "transport": {
+        "type": "stdio"
+      },
       "environmentVariables": [
         {
           "name": "INTER_CLIENT_ID",
@@ -24,5 +26,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.inter.co",
+    "logoUrl": "https://logo.clearbit.com/inter.co",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=inter.co&sz=128",
+    "docsUrl": "https://developers.inter.co",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

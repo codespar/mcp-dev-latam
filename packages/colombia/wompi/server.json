@@ -13,7 +13,9 @@
       "registryType": "npm",
       "identifier": "@codespar/mcp-wompi",
       "version": "0.2.1",
-      "transport": { "type": "stdio" },
+      "transport": {
+        "type": "stdio"
+      },
       "environmentVariables": [
         {
           "name": "WOMPI_PUBLIC_KEY",
@@ -38,5 +40,15 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.wompi.co",
+    "logoUrl": "https://logo.clearbit.com/wompi.co",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=wompi.co&sz=128",
+    "docsUrl": "https://docs.wompi.co",
+    "sandbox": {
+      "available": true,
+      "url": "https://sandbox.wompi.co"
+    }
+  }
 }

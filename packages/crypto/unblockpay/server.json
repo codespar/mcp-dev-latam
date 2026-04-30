@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-unblockpay",
   "description": "MCP server for UnblockPay — fiat-to-stablecoin onramp/offramp, wallets, transfers",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/crypto/unblockpay"
   },
@@ -26,5 +26,13 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.unblockpay.com",
+    "logoUrl": "https://logo.clearbit.com/unblockpay.com",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=unblockpay.com&sz=128",
+    "sandbox": {
+      "available": false
+    }
+  }
 }

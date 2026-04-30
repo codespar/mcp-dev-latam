@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-clearsale",
   "description": "MCP server for ClearSale — Brazilian fraud prevention, order risk scoring, device fingerprinting, and chargeback feedback",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/fraud/clearsale"
   },
@@ -33,5 +33,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.clear.sale",
+    "logoUrl": "https://logo.clearbit.com/clear.sale",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=clear.sale&sz=128",
+    "docsUrl": "https://developers.clear.sale",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

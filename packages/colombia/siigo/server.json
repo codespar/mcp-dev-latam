@@ -13,7 +13,9 @@
       "registryType": "npm",
       "identifier": "@codespar/mcp-siigo",
       "version": "0.2.1",
-      "transport": { "type": "stdio" },
+      "transport": {
+        "type": "stdio"
+      },
       "environmentVariables": [
         {
           "name": "SIIGO_API_KEY",
@@ -31,5 +33,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.siigo.com",
+    "logoUrl": "https://logo.clearbit.com/siigo.com",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=siigo.com&sz=128",
+    "docsUrl": "https://siigoapi.docs.apiary.io",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-open-finance",
   "description": "MCP server for Open Finance Brasil — accounts, transactions, consents, credit cards, loans, financings, investments, payment-initiation, customer qualifications",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/banking/open-finance"
   },
@@ -26,5 +26,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.openfinancebrasil.org.br",
+    "logoUrl": "https://logo.clearbit.com/openfinancebrasil.org.br",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=openfinancebrasil.org.br&sz=128",
+    "docsUrl": "https://openbanking-brasil.github.io",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

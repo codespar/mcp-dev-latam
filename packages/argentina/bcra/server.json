@@ -13,8 +13,19 @@
       "registryType": "npm",
       "identifier": "@codespar/mcp-bcra",
       "version": "0.2.1",
-      "transport": { "type": "stdio" },
+      "transport": {
+        "type": "stdio"
+      },
       "environmentVariables": []
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.bcra.gob.ar",
+    "logoUrl": "https://logo.clearbit.com/bcra.gob.ar",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=bcra.gob.ar&sz=128",
+    "docsUrl": "https://www.bcra.gob.ar/Catalogo/APIs.asp",
+    "sandbox": {
+      "available": false
+    }
+  }
 }

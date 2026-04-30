@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-izipay",
   "description": "MCP server for Izipay — Peru's enterprise acquirer (Niubiz). Card authorize/capture/refund, tokenization, cuotas, reconciliation.",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/payments/izipay"
   },
@@ -54,5 +54,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.izipay.pe",
+    "logoUrl": "https://logo.clearbit.com/izipay.pe",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=izipay.pe&sz=128",
+    "docsUrl": "https://developers.izipay.pe",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

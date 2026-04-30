@@ -13,7 +13,9 @@
       "registryType": "npm",
       "identifier": "@codespar/mcp-belvo",
       "version": "0.2.1",
-      "transport": { "type": "stdio" },
+      "transport": {
+        "type": "stdio"
+      },
       "environmentVariables": [
         {
           "name": "BELVO_SECRET_ID",
@@ -38,5 +40,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.belvo.com",
+    "logoUrl": "https://logo.clearbit.com/belvo.com",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=belvo.com&sz=128",
+    "docsUrl": "https://developers.belvo.com",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-stone",
   "description": "MCP server for Stone — open banking, payments, Pix, transfers",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/payments/stone"
   },
@@ -26,5 +26,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.stone.com.br",
+    "logoUrl": "https://logo.clearbit.com/stone.com.br",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=stone.com.br&sz=128",
+    "docsUrl": "https://developer.stone.com.br",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

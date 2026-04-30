@@ -13,7 +13,9 @@
       "registryType": "npm",
       "identifier": "@codespar/mcp-conekta",
       "version": "0.2.1",
-      "transport": { "type": "stdio" },
+      "transport": {
+        "type": "stdio"
+      },
       "environmentVariables": [
         {
           "name": "CONEKTA_API_KEY",
@@ -24,5 +26,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.conekta.com",
+    "logoUrl": "https://logo.clearbit.com/conekta.com",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=conekta.com&sz=128",
+    "docsUrl": "https://developers.conekta.com",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

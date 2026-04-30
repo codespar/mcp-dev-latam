@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-chargebee",
   "description": "MCP server for Chargebee — global subscription billing, recurring revenue orchestration",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/payments/chargebee"
   },
@@ -33,5 +33,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.chargebee.com",
+    "logoUrl": "https://logo.clearbit.com/chargebee.com",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=chargebee.com&sz=128",
+    "docsUrl": "https://apidocs.chargebee.com",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-nuvem-fiscal",
   "description": "MCP server for Nuvem Fiscal — NF-e, NFS-e, NFC-e, CNPJ, CEP",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/fiscal/nuvem-fiscal"
   },
@@ -26,5 +26,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.nuvemfiscal.com.br",
+    "logoUrl": "https://logo.clearbit.com/nuvemfiscal.com.br",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=nuvemfiscal.com.br&sz=128",
+    "docsUrl": "https://dev.nuvemfiscal.com.br",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

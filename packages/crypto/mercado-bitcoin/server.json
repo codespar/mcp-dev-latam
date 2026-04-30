@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-mercado-bitcoin",
   "description": "MCP server for Mercado Bitcoin — Brazilian crypto exchange, trading, orderbook, withdrawals",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/crypto/mercado-bitcoin"
   },
@@ -26,5 +26,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.mercadobitcoin.com.br",
+    "logoUrl": "https://logo.clearbit.com/mercadobitcoin.com.br",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=mercadobitcoin.com.br&sz=128",
+    "docsUrl": "https://api.mercadobitcoin.net/api/v4/docs",
+    "sandbox": {
+      "available": false
+    }
+  }
 }

@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-banco-do-brasil",
   "description": "MCP server for Banco do Brasil — Brazil's top public bank. Pix, Cobrança (boleto), Conta-Corrente, and Arrecadação via BB's Developer Portal APIs (OAuth2 + mTLS).",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/banking/banco-do-brasil"
   },
@@ -61,5 +61,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.bb.com.br",
+    "logoUrl": "https://logo.clearbit.com/bb.com.br",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=bb.com.br&sz=128",
+    "docsUrl": "https://developers.bb.com.br",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

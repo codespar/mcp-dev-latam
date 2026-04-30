@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-mercado-libre",
   "description": "Mercado Libre — LATAM marketplace, product search, orders, sellers, shipments",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/payments/mercado-libre"
   },
@@ -13,7 +13,9 @@
       "registryType": "npm",
       "identifier": "@codespar/mcp-mercado-libre",
       "version": "0.2.1",
-      "transport": { "type": "stdio" },
+      "transport": {
+        "type": "stdio"
+      },
       "environmentVariables": [
         {
           "name": "MELI_ACCESS_TOKEN",
@@ -24,5 +26,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.mercadolibre.com.ar",
+    "logoUrl": "https://logo.clearbit.com/mercadolibre.com.ar",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=mercadolibre.com.ar&sz=128",
+    "docsUrl": "https://developers.mercadolibre.com.ar",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

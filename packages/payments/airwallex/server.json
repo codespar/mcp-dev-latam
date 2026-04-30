@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-airwallex",
   "description": "MCP server for Airwallex — embedded finance for cross-border collection and payouts. Global accounts, FX conversions, beneficiary transfers.",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/payments/airwallex"
   },
@@ -40,5 +40,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.airwallex.com",
+    "logoUrl": "https://logo.clearbit.com/airwallex.com",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=airwallex.com&sz=128",
+    "docsUrl": "https://www.airwallex.com/docs",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

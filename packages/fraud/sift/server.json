@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-sift",
   "description": "MCP server for Sift — global enterprise ML-based fraud detection, real-time risk scoring (payment/account/content abuse), decisions workflows, and event ingestion",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/fraud/sift"
   },
@@ -40,5 +40,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.sift.com",
+    "logoUrl": "https://logo.clearbit.com/sift.com",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=sift.com&sz=128",
+    "docsUrl": "https://sift.com/developers",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

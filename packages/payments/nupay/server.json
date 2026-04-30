@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-nupay",
   "description": "MCP server for NuPay — Nubank's merchant checkout rail. Pix + NuPay wallet one-click checkout backed by Nubank's 100M+ BR customer distribution.",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/payments/nupay"
   },
@@ -54,5 +54,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.nubank.com.br",
+    "logoUrl": "https://logo.clearbit.com/nubank.com.br",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=nubank.com.br&sz=128",
+    "docsUrl": "https://nupay.com.br/empresa",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

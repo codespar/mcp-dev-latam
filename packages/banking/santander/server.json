@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-santander",
   "description": "MCP server for Santander Brasil — 3rd largest private bank in Brazil. Pix, Cobrança (boleto), Arrecadação, and Extrato via Santander's trust-open Developer Portal APIs (OAuth2 + mTLS).",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/banking/santander"
   },
@@ -54,5 +54,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.santander.com.br",
+    "logoUrl": "https://logo.clearbit.com/santander.com.br",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=santander.com.br&sz=128",
+    "docsUrl": "https://developer.santander.com.br",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

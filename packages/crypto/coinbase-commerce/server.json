@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-coinbase-commerce",
   "description": "MCP server for Coinbase Commerce — global crypto merchant payments. Create charges, checkouts, and invoices so buyers can pay in BTC, ETH, USDC and more; Coinbase settles to crypto or fiat.",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/crypto/coinbase-commerce"
   },
@@ -40,5 +40,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.commerce.coinbase.com",
+    "logoUrl": "https://logo.clearbit.com/commerce.coinbase.com",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=commerce.coinbase.com&sz=128",
+    "docsUrl": "https://docs.cloud.coinbase.com/commerce",
+    "sandbox": {
+      "available": false
+    }
+  }
 }

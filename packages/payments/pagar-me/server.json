@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-pagar-me",
   "description": "MCP server for Pagar.me — orders, charges, recipients, transfers, anticipations, plans, subscriptions, tokens, withdrawals, webhooks",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/payments/pagar-me"
   },
@@ -33,5 +33,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.pagar.me",
+    "logoUrl": "https://logo.clearbit.com/pagar.me",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=pagar.me&sz=128",
+    "docsUrl": "https://docs.pagar.me",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

@@ -13,7 +13,9 @@
       "registryType": "npm",
       "identifier": "@codespar/mcp-facturapi",
       "version": "0.2.1",
-      "transport": { "type": "stdio" },
+      "transport": {
+        "type": "stdio"
+      },
       "environmentVariables": [
         {
           "name": "FACTURAPI_API_KEY",
@@ -24,5 +26,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.facturapi.io",
+    "logoUrl": "https://logo.clearbit.com/facturapi.io",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=facturapi.io&sz=128",
+    "docsUrl": "https://docs.facturapi.io",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

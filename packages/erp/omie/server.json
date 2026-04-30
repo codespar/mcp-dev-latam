@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-omie",
   "description": "MCP server for Omie — ERP, customers, products, orders, invoices, financials",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/erp/omie"
   },
@@ -26,5 +26,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.omie.com.br",
+    "logoUrl": "https://logo.clearbit.com/omie.com.br",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=omie.com.br&sz=128",
+    "docsUrl": "https://developer.omie.com.br",
+    "sandbox": {
+      "available": false
+    }
+  }
 }

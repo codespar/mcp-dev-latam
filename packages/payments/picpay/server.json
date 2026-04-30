@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-picpay",
   "description": "MCP server for PicPay Business — Brazilian digital wallet with 60M+ users. Merchant checkout API, Pix QR, refunds, cancellations, and recurring subscriptions.",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/payments/picpay"
   },
@@ -40,5 +40,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.picpay.com",
+    "logoUrl": "https://logo.clearbit.com/picpay.com",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=picpay.com&sz=128",
+    "docsUrl": "https://ecommerce.picpay.com",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

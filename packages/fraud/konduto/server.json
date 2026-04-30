@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-konduto",
   "description": "MCP server for Konduto — Brazilian fraud prevention, API-first order risk scoring, behavioral device intelligence, and blocklist/allowlist/reviewlist management",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/fraud/konduto"
   },
@@ -33,5 +33,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.konduto.com",
+    "logoUrl": "https://logo.clearbit.com/konduto.com",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=konduto.com&sz=128",
+    "docsUrl": "https://docs.konduto.com",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

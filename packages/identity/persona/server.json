@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-persona",
   "description": "MCP server for Persona — modern developer-first identity verification and KYC (inquiries, accounts, reports, cases)",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/identity/persona"
   },
@@ -33,5 +33,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.withpersona.com",
+    "logoUrl": "https://logo.clearbit.com/withpersona.com",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=withpersona.com&sz=128",
+    "docsUrl": "https://docs.withpersona.com",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

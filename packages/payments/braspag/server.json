@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-braspag",
   "description": "MCP server for Braspag — Cielo's enterprise orchestration, token vault (Cartão Protegido), recurrence, and marketplace split",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/payments/braspag"
   },
@@ -40,5 +40,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.braspag.com.br",
+    "logoUrl": "https://logo.clearbit.com/braspag.com.br",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=braspag.com.br&sz=128",
+    "docsUrl": "https://braspag.github.io",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

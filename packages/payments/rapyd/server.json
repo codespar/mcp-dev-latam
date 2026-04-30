@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-rapyd",
   "description": "MCP server for Rapyd — global collect + disburse across 100+ countries, including cash pickup and managed wallets",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/payments/rapyd"
   },
@@ -40,5 +40,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.rapyd.net",
+    "logoUrl": "https://logo.clearbit.com/rapyd.net",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=rapyd.net&sz=128",
+    "docsUrl": "https://docs.rapyd.net",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-ebanx",
   "description": "MCP server for EBANX — cross-border payments, payouts, exchange rates",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/payments/ebanx"
   },
@@ -26,5 +26,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.ebanx.com",
+    "logoUrl": "https://logo.clearbit.com/ebanx.com",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=ebanx.com&sz=128",
+    "docsUrl": "https://developers.ebanx.com",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

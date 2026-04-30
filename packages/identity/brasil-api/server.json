@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-brasil-api",
   "description": "MCP server for BrasilAPI — CEP, CNPJ, banks, FIPE, holidays, weather",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/identity/brasil-api"
   },
@@ -17,5 +17,14 @@
         "type": "stdio"
       }
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.brasilapi.com.br",
+    "logoUrl": "https://logo.clearbit.com/brasilapi.com.br",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=brasilapi.com.br&sz=128",
+    "docsUrl": "https://brasilapi.com.br/docs",
+    "sandbox": {
+      "available": false
+    }
+  }
 }

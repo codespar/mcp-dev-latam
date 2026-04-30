@@ -13,7 +13,9 @@
       "registryType": "npm",
       "identifier": "@codespar/mcp-coordinadora",
       "version": "0.2.0-alpha.2",
-      "transport": { "type": "stdio" },
+      "transport": {
+        "type": "stdio"
+      },
       "environmentVariables": [
         {
           "name": "COORDINADORA_API_KEY",
@@ -31,5 +33,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.coordinadora.com",
+    "logoUrl": "https://logo.clearbit.com/coordinadora.com",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=coordinadora.com&sz=128",
+    "docsUrl": "https://coordinadora.docs.apiary.io",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

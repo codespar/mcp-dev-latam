@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-stripe",
   "description": "MCP server for Stripe — global standard-bearer payments API (PaymentIntents, Checkout, Billing, Refunds)",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/payments/stripe"
   },
@@ -33,5 +33,15 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.stripe.com",
+    "logoUrl": "https://logo.clearbit.com/stripe.com",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=stripe.com&sz=128",
+    "docsUrl": "https://docs.stripe.com",
+    "sandbox": {
+      "available": true,
+      "url": "https://api.stripe.com (test mode keys)"
+    }
+  }
 }

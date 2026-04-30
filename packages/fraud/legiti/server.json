@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-legiti",
   "description": "MCP server for Legiti — Brazilian fraud prevention (ticketing + ecommerce), real-time order evaluation, chargeback feedback, and account/event/sale collection",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/fraud/legiti"
   },
@@ -33,5 +33,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.legiti.com",
+    "logoUrl": "https://logo.clearbit.com/legiti.com",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=legiti.com&sz=128",
+    "docsUrl": "https://docs.legiti.com",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

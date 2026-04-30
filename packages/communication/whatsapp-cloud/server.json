@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-whatsapp-cloud",
   "description": "MCP server for WhatsApp Cloud API (Meta direct) — official Graph API integration for messages, media, and templates",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/communication/whatsapp-cloud"
   },
@@ -47,5 +47,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.developers.facebook.com",
+    "logoUrl": "https://logo.clearbit.com/developers.facebook.com",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=developers.facebook.com&sz=128",
+    "docsUrl": "https://developers.facebook.com/docs/whatsapp/cloud-api",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

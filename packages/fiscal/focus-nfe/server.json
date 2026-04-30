@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-focus-nfe",
   "description": "MCP server for Focus NFe — NFe, NFSe, NFCe emission and management",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/fiscal/focus-nfe"
   },
@@ -26,5 +26,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.focusnfe.com.br",
+    "logoUrl": "https://logo.clearbit.com/focusnfe.com.br",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=focusnfe.com.br&sz=128",
+    "docsUrl": "https://focusnfe.com.br/doc",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-pagseguro",
   "description": "MCP server for PagSeguro/PagBank — orders, Pix, boleto, credit card, charges",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/payments/pagseguro"
   },
@@ -26,5 +26,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.pagseguro.uol.com.br",
+    "logoUrl": "https://logo.clearbit.com/pagseguro.uol.com.br",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=pagseguro.uol.com.br&sz=128",
+    "docsUrl": "https://dev.pagbank.uol.com.br",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

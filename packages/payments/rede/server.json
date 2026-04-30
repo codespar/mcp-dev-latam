@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-rede",
   "description": "MCP server for Rede — Itaú-owned Brazilian card acquirer. Authorize/capture/refund, zero-auth, card tokens, and native recurrences.",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/payments/rede"
   },
@@ -40,5 +40,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.userede.com.br",
+    "logoUrl": "https://logo.clearbit.com/userede.com.br",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=userede.com.br&sz=128",
+    "docsUrl": "https://www.userede.com.br/desenvolvedores",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

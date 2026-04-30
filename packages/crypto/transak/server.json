@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-transak",
   "description": "MCP server for Transak — fiat-to-crypto on/off-ramp across ~170 countries with multi-chain support (Partner API)",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/crypto/transak"
   },
@@ -40,5 +40,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.transak.com",
+    "logoUrl": "https://logo.clearbit.com/transak.com",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=transak.com&sz=128",
+    "docsUrl": "https://docs.transak.com",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

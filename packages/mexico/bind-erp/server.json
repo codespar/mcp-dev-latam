@@ -13,7 +13,9 @@
       "registryType": "npm",
       "identifier": "@codespar/mcp-bind-erp",
       "version": "0.2.1",
-      "transport": { "type": "stdio" },
+      "transport": {
+        "type": "stdio"
+      },
       "environmentVariables": [
         {
           "name": "BIND_API_KEY",
@@ -24,5 +26,13 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.bind.com.ar",
+    "logoUrl": "https://logo.clearbit.com/bind.com.ar",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=bind.com.ar&sz=128",
+    "sandbox": {
+      "available": false
+    }
+  }
 }

@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-xero",
   "description": "MCP server for Xero — global cloud accounting (UK/AU/NZ leader, expanding in US). Contacts, invoices, payments, items, accounts, reports.",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/erp/xero"
   },
@@ -33,5 +33,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.xero.com",
+    "logoUrl": "https://logo.clearbit.com/xero.com",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=xero.com&sz=128",
+    "docsUrl": "https://developer.xero.com",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

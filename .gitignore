@@ -7,3 +7,4 @@ dist/
 !package.json
 .env
 *.local*
+.DS_Store

@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-stark-bank",
   "description": "MCP server for Stark Bank — transfers, boletos, invoices, Pix, balance",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/banking/stark-bank"
   },
@@ -26,5 +26,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.starkbank.com",
+    "logoUrl": "https://logo.clearbit.com/starkbank.com",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=starkbank.com&sz=128",
+    "docsUrl": "https://starkbank.com/docs",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

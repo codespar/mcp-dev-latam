@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-onfido",
   "description": "MCP server for Onfido — global identity verification and KYC (applicants, documents, live photos, checks, reports, workflow runs, SDK tokens)",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/identity/onfido"
   },
@@ -33,5 +33,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.onfido.com",
+    "logoUrl": "https://logo.clearbit.com/onfido.com",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=onfido.com&sz=128",
+    "docsUrl": "https://documentation.onfido.com",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

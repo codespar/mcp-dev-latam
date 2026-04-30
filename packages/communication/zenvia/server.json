@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-zenvia",
   "description": "MCP server for Zenvia — SMS, WhatsApp, RCS, Email, Voice, Facebook messaging, templates and reports",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/communication/zenvia"
   },
@@ -26,5 +26,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.zenvia.com",
+    "logoUrl": "https://logo.clearbit.com/zenvia.com",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=zenvia.com&sz=128",
+    "docsUrl": "https://zenvia.github.io",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

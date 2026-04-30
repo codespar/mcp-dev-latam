@@ -13,7 +13,9 @@
       "registryType": "npm",
       "identifier": "@codespar/mcp-stp-spei",
       "version": "0.2.0-alpha.2",
-      "transport": { "type": "stdio" },
+      "transport": {
+        "type": "stdio"
+      },
       "environmentVariables": [
         {
           "name": "STP_API_KEY",
@@ -31,5 +33,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.stpmex.com",
+    "logoUrl": "https://logo.clearbit.com/stpmex.com",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=stpmex.com&sz=128",
+    "docsUrl": "https://stpmex.com/docs",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

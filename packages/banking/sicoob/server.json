@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-sicoob",
   "description": "MCP server for Sicoob — Brazil's largest cooperative bank network (top 4 in Pix volume). Pix (cob, cobv, DICT), Cobrança (boleto), and SPB via Sicoob's Developers Portal APIs (OAuth2 + mTLS).",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/banking/sicoob"
   },
@@ -54,5 +54,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.sicoob.com.br",
+    "logoUrl": "https://logo.clearbit.com/sicoob.com.br",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=sicoob.com.br&sz=128",
+    "docsUrl": "https://developers.sicoob.com.br",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

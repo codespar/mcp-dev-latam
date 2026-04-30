@@ -13,7 +13,9 @@
       "registryType": "npm",
       "identifier": "@codespar/mcp-tienda-nube",
       "version": "0.2.1",
-      "transport": { "type": "stdio" },
+      "transport": {
+        "type": "stdio"
+      },
       "environmentVariables": [
         {
           "name": "TIENDANUBE_ACCESS_TOKEN",
@@ -31,5 +33,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.tiendanube.com",
+    "logoUrl": "https://logo.clearbit.com/tiendanube.com",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=tiendanube.com&sz=128",
+    "docsUrl": "https://tiendanube.github.io",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

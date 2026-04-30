@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-nfe-io",
   "description": "MCP server for NFe.io — NF-e, NFS-e, CNPJ, CEP",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/fiscal/nfe-io"
   },
@@ -33,5 +33,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.nfe.io",
+    "logoUrl": "https://logo.clearbit.com/nfe.io",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=nfe.io&sz=128",
+    "docsUrl": "https://nfe.io/docs",
+    "sandbox": {
+      "available": true
+    }
+  }
 }

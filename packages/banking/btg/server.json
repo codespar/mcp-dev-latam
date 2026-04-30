@@ -3,7 +3,7 @@
   "name": "io.github.codespar/mcp-btg",
   "description": "MCP server for BTG Pactual — Brazil's largest investment bank. Pix, Boleto, Account, and Investments (CDB, LCI, LCA, debêntures, funds) via BTG's Developer Portal APIs (OAuth2 + mTLS).",
   "repository": {
-    "url": "https://github.com/codespar/mcp-dev-brasil",
+    "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/banking/btg"
   },
@@ -54,5 +54,14 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "homepage": "https://www.btgpactual.com",
+    "logoUrl": "https://logo.clearbit.com/btgpactual.com",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=btgpactual.com&sz=128",
+    "docsUrl": "https://developers.btgpactual.com",
+    "sandbox": {
+      "available": true
+    }
+  }
 }
