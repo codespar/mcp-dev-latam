@@ -98,7 +98,8 @@ Stone provides a sandbox via the developer portal.
 |----------|----------|-------------|
 | `STONE_CLIENT_ID` | Yes | OAuth2 client ID |
 | `STONE_CLIENT_SECRET` | Yes | OAuth2 client secret |
-| `STONE_BASE_URL` | No | Override base URL (default `https://api.openbank.stone.com.br/api/v1`) |
+| `STONE_BASE_URL` | No | Override base URL (default `https://api.openbank.stone.com.br/api/v1`; sandbox `https://sandbox-api.openbank.stone.com.br/api/v1`) |
+| `STONE_AUTH_URL` | No | Override the OAuth2 token URL (default `https://accounts.openbank.stone.com.br/auth/realms/stone_bank/protocol/openid-connect/token`; sandbox `https://sandbox-accounts.openbank.stone.com.br/auth/realms/stone_bank/protocol/openid-connect/token`). Up to 0.2.2 the token call went to `login.openbank.stone.com.br`, which does not exist, so every tool failed at authentication. |
 
 ## Roadmap
 

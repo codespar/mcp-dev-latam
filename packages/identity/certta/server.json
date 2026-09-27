@@ -1,18 +1,18 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.codespar/mcp-certta",
-  "description": "MCP server for Certta — Brazilian KYC/KYB: biometrics, OCR, ICP-Brasil e-signature, onboarding",
+  "description": "DEPRECATED: no live endpoint (api.certta.com.br does not resolve)",
   "repository": {
     "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/identity/certta"
   },
-  "version": "0.1.2",
+  "version": "0.1.3",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "@codespar/mcp-certta",
-      "version": "0.1.2",
+      "version": "0.1.3",
       "transport": {
         "type": "stdio"
       },

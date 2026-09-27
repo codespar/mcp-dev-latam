@@ -47,9 +47,9 @@ const PASSWORD = process.env.NIUBIZ_PASSWORD || "";
 const MERCHANT_ID = process.env.NIUBIZ_MERCHANT_ID || "";
 const ENV = (process.env.NIUBIZ_ENV || "sandbox").toLowerCase();
 
-const BASE_URL = ENV === "production"
+const BASE_URL = process.env.NIUBIZ_BASE_URL || (ENV === "production"
   ? "https://apiprod.vnforapps.com"
-  : "https://apisandbox.vnforappstest.com";
+  : "https://apisandbox.vnforappstest.com");
 
 /** Security tokens are valid for a limited window; cache and reuse,
  *  refetch when older than 20 minutes. */

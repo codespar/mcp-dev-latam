@@ -60,9 +60,9 @@ const DEMO_RESPONSES: Record<string, unknown> = {
 };
 
 const TOKEN = process.env.MELHOR_ENVIO_TOKEN || "";
-const BASE_URL = process.env.MELHOR_ENVIO_SANDBOX === "true"
+const BASE_URL = process.env.MELHOR_ENVIO_BASE_URL || (process.env.MELHOR_ENVIO_SANDBOX === "true"
   ? "https://sandbox.melhorenvio.com.br/api/v2"
-  : "https://melhorenvio.com.br/api/v2";
+  : "https://melhorenvio.com.br/api/v2");
 
 async function melhorEnvioRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const res = await fetch(`${BASE_URL}${path}`, {

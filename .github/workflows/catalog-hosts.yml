@@ -1,0 +1,73 @@
+name: Catalog hosts
+
+# Every default URL a server calls must exist. scripts/check-catalog-hosts.py
+# computes the URL set from packages/*/*/src/index.ts on each run (nothing is
+# listed by hand), resolves every host and completes a TLS handshake that
+# verifies the certificate for that name. A host that does not resolve or whose
+# certificate is for another name fails the job; a timeout or reset is only a
+# warning, because it depends on where the runner sits. Deprecated packages
+# (package.json description starting with "DEPRECATED") and the hosts listed in
+# scripts/catalog-hosts-known-dead.json are the carve-outs; the job fails if a
+# deprecated package has no dead host left or a listed host comes back.
+#
+# The self-test runs first: it plants a dead host, a wrong-certificate host, a
+# live control, a deprecated package and a hardcoded URL in a temp tree and
+# asserts each verdict by name. If the self-test fails, the catalog verdict
+# below is not evidence of anything.
+
+on:
+  schedule:
+    - cron: "17 9 * * 1" # Mondays 09:17 UTC
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - "packages/*/*/src/**"
+      - "packages/*/*/package.json"
+      - "scripts/check-catalog-hosts.py"
+      - "scripts/catalog-hosts-known-dead.json"
+      - ".github/workflows/catalog-hosts.yml"
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  hosts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Self-test (planted dead, wrong-cert and live hosts)
+        run: python3 scripts/check-catalog-hosts.py --self-test
+
+      - name: Resolve and TLS-handshake every default URL in the catalog
+        id: check
+        run: |
+          set -o pipefail
+          python3 scripts/check-catalog-hosts.py | tee hosts-report.txt
+
+      # A red scheduled run only emails whoever last touched the cron line, so
+      # the weekly failure also lands in one issue (reused, not duplicated).
+      - name: Open or update the dead-host issue (scheduled runs)
+        if: failure() && github.event_name == 'schedule' && steps.check.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          title="catalog-hosts: dead host in the catalog"
+          {
+            echo "The weekly host check failed: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo
+            echo '```'
+            grep -v '^::' hosts-report.txt
+            echo '```'
+          } > body.md
+          num=$(gh issue list --state open --search "\"$title\" in:title" --json number -q '.[0].number')
+          if [ -n "$num" ]; then
+            gh issue comment "$num" --body-file body.md
+          else
+            gh issue create --title "$title" --body-file body.md
+          fi

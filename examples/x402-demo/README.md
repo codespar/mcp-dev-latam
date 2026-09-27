@@ -59,10 +59,10 @@ npm run client
 
 ## Integration with CodeSpar
 
-This is what the `@codespar/mcp-x402` server does under the hood — the `pay_request` tool wraps this flow so any AI agent can pay for 402-protected resources via MCP.
+`@codespar/mcp-x402` was meant to wrap this flow in a `pay_request` tool. It is deprecated: its default host, `api.x402.org`, does not resolve, so none of its tools reach a service. This demo does not use it: it calls a facilitator directly (the public one on Base Sepolia, Coinbase CDP on mainnet).
 
 ## Links
 
 - [x402 Protocol](https://github.com/coinbase/x402)
-- [@codespar/mcp-x402](https://www.npmjs.com/package/@codespar/mcp-x402)
+- [@codespar/mcp-x402](https://www.npmjs.com/package/@codespar/mcp-x402) (deprecated: no live endpoint)
 - [Coinbase Faucet](https://portal.cdp.coinbase.com/products/faucet)

@@ -73,9 +73,9 @@ import {
 const ACCESS_KEY = process.env.RAPYD_ACCESS_KEY || "";
 const SECRET_KEY = process.env.RAPYD_SECRET_KEY || "";
 const RAPYD_ENV = (process.env.RAPYD_ENV || "sandbox").toLowerCase();
-const BASE_URL = RAPYD_ENV === "production"
+const BASE_URL = process.env.RAPYD_BASE_URL || (RAPYD_ENV === "production"
   ? "https://api.rapyd.net"
-  : "https://sandboxapi.rapyd.net";
+  : "https://sandboxapi.rapyd.net");
 
 async function rapydRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const httpMethod = method.toLowerCase();

@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 
 /**
+ * DEPRECATED (2026-09-27): no live endpoint. api.nubank.com.br does not resolve.
+ * No tool reaches a service. Override the host with
+ * NUBANK_BASE_URL if you have a working endpoint.
+ *
  * MCP Server for Nubank — via Open Finance Brasil standard.
  *
  * Tools:
@@ -45,7 +49,7 @@ import {
 const CLIENT_ID = process.env.NUBANK_CLIENT_ID || "";
 const CLIENT_SECRET = process.env.NUBANK_CLIENT_SECRET || "";
 const CERT_PATH = process.env.NUBANK_CERT_PATH || "";
-const BASE_URL = "https://api.nubank.com.br";
+const BASE_URL = process.env.NUBANK_BASE_URL || "https://api.nubank.com.br";
 
 let cachedToken: string | null = null;
 let tokenExpiry = 0;

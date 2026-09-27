@@ -1,5 +1,7 @@
 # @codespar/mcp-nubank
 
+> **Deprecated: no live endpoint.** Measured on 2026-09-27 against two public DNS resolvers (8.8.8.8 and 1.1.1.1): `api.nubank.com.br`, the host this server calls, does not resolve in DNS. Nubank's only public API we found is NuPay for Business (`api.spinpay.com.br`), which [`@codespar/mcp-nupay`](https://github.com/codespar/mcp-dev-latam/tree/main/packages/payments/nupay) already covers. No tool in this server reaches a service. The package is deprecated on npm and stays in this repository for reference only. If you have a working endpoint, point the server at it with `NUBANK_BASE_URL`. To bring the package back, open an issue in [mcp-dev-latam](https://github.com/codespar/mcp-dev-latam/issues) with the provider's documented base URL.
+
 > MCP server for **Nubank**, Brazil's largest digital bank, using the Open Finance Brasil standard
 
 [![npm](https://img.shields.io/npm/v/@codespar/mcp-nubank)](https://www.npmjs.com/package/@codespar/mcp-nubank)

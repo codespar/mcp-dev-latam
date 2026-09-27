@@ -42,7 +42,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 
 const API_KEY = process.env.CIRCLE_API_KEY || "";
-const BASE_URL = "https://api.circle.com/v1";
+const BASE_URL = process.env.CIRCLE_BASE_URL || "https://api.circle.com/v1";
 
 async function circleRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const res = await fetch(`${BASE_URL}${path}`, {

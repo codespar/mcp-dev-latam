@@ -66,7 +66,7 @@ const DEMO_RESPONSES: Record<string, unknown> = {
 
 const APP_KEY = process.env.OMIE_APP_KEY || "";
 const APP_SECRET = process.env.OMIE_APP_SECRET || "";
-const BASE_URL = "https://app.omie.com.br/api/v1";
+const BASE_URL = process.env.OMIE_BASE_URL || "https://app.omie.com.br/api/v1";
 
 async function omieRequest(path: string, call: string, param: unknown[]): Promise<unknown> {
   const res = await fetch(`${BASE_URL}${path}`, {

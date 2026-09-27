@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 
 /**
+ * DEPRECATED (2026-09-27): no live endpoint. AP2 is a spec; ap2.googleapis.com serves no API.
+ * No tool reaches a service. Override the host with
+ * AP2_BASE_URL if you have a working endpoint.
+ *
  * MCP Server for AP2 — Google's Agent-to-Agent Payment Protocol.
  *
  * AP2 provides authorization, audit trails, and trust frameworks
@@ -57,9 +61,9 @@ import {
 const API_KEY = process.env.AP2_API_KEY || "";
 const AGENT_ID = process.env.AP2_AGENT_ID || "";
 const SANDBOX = process.env.AP2_SANDBOX === "true";
-const BASE_URL = SANDBOX
+const BASE_URL = process.env.AP2_BASE_URL || (SANDBOX
   ? "https://sandbox.ap2.googleapis.com/v1"
-  : "https://ap2.googleapis.com/v1";
+  : "https://ap2.googleapis.com/v1");
 
 async function ap2Request(method: string, path: string, body?: unknown): Promise<unknown> {
   const res = await fetch(`${BASE_URL}${path}`, {

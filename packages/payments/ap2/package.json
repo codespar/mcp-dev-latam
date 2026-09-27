@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-ap2",
-  "version": "0.2.0-alpha.3",
-  "description": "MCP server for AP2 — Google's Agent-to-Agent Payment Protocol (authorization, audit, trust)",
+  "version": "0.2.0-alpha.4",
+  "description": "DEPRECATED: no live endpoint (AP2 is a spec; ap2.googleapis.com serves no API). MCP server for AP2 — Google's Agent-to-Agent Payment Protocol (authorization, audit, trust)",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

@@ -203,9 +203,9 @@ export function getInstallmentsDemoResponse(args: any): Record<string, unknown> 
 }
 
 const API_KEY = process.env.ASAAS_API_KEY || "";
-const BASE_URL = process.env.ASAAS_SANDBOX === "true"
+const BASE_URL = process.env.ASAAS_BASE_URL || (process.env.ASAAS_SANDBOX === "true"
   ? "https://sandbox.asaas.com/api/v3"
-  : "https://api.asaas.com/v3";
+  : "https://api.asaas.com/v3");
 
 async function asaasRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const res = await fetch(`${BASE_URL}${path}`, {

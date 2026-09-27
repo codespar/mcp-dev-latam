@@ -1,5 +1,6 @@
 # @codespar/mcp-ap2
 
+> **Deprecated: no live endpoint.** Measured on 2026-09-27: `ap2.googleapis.com` answers every path with Google's generic `Error 404 (Not Found)` page, and `sandbox.ap2.googleapis.com` (used with `AP2_SANDBOX=true`) fails the TLS handshake, because the certificate served there covers `*.googleapis.com` and not the extra label. AP2 is an open specification, not an API Google hosts. No tool in this server reaches a service. The package is deprecated on npm and stays in this repository for reference only. If you have a working endpoint, point the server at it with `AP2_BASE_URL`. To bring the package back, open an issue in [mcp-dev-latam](https://github.com/codespar/mcp-dev-latam/issues) with the provider's documented base URL.
 
 > **Alpha release** — published under the `alpha` npm dist-tag. Pin exact versions during `0.x.x-alpha`. Install with `npm install <pkg>@alpha`.
 
@@ -7,8 +8,6 @@
 
 [![npm](https://img.shields.io/npm/v/@codespar/mcp-ap2)](https://www.npmjs.com/package/@codespar/mcp-ap2)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-
-> **No live endpoint.** Checked on 2026-08-27. This server's `BASE_URL` (`src/index.ts:62-64`) is `https://ap2.googleapis.com/v1`, which answers HTTP 404 with Google's generic `Error 404 (Not Found)` HTML page instead of an API response. With `AP2_SANDBOX=true` the address becomes `https://sandbox.ap2.googleapis.com/v1`, which fails the TLS handshake, because the certificate served there covers `*.googleapis.com` and not the extra label. AP2 is a published specification and this package ships tool definitions written for it; we have not checked them against a conforming implementation, and no call made through this server currently reaches a service.
 
 ## What is AP2?
 

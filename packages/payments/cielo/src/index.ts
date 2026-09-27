@@ -44,12 +44,12 @@ import {
 
 const MERCHANT_ID = process.env.CIELO_MERCHANT_ID || "";
 const MERCHANT_KEY = process.env.CIELO_MERCHANT_KEY || "";
-const BASE_URL = process.env.CIELO_SANDBOX === "true"
+const BASE_URL = process.env.CIELO_BASE_URL || (process.env.CIELO_SANDBOX === "true"
   ? "https://apisandbox.cieloecommerce.cielo.com.br/1"
-  : "https://api.cieloecommerce.cielo.com.br/1";
-const QUERY_URL = process.env.CIELO_SANDBOX === "true"
+  : "https://api.cieloecommerce.cielo.com.br/1");
+const QUERY_URL = process.env.CIELO_QUERY_URL || (process.env.CIELO_SANDBOX === "true"
   ? "https://apiquerysandbox.cieloecommerce.cielo.com.br/1"
-  : "https://apiquery.cieloecommerce.cielo.com.br/1";
+  : "https://apiquery.cieloecommerce.cielo.com.br/1");
 
 async function cieloRequest(method: string, path: string, body?: unknown, useQueryUrl = false): Promise<unknown> {
   const baseUrl = useQueryUrl ? QUERY_URL : BASE_URL;

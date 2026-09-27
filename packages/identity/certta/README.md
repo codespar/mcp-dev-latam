@@ -1,5 +1,7 @@
 # @codespar/mcp-certta
 
+> **Deprecated: no live endpoint.** Measured on 2026-09-27 against two public DNS resolvers (8.8.8.8 and 1.1.1.1): `api.certta.com.br`, the host this server calls, does not resolve in DNS. `docs.certta.ai` redirects to CAF's documentation (Certta is CAF's current brand), which names `api.combateafraude.com/v1` (Core API, not recommended for new integrations) and `api.us.prd.caf.io` (Connect API); this server was not written against either and has not been checked. See also `@codespar/mcp-caf`. No tool in this server reaches a service. The package is deprecated on npm and stays in this repository for reference only. If you have a working endpoint, point the server at it with `CERTTA_BASE_URL`. To bring the package back, open an issue in [mcp-dev-latam](https://github.com/codespar/mcp-dev-latam/issues) with the provider's documented base URL.
+
 MCP server for **Certta** — Brazilian identity + signature platform. KYC/KYB (CPF / CNPJ via Receita Federal + SPC / Serasa), face match + liveness, OCR of RG / CNH / comprovantes, antifraud score, ICP-Brasil digital signature + GoCertta electronic signature, and orchestrated onboarding pipelines that chain KYC + biometrics + signature in one process.
 
 ## Quick Start

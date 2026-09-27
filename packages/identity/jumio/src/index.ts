@@ -75,7 +75,7 @@ function regionHost(r: string): string {
     default:   return "https://api.amer-1.jumio.ai";
   }
 }
-const BASE_URL = regionHost(REGION);
+const BASE_URL = process.env.JUMIO_BASE_URL || regionHost(REGION);
 
 async function jumioRequest(
   method: string,

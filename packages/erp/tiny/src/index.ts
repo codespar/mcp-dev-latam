@@ -42,7 +42,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 
 const API_TOKEN = process.env.TINY_API_TOKEN || "";
-const BASE_URL = "https://api.tiny.com.br/api2";
+const BASE_URL = process.env.TINY_BASE_URL || "https://api.tiny.com.br/api2";
 
 async function tinyRequest(endpoint: string, extraParams?: Record<string, string>): Promise<unknown> {
   const params = new URLSearchParams({

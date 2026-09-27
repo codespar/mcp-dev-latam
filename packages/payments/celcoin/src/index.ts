@@ -27,6 +27,12 @@
  *   CELCOIN_CLIENT_ID — OAuth2 client ID
  *   CELCOIN_CLIENT_SECRET — OAuth2 client secret
  *   CELCOIN_SANDBOX — "true" to use sandbox (default: false)
+ *   CELCOIN_BASE_URL — override the API host (default: production
+ *     https://api.openfinance.celcoin.com.br, sandbox
+ *     https://sandbox.openfinance.celcoin.dev). Celcoin only accepts
+ *     production calls over mTLS from IPs registered with them in advance,
+ *     and this server does not present a client certificate: in production,
+ *     point CELCOIN_BASE_URL at a proxy that terminates the mTLS.
  */
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
@@ -40,9 +46,9 @@ import {
 
 const CLIENT_ID = process.env.CELCOIN_CLIENT_ID || "";
 const CLIENT_SECRET = process.env.CELCOIN_CLIENT_SECRET || "";
-const BASE_URL = process.env.CELCOIN_SANDBOX === "true"
+const BASE_URL = process.env.CELCOIN_BASE_URL || (process.env.CELCOIN_SANDBOX === "true"
   ? "https://sandbox.openfinance.celcoin.dev"
-  : "https://api-sec.celcoin.com.br";
+  : "https://api.openfinance.celcoin.com.br");
 
 let accessToken = "";
 let tokenExpiry = 0;

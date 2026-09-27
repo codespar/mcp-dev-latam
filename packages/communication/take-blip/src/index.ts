@@ -42,7 +42,7 @@ import {
 
 const BOT_ID = process.env.TAKE_BLIP_BOT_ID || "";
 const ACCESS_KEY = process.env.TAKE_BLIP_ACCESS_KEY || "";
-const BASE_URL = "https://msging.net";
+const BASE_URL = process.env.TAKE_BLIP_BASE_URL || "https://msging.net";
 
 function getAuthKey(): string {
   const raw = `${BOT_ID}:${ACCESS_KEY}`;

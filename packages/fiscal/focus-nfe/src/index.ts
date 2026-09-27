@@ -45,9 +45,9 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 
 const TOKEN = process.env.FOCUS_NFE_TOKEN || "";
-const BASE_URL = process.env.FOCUS_NFE_SANDBOX === "true"
+const BASE_URL = process.env.FOCUS_NFE_BASE_URL || (process.env.FOCUS_NFE_SANDBOX === "true"
   ? "https://homologacao.focusnfe.com.br/v2"
-  : "https://api.focusnfe.com.br/v2";
+  : "https://api.focusnfe.com.br/v2");
 
 async function focusNfeRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const res = await fetch(`${BASE_URL}${path}`, {

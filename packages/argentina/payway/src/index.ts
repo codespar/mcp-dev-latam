@@ -44,9 +44,9 @@ const PUBLIC_KEY = process.env.PAYWAY_PUBLIC_API_KEY || "";
 const PRIVATE_KEY = process.env.PAYWAY_PRIVATE_API_KEY || "";
 const ENV = (process.env.PAYWAY_ENV || "sandbox").toLowerCase();
 
-const BASE_URL = ENV === "production"
+const BASE_URL = process.env.PAYWAY_BASE_URL || (ENV === "production"
   ? "https://ventasonline.payway.com.ar/api/v2"
-  : "https://developers.decidir.com/api/v2";
+  : "https://developers.decidir.com/api/v2");
 
 async function paywayRequest(
   method: string,

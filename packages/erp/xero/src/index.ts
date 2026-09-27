@@ -65,7 +65,7 @@ import {
 
 const ACCESS_TOKEN = process.env.XERO_ACCESS_TOKEN || "";
 const TENANT_ID = process.env.XERO_TENANT_ID || "";
-const BASE_URL = "https://api.xero.com/api.xro/2.0";
+const BASE_URL = process.env.XERO_BASE_URL || "https://api.xero.com/api.xro/2.0";
 
 async function xeroRequest(
   method: string,

@@ -43,7 +43,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 
 const API_TOKEN = process.env.SKYDROPX_API_TOKEN || "";
-const BASE_URL = "https://api.skydropx.com/v1";
+const BASE_URL = process.env.SKYDROPX_BASE_URL || "https://api.skydropx.com/v1";
 
 async function skyRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const headers: Record<string, string> = { "Content-Type": "application/json" };

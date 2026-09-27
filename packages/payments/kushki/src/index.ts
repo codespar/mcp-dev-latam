@@ -47,9 +47,9 @@ const PUBLIC_MERCHANT_ID = process.env.KUSHKI_PUBLIC_MERCHANT_ID || "";
 const PRIVATE_MERCHANT_ID = process.env.KUSHKI_PRIVATE_MERCHANT_ID || "";
 const ENV = (process.env.KUSHKI_ENV || "sandbox").toLowerCase();
 
-const BASE_URL = ENV === "production"
+const BASE_URL = process.env.KUSHKI_BASE_URL || (ENV === "production"
   ? "https://api.kushkipagos.com"
-  : "https://api-uat.kushkipagos.com";
+  : "https://api-uat.kushkipagos.com");
 
 async function kushkiRequest(
   method: string,

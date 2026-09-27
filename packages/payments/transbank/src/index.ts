@@ -69,9 +69,9 @@ import {
 const COMMERCE_CODE = process.env.TRANSBANK_COMMERCE_CODE || "";
 const API_KEY_SECRET = process.env.TRANSBANK_API_KEY_SECRET || "";
 const ENV = (process.env.TRANSBANK_ENV || "integration").toLowerCase();
-const BASE_URL = ENV === "production"
+const BASE_URL = process.env.TRANSBANK_BASE_URL || (ENV === "production"
   ? "https://webpay3g.transbank.cl"
-  : "https://webpay3gint.transbank.cl";
+  : "https://webpay3gint.transbank.cl");
 
 async function transbankRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const res = await fetch(`${BASE_URL}${path}`, {

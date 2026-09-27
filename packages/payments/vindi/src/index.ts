@@ -27,7 +27,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 
 const API_KEY = process.env.VINDI_API_KEY || "";
-const BASE_URL = "https://app.vindi.com.br/api/v1";
+const BASE_URL = process.env.VINDI_BASE_URL || "https://app.vindi.com.br/api/v1";
 
 async function vindiRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const credentials = btoa(`${API_KEY}:`);

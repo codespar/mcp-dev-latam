@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 
 /**
+ * DEPRECATED (2026-09-27): no live endpoint. api.unico.co does not resolve.
+ * No tool reaches a service. Override the host with
+ * UNICO_BASE_URL, UNICO_AUTH_URL if you have a working endpoint.
+ *
  * MCP Server for Unico — the Brazilian identity verification leader.
  *
  * Unico offers three separately-contracted products:

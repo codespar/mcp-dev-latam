@@ -62,7 +62,7 @@ import {
 const SHOP = process.env.SHOPIFY_SHOP || "";
 const ACCESS_TOKEN = process.env.SHOPIFY_ACCESS_TOKEN || "";
 const API_VERSION = process.env.SHOPIFY_API_VERSION || "2024-01";
-const BASE_URL = `https://${SHOP}.myshopify.com/admin/api/${API_VERSION}`;
+const BASE_URL = process.env.SHOPIFY_BASE_URL || `https://${SHOP}.myshopify.com/admin/api/${API_VERSION}`;
 
 async function shopifyRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const res = await fetch(`${BASE_URL}${path}`, {

@@ -42,7 +42,7 @@ import * as crypto from "node:crypto";
 
 const API_KEY = process.env.BITSO_API_KEY || "";
 const API_SECRET = process.env.BITSO_API_SECRET || "";
-const BASE_URL = "https://api.bitso.com/v3";
+const BASE_URL = process.env.BITSO_BASE_URL || "https://api.bitso.com/v3";
 
 function generateAuthHeader(method: string, path: string, body?: string): string {
   const nonce = Date.now().toString();

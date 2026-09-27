@@ -29,9 +29,9 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 
 const TOKEN = process.env.SUPERFRETE_TOKEN || "";
-const BASE_URL = process.env.SUPERFRETE_SANDBOX === "true"
+const BASE_URL = process.env.SUPERFRETE_BASE_URL || (process.env.SUPERFRETE_SANDBOX === "true"
   ? "https://sandbox.superfrete.com/"
-  : "https://api.superfrete.com/";
+  : "https://api.superfrete.com/");
 
 async function superfreteRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const res = await fetch(`${BASE_URL}${path}`, {

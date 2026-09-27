@@ -35,7 +35,7 @@ import * as crypto from "node:crypto";
 
 const API_KEY = process.env.FOXBIT_API_KEY || "";
 const API_SECRET = process.env.FOXBIT_API_SECRET || "";
-const BASE_URL = "https://api.foxbit.com.br";
+const BASE_URL = process.env.FOXBIT_BASE_URL || "https://api.foxbit.com.br";
 const PATH_PREFIX = "/rest/v3";
 
 async function foxbitRequest(

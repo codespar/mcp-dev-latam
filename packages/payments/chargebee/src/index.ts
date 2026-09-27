@@ -32,7 +32,7 @@ import {
 
 const SITE = process.env.CHARGEBEE_SITE || "";
 const API_KEY = process.env.CHARGEBEE_API_KEY || "";
-const BASE_URL = `https://${SITE}.chargebee.com/api/v2`;
+const BASE_URL = process.env.CHARGEBEE_BASE_URL || `https://${SITE}.chargebee.com/api/v2`;
 
 /**
  * Flatten a nested object into Chargebee's form-encoded convention.

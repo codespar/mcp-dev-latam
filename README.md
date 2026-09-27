@@ -55,26 +55,24 @@ Each MCP server in this repo wraps a real provider — payments, fiscal, logisti
 
 ## Agentic Payment Protocols
 
-Four servers for the emerging agentic payment stack:
+Four servers for the emerging agentic payment stack. Only Stripe ACP reaches a live service today; the other three are deprecated (see the note under the table):
 
 | Protocol | Server | Tools | What it does |
 |----------|--------|-------|-------------|
-| **[Google UCP](packages/payments/ucp)** <sub>no live endpoint</sub> | `@codespar/mcp-ucp` | 20 | Universal Commerce Protocol — agentic shopping, cart, checkout, orders, delivery, identity. |
+| **[Google UCP](packages/payments/ucp)** <sub>deprecated: no live endpoint</sub> | `@codespar/mcp-ucp` | 20 | Universal Commerce Protocol — agentic shopping, cart, checkout, orders, delivery, identity. |
 | **[Stripe ACP](packages/payments/stripe-acp)** | `@codespar/mcp-stripe-acp` | 24 | Agentic Commerce Protocol — AI agent checkout, payment delegation, products, invoices. |
-| **[x402](packages/crypto/x402)** <sub>no live endpoint</sub> | `@codespar/mcp-x402` | 10 | HTTP-native micropayments by Coinbase — when an agent hits a 402, it pays USDC on Base/Solana and retries. Pure HTTP, no checkout UI. |
-| **[AP2](packages/payments/ap2)** <sub>no live endpoint</sub> | `@codespar/mcp-ap2` <sub>alpha</sub> | 22 | Google's Agent-to-Agent Payment Protocol — authorization, audit trails, scoped spend limits. |
+| **[x402](packages/crypto/x402)** <sub>deprecated: no live endpoint</sub> | `@codespar/mcp-x402` | 10 | HTTP-native micropayments by Coinbase — when an agent hits a 402, it pays USDC on Base/Solana and retries. Pure HTTP, no checkout UI. |
+| **[AP2](packages/payments/ap2)** <sub>deprecated: no live endpoint</sub> | `@codespar/mcp-ap2` <sub>alpha</sub> | 22 | Google's Agent-to-Agent Payment Protocol — authorization, audit trails, scoped spend limits. |
 
-> **No live endpoint behind UCP, AP2, and x402.** Checked on 2026-08-27:
+> **UCP, AP2 and x402 are deprecated: no live endpoint.** Measured on 2026-09-27:
 >
-> | Server | `BASE_URL` in source | What that address answered |
+> | Server | Default host | What that host answered |
 > |---|---|---|
-> | `@codespar/mcp-ucp` | `https://commerce.googleapis.com/ucp/v1` (`packages/payments/ucp/src/index.ts:71-73`) | HTTP 404, Google's generic `Error 404 (Not Found)` HTML page |
-> | `@codespar/mcp-ap2` | `https://ap2.googleapis.com/v1` (`packages/payments/ap2/src/index.ts:62-64`) | HTTP 404, the same generic HTML page |
-> | `@codespar/mcp-x402` | `https://api.x402.org/v1` (`packages/crypto/x402/src/index.ts:40`) | `NXDOMAIN`, the host does not resolve |
+> | `@codespar/mcp-ucp` | `commerce.googleapis.com` (sandbox: `sandbox.commerce.googleapis.com`) | HTTP 404 with Google's generic `Error 404 (Not Found)` page; the sandbox host fails the TLS handshake (certificate is for `*.googleapis.com`) |
+> | `@codespar/mcp-ap2` | `ap2.googleapis.com` (sandbox: `sandbox.ap2.googleapis.com`) | the same generic 404 page; the sandbox host fails the TLS handshake the same way |
+> | `@codespar/mcp-x402` | `api.x402.org` | does not resolve in DNS (8.8.8.8 and 1.1.1.1) |
 >
-> Every path these servers actually call failed on the same run, which is what the claim above rests on. A generic 404 by itself does not prove a name has no service behind it: `translate.googleapis.com/v1`, a registered service asked for a path it does not serve, answers the same generic page.
->
-> UCP, AP2, and x402 are published specifications, and these three packages ship tool definitions written for them. We have not checked those definitions against a conforming implementation, and no call made through the three servers currently reaches a service.
+> A generic 404 by itself does not prove a name has no service behind it: `translate.googleapis.com/v1`, a registered service asked for a path it does not serve, answers the same page. What the claim rests on is that every path these servers call failed the same way. UCP and AP2 are open specifications, not APIs Google hosts, and x402 has no central API (each seller picks its own facilitator). The three packages are deprecated on npm and kept here for reference; they are out of the quick start and the decision tree below. Eight more servers are deprecated for the same reason (their default host does not resolve): C6, Dock, Matera, Legiti, Caf, Certta, Unico and Nubank.
 
 ### The Autonomy Spectrum
 
@@ -113,10 +111,7 @@ Each protocol sits at a different level of agent autonomy:
 
 ```
 Agent needs to buy something
-  ├── Full commerce?       → Google UCP (search → cart → checkout → delivery)
   ├── Retail checkout?     → Stripe ACP (create_checkout → complete_checkout)
-  ├── API micropayment?    → x402 (pay_request → USDC $0.001 → data returned)
-  ├── Agent-to-agent?      → AP2 (authorize_payment → execute_payment)
   └── LATAM merchant?      → Asaas / Mercado Pago / Conekta / Wompi / etc.
 
 All via MCP. Same interface. One agent.
@@ -152,7 +147,7 @@ Add to `~/.config/claude/claude_desktop_config.json`:
 }
 ```
 
-For alpha packages (contract-gated providers like Itaú, Bradesco, Santander, Caixa, BB, BTG, C6, Sicoob, Bradesco, Matera), add `@alpha` to the install:
+For alpha packages (contract-gated providers like Itaú, Bradesco, Santander, Caixa, BB, BTG, Sicoob), add `@alpha` to the install:
 
 ```bash
 npx -y @codespar/mcp-itau@alpha
@@ -162,9 +157,6 @@ npx -y @codespar/mcp-itau@alpha
 
 ```bash
 npx @codespar/mcp-stripe-acp        # Agentic Commerce Protocol
-npx @codespar/mcp-ucp                # Google Universal Commerce Protocol
-npx @codespar/mcp-x402               # HTTP micropayments (Coinbase)
-npx @codespar/mcp-ap2@alpha          # Agent-to-Agent payment authorization
 
 npx @codespar/mcp-asaas              # BR billing + Pix
 npx @codespar/mcp-mercado-pago       # LATAM payments
@@ -185,6 +177,12 @@ npx @codespar/mcp-brasil-api
 ```
 
 Then ask your agent: _"What is the address for CEP 01001-000?"_ or _"Look up CNPJ 00.000.000/0001-91"_.
+
+### Pointing a server at another host
+
+Every server reads its provider host from an environment variable, so a proxy, a mock, or an endpoint the provider moved can be used without a new release. The primary API is `<PREFIX>_BASE_URL`, where `<PREFIX>` is the one the server's credentials already use (`CELCOIN_BASE_URL`, `STONE_BASE_URL`, `BB_BASE_URL`). A second host gets `<PREFIX>_<ROLE>_URL`, for example `STONE_AUTH_URL` for a token endpoint or `CIELO_QUERY_URL`. When the variable is unset the server uses its documented default.
+
+A weekly CI job ([`catalog-hosts.yml`](.github/workflows/catalog-hosts.yml)) resolves every default host in the catalog and completes a TLS handshake with it, and fails when a host does not exist. The only exceptions are deprecated servers and the few sandbox hosts listed, each with its reason, in [`scripts/catalog-hosts-known-dead.json`](scripts/catalog-hosts-known-dead.json); the job also fails when one of those comes back, so the list cannot go stale. Run it locally with `python3 scripts/check-catalog-hosts.py` (Python 3.10+).
 
 ---
 
@@ -223,13 +221,13 @@ Browse the full catalog at [codespar.dev/servers](https://codespar.dev/servers).
 | **[Stripe ACP](packages/payments/stripe-acp)** | 24 | `@codespar/mcp-stripe-acp` | API Key |
 | **[Iugu](packages/payments/iugu)** | 23 | `@codespar/mcp-iugu` | API Key |
 | **[Openpay](packages/payments/openpay)** | 23 | `@codespar/mcp-openpay` | API Key |
-| **[AP2](packages/payments/ap2)** <sub>alpha</sub> <sub>no live endpoint</sub> | 22 | `@codespar/mcp-ap2` | API Key |
+| **[AP2](packages/payments/ap2)** <sub>alpha</sub> <sub>deprecated: no live endpoint</sub> | 22 | `@codespar/mcp-ap2` | API Key |
 | **[Braintree](packages/payments/braintree)** | 22 | `@codespar/mcp-braintree` | API Key |
 | **[Braspag](packages/payments/braspag)** | 22 | `@codespar/mcp-braspag` | API Key |
 | **[Cielo](packages/payments/cielo)** | 22 | `@codespar/mcp-cielo` | API Key |
 | **[Inter Bank](packages/payments/inter-bank)** | 22 | `@codespar/mcp-inter-bank` | OAuth2 |
 | **[Mercado Libre](packages/payments/mercado-libre)** | 22 | `@codespar/mcp-mercado-libre` | API Key |
-| **[Nubank](packages/payments/nubank)** <sub>alpha</sub> | 22 | `@codespar/mcp-nubank` | OAuth2 |
+| **[Nubank](packages/payments/nubank)** <sub>alpha</sub> <sub>deprecated: no live endpoint</sub> | 22 | `@codespar/mcp-nubank` | OAuth2 |
 | **[Nupay](packages/payments/nupay)** | 22 | `@codespar/mcp-nupay` | OAuth2 |
 | **[Pagar Me](packages/payments/pagar-me)** | 22 | `@codespar/mcp-pagar-me` | API Key |
 | **[Rapyd](packages/payments/rapyd)** | 22 | `@codespar/mcp-rapyd` | API Key |
@@ -245,7 +243,7 @@ Browse the full catalog at [codespar.dev/servers](https://codespar.dev/servers).
 | **[Getnet](packages/payments/getnet)** | 20 | `@codespar/mcp-getnet` | OAuth2 |
 | **[Izipay](packages/payments/izipay)** <sub>alpha</sub> | 20 | `@codespar/mcp-izipay` | API Key |
 | **[Picpay](packages/payments/picpay)** <sub>alpha</sub> | 20 | `@codespar/mcp-picpay` | API Key |
-| **[UCP](packages/payments/ucp)** <sub>no live endpoint</sub> | 20 | `@codespar/mcp-ucp` | API Key |
+| **[UCP](packages/payments/ucp)** <sub>deprecated: no live endpoint</sub> | 20 | `@codespar/mcp-ucp` | API Key |
 | **[Vindi](packages/payments/vindi)** | 20 | `@codespar/mcp-vindi` | API Key |
 | **[Paypal](packages/payments/paypal)** | 19 | `@codespar/mcp-paypal` | OAuth2 |
 | **[Transbank](packages/payments/transbank)** <sub>alpha</sub> | 19 | `@codespar/mcp-transbank` | API Key |
@@ -269,11 +267,11 @@ Browse the full catalog at [codespar.dev/servers](https://codespar.dev/servers).
 | **[Santander](packages/banking/santander)** <sub>alpha</sub> | 23 | `@codespar/mcp-santander` | OAuth2 |
 | **[Bradesco](packages/banking/bradesco)** <sub>alpha</sub> | 22 | `@codespar/mcp-bradesco` | OAuth2 |
 | **[Itau](packages/banking/itau)** <sub>alpha</sub> | 22 | `@codespar/mcp-itau` | OAuth2 |
-| **[Matera](packages/banking/matera)** <sub>alpha</sub> | 22 | `@codespar/mcp-matera` | OAuth2 |
-| **[Dock](packages/banking/dock)** <sub>alpha</sub> | 20 | `@codespar/mcp-dock` | OAuth2 |
+| **[Matera](packages/banking/matera)** <sub>alpha</sub> <sub>deprecated: no live endpoint</sub> | 22 | `@codespar/mcp-matera` | OAuth2 |
+| **[Dock](packages/banking/dock)** <sub>alpha</sub> <sub>deprecated: no live endpoint</sub> | 20 | `@codespar/mcp-dock` | OAuth2 |
 | **[Open Finance](packages/banking/open-finance)** | 18 | `@codespar/mcp-open-finance` | API Key |
 | **[Pluggy](packages/banking/pluggy)** | 16 | `@codespar/mcp-pluggy` | API Key |
-| **[C6](packages/banking/c6)** <sub>alpha</sub> | 14 | `@codespar/mcp-c6` | OAuth2 |
+| **[C6](packages/banking/c6)** <sub>alpha</sub> <sub>deprecated: no live endpoint</sub> | 14 | `@codespar/mcp-c6` | OAuth2 |
 | **[Banco Do Brasil](packages/banking/banco-do-brasil)** <sub>alpha</sub> | 13 | `@codespar/mcp-banco-do-brasil` | OAuth2 |
 | **[Sicoob](packages/banking/sicoob)** <sub>alpha</sub> | 13 | `@codespar/mcp-sicoob` | OAuth2 |
 | **[BTG](packages/banking/btg)** <sub>alpha</sub> | 12 | `@codespar/mcp-btg` | OAuth2 |
@@ -333,10 +331,10 @@ Browse the full catalog at [codespar.dev/servers](https://codespar.dev/servers).
 | **[Jumio](packages/identity/jumio)** | 20 | `@codespar/mcp-jumio` | API Key |
 | **[Onfido](packages/identity/onfido)** | 20 | `@codespar/mcp-onfido` | API Key |
 | **[Persona](packages/identity/persona)** | 20 | `@codespar/mcp-persona` | API Key |
-| **[Unico](packages/identity/unico)** <sub>alpha</sub> | 18 | `@codespar/mcp-unico` | OAuth2 |
-| **[Certta](packages/identity/certta)** | 11 | `@codespar/mcp-certta` | API Key |
+| **[Unico](packages/identity/unico)** <sub>alpha</sub> <sub>deprecated: no live endpoint</sub> | 18 | `@codespar/mcp-unico` | OAuth2 |
+| **[Certta](packages/identity/certta)** <sub>deprecated: no live endpoint</sub> | 11 | `@codespar/mcp-certta` | API Key |
 | **[BigDataCorp](packages/identity/bigdatacorp)** | 10 | `@codespar/mcp-bigdatacorp` | API Key |
-| **[Caf](packages/identity/caf)** | 9 | `@codespar/mcp-caf` | API Key |
+| **[Caf](packages/identity/caf)** <sub>deprecated: no live endpoint</sub> | 9 | `@codespar/mcp-caf` | API Key |
 
 ### 🛡️ Fraud & Risk (4 servers)
 
@@ -345,7 +343,7 @@ Browse the full catalog at [codespar.dev/servers](https://codespar.dev/servers).
 | **[Sift](packages/fraud/sift)** <sub>alpha</sub> | 20 | `@codespar/mcp-sift` | API Key |
 | **[Clearsale](packages/fraud/clearsale)** <sub>alpha</sub> | 18 | `@codespar/mcp-clearsale` | API Key |
 | **[Konduto](packages/fraud/konduto)** <sub>alpha</sub> | 18 | `@codespar/mcp-konduto` | API Key |
-| **[Legiti](packages/fraud/legiti)** <sub>alpha</sub> | 18 | `@codespar/mcp-legiti` | API Key |
+| **[Legiti](packages/fraud/legiti)** <sub>alpha</sub> <sub>deprecated: no live endpoint</sub> | 18 | `@codespar/mcp-legiti` | API Key |
 
 ### 🪙 Crypto / Stablecoins (10 servers)
 
@@ -360,7 +358,7 @@ Browse the full catalog at [codespar.dev/servers](https://codespar.dev/servers).
 | **[Coinbase Commerce](packages/crypto/coinbase-commerce)** | 18 | `@codespar/mcp-coinbase-commerce` | API Key |
 | **[Transak](packages/crypto/transak)** <sub>alpha</sub> | 18 | `@codespar/mcp-transak` | API Key |
 | **[Coinbase CDP](packages/crypto/coinbase-cdp)** | 15 | `@codespar/mcp-coinbase-cdp` | API Key |
-| **[x402](packages/crypto/x402)** <sub>no live endpoint</sub> | 10 | `@codespar/mcp-x402` | API Key |
+| **[x402](packages/crypto/x402)** <sub>deprecated: no live endpoint</sub> | 10 | `@codespar/mcp-x402` | API Key |
 
 ### 🇦🇷 Argentina (6 servers)
 

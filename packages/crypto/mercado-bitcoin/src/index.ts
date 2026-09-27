@@ -41,7 +41,7 @@ import {
 
 const API_KEY = process.env.MB_API_KEY || "";
 const API_SECRET = process.env.MB_API_SECRET || "";
-const BASE_URL = "https://api.mercadobitcoin.net/api/v4";
+const BASE_URL = process.env.MB_BASE_URL || "https://api.mercadobitcoin.net/api/v4";
 
 async function mbRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const res = await fetch(`${BASE_URL}${path}`, {

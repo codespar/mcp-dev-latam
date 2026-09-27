@@ -57,9 +57,9 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 
-const BASE_URL = process.env.MALGA_SANDBOX === "false"
+const BASE_URL = process.env.MALGA_BASE_URL || (process.env.MALGA_SANDBOX === "false"
   ? "https://api.malga.io"
-  : "https://sandbox-api.malga.io";
+  : "https://sandbox-api.malga.io");
 const CLIENT_ID = process.env.MALGA_CLIENT_ID ?? "";
 const API_KEY = process.env.MALGA_API_KEY ?? "";
 const USER_AGENT = "codespar-mcp-dev-latam/mcp-malga/0.1.0";

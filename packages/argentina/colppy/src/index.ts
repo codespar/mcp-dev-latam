@@ -31,7 +31,7 @@ import {
 
 const API_KEY = process.env.COLPPY_API_KEY || "";
 const COMPANY_ID = process.env.COLPPY_COMPANY_ID || "";
-const BASE_URL = "https://login.colppy.com/lib/frontera2";
+const BASE_URL = process.env.COLPPY_BASE_URL || "https://login.colppy.com/lib/frontera2";
 
 async function colppyRequest(service: string, operation: string, params?: Record<string, unknown>): Promise<unknown> {
   const payload = {

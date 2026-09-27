@@ -80,7 +80,7 @@ import {
 
 const SECRET_KEY = process.env.STRIPE_SECRET_KEY || "";
 const API_VERSION = process.env.STRIPE_API_VERSION || "";
-const BASE_URL = "https://api.stripe.com/v1";
+const BASE_URL = process.env.STRIPE_BASE_URL || "https://api.stripe.com/v1";
 
 /**
  * Flatten a nested object into Stripe's form-encoded convention.

@@ -45,9 +45,9 @@ const PUBLIC_KEY = process.env.EPAYCO_PUBLIC_KEY || "";
 const PRIVATE_KEY = process.env.EPAYCO_PRIVATE_KEY || "";
 const IS_TEST = (process.env.EPAYCO_TEST || "true").toLowerCase() !== "false";
 
-const API_URL = "https://api.secure.payco.co";
-const REST_URL = "https://secure.payco.co";
-const VALIDATION_URL = "https://secure.epayco.co";
+const API_URL = process.env.EPAYCO_BASE_URL || "https://api.secure.payco.co";
+const REST_URL = process.env.EPAYCO_REST_URL || "https://secure.payco.co";
+const VALIDATION_URL = process.env.EPAYCO_VALIDATION_URL || "https://secure.epayco.co";
 
 /** Card/token API — Basic auth with the key pair (SDK convention). */
 async function apiRequest(method: string, path: string, body?: unknown): Promise<unknown> {

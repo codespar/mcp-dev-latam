@@ -49,15 +49,20 @@ const CLIENT_ID = process.env.POMELO_CLIENT_ID || "";
 const CLIENT_SECRET = process.env.POMELO_CLIENT_SECRET || "";
 const ENV = (process.env.POMELO_ENV || "sandbox").toLowerCase();
 
+// Hosts per developers.pomelo.la ("Stage: https://api-stage.pomelo.la /
+// Produccion: https://api.pomelo.la"); the token call is {API host}/oauth/token.
+// Up to 0.1.0 the sandbox defaults were api-dev / auth-dev.pomelo.la,
+// which do not resolve.
 const BASE_URL =
   process.env.POMELO_BASE_URL ||
-  (ENV === "production" ? "https://api.pomelo.la" : "https://api-dev.pomelo.la");
+  (ENV === "production" ? "https://api.pomelo.la" : "https://api-stage.pomelo.la");
 const AUTH_URL =
   process.env.POMELO_AUTH_URL ||
-  (ENV === "production" ? "https://auth.pomelo.la" : "https://auth-dev.pomelo.la");
+  (ENV === "production" ? "https://api.pomelo.la" : "https://api-stage.pomelo.la");
+// The audience is a JWT claim value, not a host the server connects to.
 const AUDIENCE =
   process.env.POMELO_AUDIENCE ||
-  (ENV === "production" ? "https://auth.pomelo.la" : "https://auth-dev.pomelo.la");
+  (ENV === "production" ? "https://auth.pomelo.la" : "https://auth-dev.pomelo.la"); // catalog-hosts: not-a-host
 
 let cachedToken: { token: string; expiresAt: number } | null = null;
 

@@ -25,7 +25,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 
 const API_KEY = process.env.INICIADOR_API_KEY;
-const BASE_URL = process.env.INICIADOR_API_BASE ?? "https://api.iniciador.com.br";
+const BASE_URL = process.env.INICIADOR_BASE_URL || process.env.INICIADOR_API_BASE || "https://api.iniciador.com.br";
 
 if (!API_KEY) {
   console.error("[mcp-iniciador] missing INICIADOR_API_KEY — refusing to start.");

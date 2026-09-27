@@ -65,9 +65,10 @@ const PRIVATE_KEY = process.env.OPENPAY_PRIVATE_KEY || "";
 const ENV = (process.env.OPENPAY_ENV || "sandbox").toLowerCase();
 
 const HOST =
-  ENV === "production"
+  process.env.OPENPAY_BASE_URL ||
+  (ENV === "production"
     ? "https://api.openpay.mx"
-    : "https://sandbox-api.openpay.mx";
+    : "https://sandbox-api.openpay.mx");
 const BASE_URL = `${HOST}/v1/${MERCHANT_ID}`;
 
 async function openpayRequest(method: string, path: string, body?: unknown): Promise<unknown> {

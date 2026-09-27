@@ -1,5 +1,7 @@
 # @codespar/mcp-caf
 
+> **Deprecated: no live endpoint.** Measured on 2026-09-27 against two public DNS resolvers (8.8.8.8 and 1.1.1.1): `api.caf.io`, the host this server calls, does not resolve in DNS. CAF's docs (now branded Certta) name `api.combateafraude.com/v1` for the Core API, which they no longer recommend for new integrations, and `api.us.prd.caf.io` for the newer Connect API; this server was not written against either and has not been checked. No tool in this server reaches a service. The package is deprecated on npm and stays in this repository for reference only. If you have a working endpoint, point the server at it with `CAF_BASE_URL`. To bring the package back, open an issue in [mcp-dev-latam](https://github.com/codespar/mcp-dev-latam/issues) with the provider's documented base URL.
+
 MCP server for **Caf** — Brazilian identity + Trust Platform. KYC/KYB, face authentication + liveness, document validation + OCR, and orchestrated onboarding flows. Direct competitor to Unico / IDwall / Certta; their Trust Platform chains multi-step identity verifications with policy rules.
 
 ## Quick Start

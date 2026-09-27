@@ -72,9 +72,9 @@ const SICOOB_ENV = (process.env.SICOOB_ENV || "sandbox").toLowerCase();
 // to onboarded cooperatives; the exact subdomain is contract-gated. The
 // production hostname commonly seen in Sicoob's public materials is
 // api.sicoob.com.br; sandbox.sicoob.com.br is a reasonable guess.
-const BASE_URL = SICOOB_ENV === "production"
+const BASE_URL = process.env.SICOOB_BASE_URL || (SICOOB_ENV === "production"
   ? "https://api.sicoob.com.br"
-  : "https://sandbox.sicoob.com.br";
+  : "https://sandbox.sicoob.com.br");
 
 // Lazy-load the mTLS agent so `--help` / schema introspection doesn't crash
 // when certs are missing. Banking ops that actually hit the wire will fail

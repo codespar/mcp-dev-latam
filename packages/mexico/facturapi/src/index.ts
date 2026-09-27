@@ -25,7 +25,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 
 const API_KEY = process.env.FACTURAPI_API_KEY || "";
-const BASE_URL = "https://www.facturapi.io/v2";
+const BASE_URL = process.env.FACTURAPI_BASE_URL || "https://www.facturapi.io/v2";
 
 async function facturRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const headers: Record<string, string> = { "Content-Type": "application/json" };

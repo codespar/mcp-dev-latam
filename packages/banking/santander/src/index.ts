@@ -88,9 +88,9 @@ const SANTANDER_ENV = (process.env.SANTANDER_ENV || "sandbox").toLowerCase();
 // Verified via Santander's public Cobrança v2 integration guide and
 // community integrations: production traffic goes through the trust-open
 // gateway, sandbox through trust-sandbox. Both enforce mTLS.
-const BASE_URL = SANTANDER_ENV === "production"
+const BASE_URL = process.env.SANTANDER_BASE_URL || (SANTANDER_ENV === "production"
   ? "https://trust-open.api.santander.com.br"
-  : "https://trust-sandbox.api.santander.com.br";
+  : "https://trust-sandbox.api.santander.com.br");
 
 // Lazy-load the mTLS agent so `--help` / schema introspection doesn't crash
 // when certs are missing. Banking ops that actually hit the wire will fail

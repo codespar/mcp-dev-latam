@@ -45,7 +45,7 @@ import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 
 const API_KEY = process.env.BOLD_API_KEY || "";
 const SECRET_KEY = process.env.BOLD_SECRET_KEY || "";
-const BASE_URL = "https://integrations.api.bold.co";
+const BASE_URL = process.env.BOLD_BASE_URL || "https://integrations.api.bold.co";
 
 async function boldRequest(
   method: string,

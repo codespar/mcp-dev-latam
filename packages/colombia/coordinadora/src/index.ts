@@ -40,7 +40,7 @@ import {
 
 const API_KEY = process.env.COORDINADORA_API_KEY || "";
 const NIT = process.env.COORDINADORA_NIT || "";
-const BASE_URL = "https://api.coordinadora.com/v1";
+const BASE_URL = process.env.COORDINADORA_BASE_URL || "https://api.coordinadora.com/v1";
 
 async function coordinadoraRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const headers: Record<string, string> = {

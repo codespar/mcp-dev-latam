@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-nubank",
-  "version": "0.2.0-alpha.3",
-  "description": "MCP server for Nubank — Brazilian neobank via Open Finance, accounts, PIX, transfers",
+  "version": "0.2.0-alpha.4",
+  "description": "DEPRECATED: no live endpoint (api.nubank.com.br does not resolve). MCP server for Nubank — Brazilian neobank via Open Finance, accounts, PIX, transfers",
   "type": "module",
   "main": "dist/index.js",
   "bin": {

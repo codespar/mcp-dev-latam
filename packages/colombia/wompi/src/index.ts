@@ -48,9 +48,9 @@ const PUBLIC_KEY = process.env.WOMPI_PUBLIC_KEY || "";
 const PRIVATE_KEY = process.env.WOMPI_PRIVATE_KEY || "";
 const EVENTS_SECRET = process.env.WOMPI_EVENTS_SECRET || "";
 const IS_SANDBOX = process.env.WOMPI_SANDBOX === "true";
-const BASE_URL = IS_SANDBOX
+const BASE_URL = process.env.WOMPI_BASE_URL || (IS_SANDBOX
   ? "https://sandbox.wompi.co/v1"
-  : "https://production.wompi.co/v1";
+  : "https://production.wompi.co/v1");
 
 async function wompiRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const headers: Record<string, string> = {

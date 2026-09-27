@@ -1,5 +1,7 @@
 # @codespar/mcp-matera
 
+> **Deprecated: no live endpoint.** Measured on 2026-09-27 against two public DNS resolvers (8.8.8.8 and 1.1.1.1): `api.matera.com`, the host this server calls, does not resolve in DNS. No tool in this server reaches a service. The package is deprecated on npm and stays in this repository for reference only. If you have a working endpoint, point the server at it with `MATERA_BASE_URL`. To bring the package back, open an issue in [mcp-dev-latam](https://github.com/codespar/mcp-dev-latam/issues) with the provider's documented base URL.
+
 > MCP server for **Matera** — Brazilian core-banking infrastructure (BaaS) for fintechs building on top of Pix, DICT, and Pix Automático
 
 [![npm](https://img.shields.io/npm/v/@codespar/mcp-matera)](https://www.npmjs.com/package/@codespar/mcp-matera)

@@ -89,6 +89,7 @@ const ENV = (process.env.ADYEN_ENV || "test").toLowerCase();
 const LIVE_URL_PREFIX = process.env.ADYEN_LIVE_URL_PREFIX || "";
 
 function checkoutBaseUrl(): string {
+  if (process.env.ADYEN_BASE_URL) return process.env.ADYEN_BASE_URL;
   if (ENV === "live") {
     if (!LIVE_URL_PREFIX) {
       throw new Error("ADYEN_ENV=live requires ADYEN_LIVE_URL_PREFIX to be set");
@@ -100,6 +101,7 @@ function checkoutBaseUrl(): string {
 
 /** Classic Dispute Service v30 base (same host family as Pay / BIN lookup). */
 function disputesBaseUrl(): string {
+  if (process.env.ADYEN_DISPUTE_URL) return process.env.ADYEN_DISPUTE_URL;
   return ENV === "live"
     ? "https://ca-live.adyen.com/ca/services/DisputeService/v30"
     : "https://ca-test.adyen.com/ca/services/DisputeService/v30";
@@ -107,6 +109,7 @@ function disputesBaseUrl(): string {
 
 /** Balance Platform — BCL v2 (balance accounts, account holders). */
 function balancePlatformBaseUrl(): string {
+  if (process.env.ADYEN_BALANCE_PLATFORM_URL) return process.env.ADYEN_BALANCE_PLATFORM_URL;
   return ENV === "live"
     ? "https://balanceplatform-api-live.adyen.com/bcl/v2"
     : "https://balanceplatform-api-test.adyen.com/bcl/v2";
@@ -114,6 +117,7 @@ function balancePlatformBaseUrl(): string {
 
 /** Transfers API — BTL v4. */
 function transfersBaseUrl(): string {
+  if (process.env.ADYEN_TRANSFERS_URL) return process.env.ADYEN_TRANSFERS_URL;
   return ENV === "live"
     ? "https://balanceplatform-api-live.adyen.com/btl/v4"
     : "https://balanceplatform-api-test.adyen.com/btl/v4";
@@ -121,6 +125,7 @@ function transfersBaseUrl(): string {
 
 /** Management API v3 (merchants, stores, API credentials). */
 function managementBaseUrl(): string {
+  if (process.env.ADYEN_MANAGEMENT_URL) return process.env.ADYEN_MANAGEMENT_URL;
   return ENV === "live"
     ? "https://management-live.adyen.com/v3"
     : "https://management-test.adyen.com/v3";

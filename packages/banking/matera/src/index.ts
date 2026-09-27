@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 /**
+ * DEPRECATED (2026-09-27): no live endpoint. api.matera.com does not resolve.
+ * No tool reaches a service. Override the host with
+ * MATERA_BASE_URL if you have a working endpoint.
+ *
  * MCP Server for Matera — Brazilian core-banking infrastructure (BaaS).
  *
  * Matera is core-banking rails underneath fintechs, not a PSP. Per vendor

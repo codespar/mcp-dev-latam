@@ -63,7 +63,7 @@ function validationError(msg: string) {
 
 const API_KEY = process.env.ZOOP_API_KEY || "";
 const MARKETPLACE_ID = process.env.ZOOP_MARKETPLACE_ID || "";
-const BASE_URL = `https://api.zoop.ws/v1/marketplaces/${MARKETPLACE_ID}`;
+const BASE_URL = `${process.env.ZOOP_BASE_URL || "https://api.zoop.ws/v1"}/marketplaces/${MARKETPLACE_ID}`;
 
 async function zoopRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const credentials = btoa(`${API_KEY}:`);

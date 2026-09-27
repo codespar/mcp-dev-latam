@@ -42,7 +42,7 @@ import {
 
 const USER = process.env.CORREIOS_USER || "";
 const TOKEN = process.env.CORREIOS_TOKEN || "";
-const BASE_URL = "https://api.correios.com.br";
+const BASE_URL = process.env.CORREIOS_BASE_URL || "https://api.correios.com.br";
 
 let authToken = "";
 let tokenExpiry = 0;

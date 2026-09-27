@@ -39,7 +39,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 
 const ACCESS_TOKEN = process.env.CONTA_AZUL_ACCESS_TOKEN || "";
-const BASE_URL = "https://api.contaazul.com/v1";
+const BASE_URL = process.env.CONTA_AZUL_BASE_URL || "https://api.contaazul.com/v1";
 
 async function contaAzulRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const res = await fetch(`${BASE_URL}${path}`, {

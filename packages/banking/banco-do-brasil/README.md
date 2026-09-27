@@ -41,6 +41,8 @@ BB_DEVELOPER_APP_KEY="..."     # gw-dev-app-key — required on most calls
 BB_CERT_PATH="/abs/path/client.crt"   # mTLS cert (production only)
 BB_KEY_PATH="/abs/path/client.key"    # mTLS key  (production only)
 BB_ENV="sandbox"                       # or "production" (default: sandbox)
+BB_BASE_URL="..."                      # optional; default api.hm.bb.com.br (sandbox) / api.bb.com.br
+BB_AUTH_URL="..."                      # optional; default https://oauth.hm.bb.com.br/oauth/token (sandbox) / oauth.bb.com.br
 ```
 
 ## Authentication

@@ -92,6 +92,7 @@ const ENV = (process.env.WORLDPAY_ENV || "sandbox").toLowerCase();
 const API_VERSION = process.env.WORLDPAY_API_VERSION || "v7";
 
 function baseUrl(): string {
+  if (process.env.WORLDPAY_BASE_URL) return process.env.WORLDPAY_BASE_URL;
   return ENV === "production"
     ? "https://access.worldpay.com"
     : "https://try.access.worldpay.com";

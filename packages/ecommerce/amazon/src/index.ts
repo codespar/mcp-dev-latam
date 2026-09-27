@@ -70,13 +70,13 @@ const MARKETPLACE_ID = process.env.AMAZON_MARKETPLACE_ID || "";
 const REGION = (process.env.AMAZON_REGION || "na").toLowerCase();
 const SELLER_ID = process.env.AMAZON_SELLER_ID || "";
 
-const LWA_TOKEN_URL = "https://api.amazon.com/auth/o2/token";
+const LWA_TOKEN_URL = process.env.AMAZON_AUTH_URL || "https://api.amazon.com/auth/o2/token";
 const REGIONAL_BASE_URLS: Record<string, string> = {
   na: "https://sellingpartnerapi-na.amazon.com",
   eu: "https://sellingpartnerapi-eu.amazon.com",
   fe: "https://sellingpartnerapi-fe.amazon.com",
 };
-const BASE_URL = REGIONAL_BASE_URLS[REGION] ?? REGIONAL_BASE_URLS.na;
+const BASE_URL = process.env.AMAZON_BASE_URL || (REGIONAL_BASE_URLS[REGION] ?? REGIONAL_BASE_URLS.na);
 
 interface TokenCache {
   accessToken: string;

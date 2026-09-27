@@ -62,9 +62,9 @@ const DEMO_MODE = process.argv.includes("--demo") || process.env.MCP_DEMO === "t
 const API_KEY = process.env.NFEIO_API_KEY || "";
 const DEFAULT_COMPANY_ID = process.env.NFEIO_COMPANY_ID || "";
 
-const NFSE_BASE = "https://api.nfe.io";
-const NFE_BASE = "https://api.nfse.io";
-const QUERY_BASE = "https://nfe.api.nfe.io";
+const NFSE_BASE = process.env.NFEIO_BASE_URL || "https://api.nfe.io";
+const NFE_BASE = process.env.NFEIO_NFE_URL || "https://api.nfse.io";
+const QUERY_BASE = process.env.NFEIO_QUERY_URL || "https://nfe.api.nfe.io";
 
 const DEMO_RESPONSES: Record<string, unknown> = {
   create_nfse: {

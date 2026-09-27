@@ -1,0 +1,30 @@
+{
+  "why": "Default hosts that do not resolve today, in servers that are NOT deprecated because their other host (production) exists. Each is waiting on a decision: fixing the host alone would not make the server work, because the provider's documented API also differs in auth or paths. check-catalog-hosts.py fails if an entry's host comes back to life or leaves the source, so this list cannot go stale silently. Measured 2026-09-27.",
+  "hosts": [
+    {
+      "server": "banking/btg",
+      "host": "sandbox.api.btgpactual.com",
+      "why": "BTG documents api.sandbox.empresas.btgpactual.com, with tokens from id.sandbox.btgpactual.com/oauth2/token, not /auth/oauth/v2/token on the API host"
+    },
+    {
+      "server": "banking/caixa",
+      "host": "apihom.caixa.gov.br",
+      "why": "Caixa's sandbox is a path on the production host (api.caixa.gov.br:8443/sandbox/...) with login on logindes.caixa.gov.br"
+    },
+    {
+      "server": "banking/itau",
+      "host": "sandbox.api.itau.com.br",
+      "why": "no Itau-hosted doc names a sandbox API host; production tokens come from sts.itau.com.br"
+    },
+    {
+      "server": "banking/bradesco",
+      "host": "apihom-bradescorip.bradesco.com.br",
+      "why": "Bradesco's API docs are behind a login; no public source names the homologation host"
+    },
+    {
+      "server": "payments/izipay",
+      "host": "sandbox-api.izipay.pe",
+      "why": "Izipay documents sandbox-api-pw.izipay.pe with tokens at /security/v1/Token/Generate, not /auth/login"
+    }
+  ]
+}

@@ -84,6 +84,8 @@ Celcoin uses OAuth2 client credentials. The server automatically manages token r
 
 Celcoin provides a sandbox at `sandbox.openfinance.celcoin.dev`. Set `CELCOIN_SANDBOX=true` to use it.
 
+Without `CELCOIN_SANDBOX`, the server calls Celcoin production at `api.openfinance.celcoin.com.br` (up to 0.2.3 the default was `api-sec.celcoin.com.br`, a host that does not exist). Celcoin accepts production calls only over mTLS, with a certificate Celcoin issues, and only from IPs you registered with them in advance ([Celcoin docs](https://developers.celcoin.com.br/docs/obtendo-acesso-%C3%A0s-apis)). From any other IP the token call answers `401 "O seu IP ou certificado digital nao foi reconhecido"`. This server does not present a client certificate, so in production point `CELCOIN_BASE_URL` at a proxy that holds the certificate and terminates the mTLS; called directly, production answers that 401.
+
 ### Get your credentials
 
 1. Go to [Celcoin Documentation](https://docs.celcoin.com.br)
@@ -98,6 +100,7 @@ Celcoin provides a sandbox at `sandbox.openfinance.celcoin.dev`. Set `CELCOIN_SA
 | `CELCOIN_CLIENT_ID` | Yes | OAuth2 client ID |
 | `CELCOIN_CLIENT_SECRET` | Yes | OAuth2 client secret |
 | `CELCOIN_SANDBOX` | No | Set to `"true"` for sandbox mode |
+| `CELCOIN_BASE_URL` | No | Override the API host. Defaults: `https://api.openfinance.celcoin.com.br` (production), `https://sandbox.openfinance.celcoin.dev` (sandbox) |
 
 ## Roadmap
 

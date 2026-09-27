@@ -41,9 +41,9 @@ const DEMO_RESPONSES: Record<string, unknown> = {
 };
 
 const ACCESS_TOKEN = process.env.STARK_BANK_ACCESS_TOKEN || "";
-const BASE_URL = process.env.STARK_BANK_SANDBOX === "true"
+const BASE_URL = process.env.STARK_BANK_BASE_URL || (process.env.STARK_BANK_SANDBOX === "true"
   ? "https://sandbox.api.starkbank.com/v2"
-  : "https://api.starkbank.com/v2";
+  : "https://api.starkbank.com/v2");
 
 async function starkBankRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const res = await fetch(`${BASE_URL}${path}`, {

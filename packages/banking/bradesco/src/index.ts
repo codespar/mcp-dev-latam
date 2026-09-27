@@ -86,9 +86,9 @@ const BRADESCO_ENV = (process.env.BRADESCO_ENV || "sandbox").toLowerCase();
 // the .prebanco.com.br domain) for homologação. Exact host + basePath are
 // contract-gated — override via forked build if your portal provisioning
 // differs.
-const BASE_URL = BRADESCO_ENV === "production"
+const BASE_URL = process.env.BRADESCO_BASE_URL || (BRADESCO_ENV === "production"
   ? "https://proxy.api.prebanco.com.br"
-  : "https://apihom-bradescorip.bradesco.com.br";
+  : "https://apihom-bradescorip.bradesco.com.br");
 
 // Lazy-load the mTLS agent so `--help` / schema introspection doesn't crash
 // when certs are missing. Banking ops that actually hit the wire will fail

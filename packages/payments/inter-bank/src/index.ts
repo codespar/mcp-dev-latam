@@ -43,7 +43,7 @@ import {
 
 const CLIENT_ID = process.env.INTER_CLIENT_ID || "";
 const CLIENT_SECRET = process.env.INTER_CLIENT_SECRET || "";
-const BASE_URL = "https://cdpj.partners.bancointer.com.br";
+const BASE_URL = process.env.INTER_BASE_URL || "https://cdpj.partners.bancointer.com.br";
 const TOKEN_URL = `${BASE_URL}/oauth/v2/token`;
 
 let cachedToken: string | null = null;

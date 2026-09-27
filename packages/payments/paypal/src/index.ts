@@ -54,9 +54,10 @@ const CLIENT_ID = process.env.PAYPAL_CLIENT_ID || "";
 const CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET || "";
 const ENV = (process.env.PAYPAL_ENV || "sandbox").toLowerCase();
 const BASE_URL =
-  ENV === "live"
+  process.env.PAYPAL_BASE_URL ||
+  (ENV === "live"
     ? "https://api-m.paypal.com"
-    : "https://api-m.sandbox.paypal.com";
+    : "https://api-m.sandbox.paypal.com");
 
 let cachedToken: { value: string; expiresAt: number } | null = null;
 

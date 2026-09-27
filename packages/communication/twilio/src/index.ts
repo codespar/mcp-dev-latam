@@ -72,14 +72,21 @@ import {
 const ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID || "";
 const AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN || "";
 const DEFAULT_MESSAGING_SERVICE_SID = process.env.TWILIO_MESSAGING_SERVICE_SID || "";
-const ACCOUNTS_BASE = `https://api.twilio.com/2010-04-01/Accounts/${ACCOUNT_SID}`;
+const BASE_URL = process.env.TWILIO_BASE_URL || "https://api.twilio.com";
+const VERIFY_URL = process.env.TWILIO_VERIFY_URL || "https://verify.twilio.com";
+const LOOKUPS_URL = process.env.TWILIO_LOOKUPS_URL || "https://lookups.twilio.com";
+const CONVERSATIONS_URL = process.env.TWILIO_CONVERSATIONS_URL || "https://conversations.twilio.com";
+const MESSAGING_URL = process.env.TWILIO_MESSAGING_URL || "https://messaging.twilio.com";
+const STUDIO_URL = process.env.TWILIO_STUDIO_URL || "https://studio.twilio.com";
+const TASKROUTER_URL = process.env.TWILIO_TASKROUTER_URL || "https://taskrouter.twilio.com";
+const ACCOUNTS_BASE = `${BASE_URL}/2010-04-01/Accounts/${ACCOUNT_SID}`;
 
 async function twilioRequest(
   method: string,
   fullUrlOrPath: string,
   body?: Record<string, unknown>
 ): Promise<unknown> {
-  const url = fullUrlOrPath.startsWith("https://")
+  const url = /^https?:\/\//.test(fullUrlOrPath)
     ? fullUrlOrPath
     : `${ACCOUNTS_BASE}${fullUrlOrPath}`;
 
@@ -495,19 +502,19 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           Channel: a.Channel,
         };
         if (a.Locale) body.Locale = a.Locale;
-        return { content: [{ type: "text", text: JSON.stringify(await twilioRequest("POST", `https://verify.twilio.com/v2/Services/${a.ServiceSid}/Verifications`, body), null, 2) }] };
+        return { content: [{ type: "text", text: JSON.stringify(await twilioRequest("POST", `${VERIFY_URL}/v2/Services/${a.ServiceSid}/Verifications`, body), null, 2) }] };
       }
       case "check_verification": {
         const body: Record<string, unknown> = {
           To: a.To,
           Code: a.Code,
         };
-        return { content: [{ type: "text", text: JSON.stringify(await twilioRequest("POST", `https://verify.twilio.com/v2/Services/${a.ServiceSid}/VerificationCheck`, body), null, 2) }] };
+        return { content: [{ type: "text", text: JSON.stringify(await twilioRequest("POST", `${VERIFY_URL}/v2/Services/${a.ServiceSid}/VerificationCheck`, body), null, 2) }] };
       }
       case "lookup_phone": {
         const q = buildQuery({ Fields: a.Fields, CountryCode: a.CountryCode });
         const number = encodeURIComponent(String(a.PhoneNumber ?? ""));
-        return { content: [{ type: "text", text: JSON.stringify(await twilioRequest("GET", `https://lookups.twilio.com/v2/PhoneNumbers/${number}${q}`), null, 2) }] };
+        return { content: [{ type: "text", text: JSON.stringify(await twilioRequest("GET", `${LOOKUPS_URL}/v2/PhoneNumbers/${number}${q}`), null, 2) }] };
       }
       case "list_incoming_numbers": {
         const q = buildQuery({
@@ -541,7 +548,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         if (a.CodeLength !== undefined) body.CodeLength = a.CodeLength;
         if (a.LookupEnabled !== undefined) body.LookupEnabled = a.LookupEnabled;
         if (a.DefaultTemplateSid) body.DefaultTemplateSid = a.DefaultTemplateSid;
-        return { content: [{ type: "text", text: JSON.stringify(await twilioRequest("POST", "https://verify.twilio.com/v2/Services", body), null, 2) }] };
+        return { content: [{ type: "text", text: JSON.stringify(await twilioRequest("POST", `${VERIFY_URL}/v2/Services`, body), null, 2) }] };
       }
       case "create_conversation": {
         const body: Record<string, unknown> = {};
@@ -549,7 +556,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         if (a.UniqueName) body.UniqueName = a.UniqueName;
         if (a.MessagingServiceSid) body.MessagingServiceSid = a.MessagingServiceSid;
         if (a.Attributes) body.Attributes = a.Attributes;
-        return { content: [{ type: "text", text: JSON.stringify(await twilioRequest("POST", "https://conversations.twilio.com/v1/Conversations", body), null, 2) }] };
+        return { content: [{ type: "text", text: JSON.stringify(await twilioRequest("POST", `${CONVERSATIONS_URL}/v1/Conversations`, body), null, 2) }] };
       }
       case "list_conversations": {
         const q = buildQuery({
@@ -558,7 +565,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           State: a.State,
           PageSize: a.PageSize,
         });
-        return { content: [{ type: "text", text: JSON.stringify(await twilioRequest("GET", `https://conversations.twilio.com/v1/Conversations${q}`), null, 2) }] };
+        return { content: [{ type: "text", text: JSON.stringify(await twilioRequest("GET", `${CONVERSATIONS_URL}/v1/Conversations${q}`), null, 2) }] };
       }
       case "add_conversation_participant": {
         const body: Record<string, unknown> = {};
@@ -566,7 +573,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         if (a["MessagingBinding.Address"]) body["MessagingBinding.Address"] = a["MessagingBinding.Address"];
         if (a["MessagingBinding.ProxyAddress"]) body["MessagingBinding.ProxyAddress"] = a["MessagingBinding.ProxyAddress"];
         if (a.Attributes) body.Attributes = a.Attributes;
-        return { content: [{ type: "text", text: JSON.stringify(await twilioRequest("POST", `https://conversations.twilio.com/v1/Conversations/${a.ConversationSid}/Participants`, body), null, 2) }] };
+        return { content: [{ type: "text", text: JSON.stringify(await twilioRequest("POST", `${CONVERSATIONS_URL}/v1/Conversations/${a.ConversationSid}/Participants`, body), null, 2) }] };
       }
       case "send_conversation_message": {
         const body: Record<string, unknown> = {};
@@ -574,11 +581,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         if (a.Author) body.Author = a.Author;
         if (a.MediaSid) body.MediaSid = a.MediaSid;
         if (a.Attributes) body.Attributes = a.Attributes;
-        return { content: [{ type: "text", text: JSON.stringify(await twilioRequest("POST", `https://conversations.twilio.com/v1/Conversations/${a.ConversationSid}/Messages`, body), null, 2) }] };
+        return { content: [{ type: "text", text: JSON.stringify(await twilioRequest("POST", `${CONVERSATIONS_URL}/v1/Conversations/${a.ConversationSid}/Messages`, body), null, 2) }] };
       }
       case "list_messaging_services": {
         const q = buildQuery({ PageSize: a.PageSize });
-        return { content: [{ type: "text", text: JSON.stringify(await twilioRequest("GET", `https://messaging.twilio.com/v1/Services${q}`), null, 2) }] };
+        return { content: [{ type: "text", text: JSON.stringify(await twilioRequest("GET", `${MESSAGING_URL}/v1/Services${q}`), null, 2) }] };
       }
       case "execute_studio_flow": {
         const body: Record<string, unknown> = {
@@ -586,7 +593,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           From: a.From,
         };
         if (a.Parameters) body.Parameters = a.Parameters;
-        return { content: [{ type: "text", text: JSON.stringify(await twilioRequest("POST", `https://studio.twilio.com/v2/Flows/${a.FlowSid}/Executions`, body), null, 2) }] };
+        return { content: [{ type: "text", text: JSON.stringify(await twilioRequest("POST", `${STUDIO_URL}/v2/Flows/${a.FlowSid}/Executions`, body), null, 2) }] };
       }
       case "create_taskrouter_task": {
         const body: Record<string, unknown> = {};
@@ -595,7 +602,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         if (a.TaskChannel) body.TaskChannel = a.TaskChannel;
         if (a.Priority !== undefined) body.Priority = a.Priority;
         if (a.Timeout !== undefined) body.Timeout = a.Timeout;
-        return { content: [{ type: "text", text: JSON.stringify(await twilioRequest("POST", `https://taskrouter.twilio.com/v1/Workspaces/${a.WorkspaceSid}/Tasks`, body), null, 2) }] };
+        return { content: [{ type: "text", text: JSON.stringify(await twilioRequest("POST", `${TASKROUTER_URL}/v1/Workspaces/${a.WorkspaceSid}/Tasks`, body), null, 2) }] };
       }
       case "list_taskrouter_workers": {
         const q = buildQuery({
@@ -604,7 +611,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           TargetWorkersExpression: a.TargetWorkersExpression,
           PageSize: a.PageSize,
         });
-        return { content: [{ type: "text", text: JSON.stringify(await twilioRequest("GET", `https://taskrouter.twilio.com/v1/Workspaces/${a.WorkspaceSid}/Workers${q}`), null, 2) }] };
+        return { content: [{ type: "text", text: JSON.stringify(await twilioRequest("GET", `${TASKROUTER_URL}/v1/Workspaces/${a.WorkspaceSid}/Workers${q}`), null, 2) }] };
       }
       default:
         return { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true };

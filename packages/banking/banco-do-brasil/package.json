@@ -1,6 +1,6 @@
 {
   "name": "@codespar/mcp-banco-do-brasil",
-  "version": "0.1.0-alpha.4",
+  "version": "0.1.0-alpha.5",
   "description": "MCP server for Banco do Brasil — Brazil's top public bank. Pix, Cobrança (boleto), Conta-Corrente, and Arrecadação via BB's Developer Portal APIs (OAuth2 + mTLS).",
   "type": "module",
   "main": "./dist/index.js",

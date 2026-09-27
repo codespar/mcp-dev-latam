@@ -73,7 +73,7 @@ const CLIENT_SECRET = process.env.SAFRAPAY_CLIENT_SECRET || ""; // MerchantToken
 const MERCHANT_ID = process.env.SAFRAPAY_MERCHANT_ID || "";
 const ENV = (process.env.SAFRAPAY_ENV || "sandbox").toLowerCase();
 
-const HOSTS = ENV === "production"
+const DEFAULT_HOSTS = ENV === "production"
   ? {
       gateway: "https://payment.aditum.com.br",
       portal: "https://portal-api.aditum.com.br",
@@ -86,6 +86,14 @@ const HOSTS = ENV === "production"
       reconciliation: "https://reconciliation-dev.aditum.com.br",
       webhook: "https://webhook-dev.aditum.com.br",
     };
+
+// Each host can be overridden on its own (proxy, mock, a moved endpoint).
+const HOSTS = {
+  gateway: process.env.SAFRAPAY_BASE_URL || DEFAULT_HOSTS.gateway,
+  portal: process.env.SAFRAPAY_PORTAL_URL || DEFAULT_HOSTS.portal,
+  reconciliation: process.env.SAFRAPAY_RECONCILIATION_URL || DEFAULT_HOSTS.reconciliation,
+  webhook: process.env.SAFRAPAY_WEBHOOK_URL || DEFAULT_HOSTS.webhook,
+};
 
 type HostKey = keyof typeof HOSTS;
 

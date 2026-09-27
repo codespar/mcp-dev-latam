@@ -75,13 +75,13 @@ const MERCHANT_KEY = process.env.NUPAY_MERCHANT_KEY || "";
 const MERCHANT_TOKEN = process.env.NUPAY_MERCHANT_TOKEN || "";
 const ENV = (process.env.NUPAY_ENV || "sandbox").toLowerCase();
 
-const API_BASE = ENV === "production"
+const API_BASE = process.env.NUPAY_BASE_URL || (ENV === "production"
   ? "https://api.spinpay.com.br"
-  : "https://sandbox-api.spinpay.com.br";
+  : "https://sandbox-api.spinpay.com.br");
 
-const AUTH_BASE = ENV === "production"
+const AUTH_BASE = process.env.NUPAY_AUTH_URL || (ENV === "production"
   ? "https://authentication.spinpay.com.br/api"
-  : "https://sandbox-authentication.spinpay.com.br/api";
+  : "https://sandbox-authentication.spinpay.com.br/api");
 
 type Json = Record<string, unknown>;
 

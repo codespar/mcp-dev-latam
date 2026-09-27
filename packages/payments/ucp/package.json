@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-ucp",
-  "version": "0.1.4",
-  "description": "MCP server for Google UCP — Universal Commerce Protocol for agentic shopping, cart, checkout, orders, and delivery",
+  "version": "0.1.5",
+  "description": "DEPRECATED: no live endpoint (UCP is a spec; commerce.googleapis.com serves no API). MCP server for Google UCP — Universal Commerce Protocol for agentic shopping, cart, checkout, orders, and delivery",
   "type": "module",
   "main": "dist/index.js",
   "bin": {

@@ -59,9 +59,10 @@ const CLIENT_ID = process.env.AIRWALLEX_CLIENT_ID || "";
 const API_KEY = process.env.AIRWALLEX_API_KEY || "";
 const ENV = (process.env.AIRWALLEX_ENV || "demo").toLowerCase();
 const BASE_URL =
-  ENV === "production"
+  process.env.AIRWALLEX_BASE_URL ||
+  (ENV === "production"
     ? "https://api.airwallex.com/api/v1"
-    : "https://api-demo.airwallex.com/api/v1";
+    : "https://api-demo.airwallex.com/api/v1");
 
 interface TokenCache {
   token: string;

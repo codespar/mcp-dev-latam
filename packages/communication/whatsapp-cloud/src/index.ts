@@ -63,7 +63,7 @@ const ACCESS_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN || "";
 const PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID || "";
 const BUSINESS_ACCOUNT_ID = process.env.WHATSAPP_BUSINESS_ACCOUNT_ID || "";
 const GRAPH_VERSION = process.env.WHATSAPP_GRAPH_VERSION || "v21.0";
-const BASE_URL = `https://graph.facebook.com/${GRAPH_VERSION}`;
+const BASE_URL = `${process.env.WHATSAPP_BASE_URL || "https://graph.facebook.com"}/${GRAPH_VERSION}`;
 
 interface RequestOptions {
   multipart?: boolean;

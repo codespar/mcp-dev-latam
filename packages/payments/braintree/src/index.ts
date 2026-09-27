@@ -64,9 +64,10 @@ const PRIVATE_KEY = process.env.BRAINTREE_PRIVATE_KEY || "";
 const ENV = (process.env.BRAINTREE_ENV || "sandbox").toLowerCase();
 const API_VERSION = process.env.BRAINTREE_API_VERSION || "2019-01-01";
 const ENDPOINT =
-  ENV === "production"
+  process.env.BRAINTREE_BASE_URL ||
+  (ENV === "production"
     ? "https://payments.braintree-api.com/graphql"
-    : "https://payments.sandbox.braintree-api.com/graphql";
+    : "https://payments.sandbox.braintree-api.com/graphql");
 
 void MERCHANT_ID; // not sent as header, included for parity with Control Panel docs & future scoping
 

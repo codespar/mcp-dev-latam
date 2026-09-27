@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-certta",
-  "version": "0.1.2",
-  "description": "MCP server for Certta — Brazilian identity + signature platform (KYC/KYB, biometrics, OCR, ICP-Brasil + electronic signature, onboarding pipelines)",
+  "version": "0.1.3",
+  "description": "DEPRECATED: no live endpoint (api.certta.com.br does not resolve). MCP server for Certta — Brazilian identity + signature platform (KYC/KYB, biometrics, OCR, ICP-Brasil + electronic signature, onboarding pipelines)",
   "type": "module",
   "main": "dist/index.js",
   "bin": {

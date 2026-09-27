@@ -49,9 +49,10 @@ import { randomUUID } from "node:crypto";
 const API_TOKEN = process.env.WISE_API_TOKEN || "";
 const ENV = (process.env.WISE_ENV || "sandbox").toLowerCase();
 const BASE_URL =
-  ENV === "live"
+  process.env.WISE_BASE_URL ||
+  (ENV === "live"
     ? "https://api.transferwise.com"
-    : "https://api.sandbox.transferwise.tech";
+    : "https://api.sandbox.transferwise.tech");
 
 function buildQuery(params?: Record<string, unknown>): string {
   if (!params) return "";

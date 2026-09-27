@@ -39,7 +39,7 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 
-const BASE_URL = "https://api.bcra.gob.ar";
+const BASE_URL = process.env.BCRA_BASE_URL || "https://api.bcra.gob.ar";
 
 async function bcraRequest(method: string, path: string): Promise<unknown> {
   const headers: Record<string, string> = {

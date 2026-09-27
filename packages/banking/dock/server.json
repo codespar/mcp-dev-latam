@@ -1,18 +1,18 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.codespar/mcp-dock",
-  "description": "MCP server for Dock — Brazilian Banking-as-a-Service: accounts, Pix, card issuing for fintechs",
+  "description": "DEPRECATED: no live endpoint (api.dock.tech does not resolve)",
   "repository": {
     "url": "https://github.com/codespar/mcp-dev-latam",
     "source": "github",
     "subfolder": "packages/banking/dock"
   },
-  "version": "0.2.0-alpha.3",
+  "version": "0.2.0-alpha.4",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "@codespar/mcp-dock",
-      "version": "0.2.0-alpha.3",
+      "version": "0.2.0-alpha.4",
       "transport": {
         "type": "stdio"
       },

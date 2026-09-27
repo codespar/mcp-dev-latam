@@ -39,7 +39,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 
 const API_KEY = process.env.BIND_API_KEY || "";
-const BASE_URL = "https://api.bind.com.mx/api/v1";
+const BASE_URL = process.env.BIND_BASE_URL || "https://api.bind.com.mx/api/v1";
 
 async function bindRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const headers: Record<string, string> = { "Content-Type": "application/json" };

@@ -42,7 +42,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 
 const ACCESS_TOKEN = process.env.SIIGO_ACCESS_TOKEN || "";
-const BASE_URL = "https://api.siigo.com/v1";
+const BASE_URL = process.env.SIIGO_BASE_URL || "https://api.siigo.com/v1";
 
 async function siigoRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const headers: Record<string, string> = {
