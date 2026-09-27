@@ -40,9 +40,9 @@ import {
 
 const CLIENT_ID = process.env.EFI_CLIENT_ID || "";
 const CLIENT_SECRET = process.env.EFI_CLIENT_SECRET || "";
-const BASE_URL = process.env.EFI_SANDBOX === "true"
+const BASE_URL = process.env.EFI_BASE_URL || (process.env.EFI_SANDBOX === "true"
   ? "https://pix-h.api.efipay.com.br"
-  : "https://pix.api.efipay.com.br";
+  : "https://pix.api.efipay.com.br");
 
 let accessToken = "";
 let tokenExpiry = 0;

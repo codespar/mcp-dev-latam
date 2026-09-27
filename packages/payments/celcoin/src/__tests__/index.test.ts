@@ -197,15 +197,35 @@ describe("mcp-celcoin", () => {
       expect(url).not.toContain("sandbox-api.celcoin.com.br");
     });
 
-    it("uses the production host when CELCOIN_SANDBOX is unset", async () => {
+    it("uses api.openfinance.celcoin.com.br (not the dead api-sec host) when CELCOIN_SANDBOX is unset", async () => {
       mockFetch.mockReset();
       mockFetch.mockResolvedValueOnce(tokenResponse()).mockResolvedValueOnce(okJson({ balance: 1 }));
 
       await callToolHandler({ params: { name: "get_balance", arguments: {} } });
 
+      // Both calls, token and endpoint, go to the production host.
+      const [tokenUrl] = mockFetch.mock.calls[0];
       const url = lastCall()[0];
-      expect(url).toContain("api-sec.celcoin.com.br");
-      expect(url).not.toContain("sandbox");
+      expect(tokenUrl).toBe("https://api.openfinance.celcoin.com.br/v5/token");
+      expect(url.startsWith("https://api.openfinance.celcoin.com.br/")).toBe(true);
+      expect(url).not.toContain("api-sec.celcoin.com.br");
+    });
+
+    it("CELCOIN_BASE_URL overrides the host in both modes", async () => {
+      process.env.CELCOIN_BASE_URL = "https://celcoin-proxy.internal.test";
+      process.env.CELCOIN_SANDBOX = "true";
+      try {
+        await loadServer();
+        mockFetch.mockReset();
+        mockFetch.mockResolvedValueOnce(tokenResponse()).mockResolvedValueOnce(okJson({ balance: 1 }));
+
+        await callToolHandler({ params: { name: "get_balance", arguments: {} } });
+
+        expect(mockFetch.mock.calls[0][0]).toBe("https://celcoin-proxy.internal.test/v5/token");
+        expect(lastCall()[0].startsWith("https://celcoin-proxy.internal.test/")).toBe(true);
+      } finally {
+        delete process.env.CELCOIN_BASE_URL;
+      }
     });
   });
 

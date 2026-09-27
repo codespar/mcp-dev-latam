@@ -95,7 +95,7 @@ export function createNfseDemoResponse(args: any): {
 
 const CLIENT_ID = process.env.NUVEM_FISCAL_CLIENT_ID || "";
 const CLIENT_SECRET = process.env.NUVEM_FISCAL_CLIENT_SECRET || "";
-const BASE_URL = "https://api.nuvemfiscal.com.br";
+const BASE_URL = process.env.NUVEM_FISCAL_BASE_URL || "https://api.nuvemfiscal.com.br";
 
 let cachedToken: { access_token: string; expires_at: number } | null = null;
 

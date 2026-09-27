@@ -46,6 +46,10 @@
  *   BB_CERT_PATH            path to mTLS client cert (production)
  *   BB_KEY_PATH             path to mTLS private key (production)
  *   BB_ENV                  "sandbox" | "production" (default: sandbox)
+ *   BB_BASE_URL             API host override (default: api.hm.bb.com.br in
+ *                           sandbox, api.bb.com.br in production)
+ *   BB_AUTH_URL             token URL override (default: oauth.hm.bb.com.br
+ *                           in sandbox, oauth.bb.com.br in production)
  *
  * Docs: https://developers.bb.com.br
  */
@@ -68,12 +72,15 @@ const BB_ENV = (process.env.BB_ENV || "sandbox").toLowerCase();
 const IS_PROD = BB_ENV === "production";
 
 // TODO(verify): production base hostnames. BB documents distinct hosts per
-// product family (api.bb.com.br for some, api-pix.bb.com.br for Pix). The
-// sandbox subdomain is api.sandbox.bb.com.br for most products.
-const BASE_URL = IS_PROD ? "https://api.bb.com.br" : "https://api.sandbox.bb.com.br";
-const OAUTH_URL = IS_PROD
+// product family (api.bb.com.br for some, api-pix.bb.com.br for Pix).
+// The test environment is *.hm.bb.com.br (developers.bb.com.br guides and the
+// oauth.hm.bb.com.br OIDC discovery document). Up to 0.1.0-alpha.4 the
+// sandbox defaults were api.sandbox.bb.com.br / oauth.sandbox.bb.com.br,
+// which time out or serve a certificate for another name.
+const BASE_URL = process.env.BB_BASE_URL || (IS_PROD ? "https://api.bb.com.br" : "https://api.hm.bb.com.br");
+const OAUTH_URL = process.env.BB_AUTH_URL || (IS_PROD
   ? "https://oauth.bb.com.br/oauth/token"
-  : "https://oauth.sandbox.bb.com.br/oauth/token";
+  : "https://oauth.hm.bb.com.br/oauth/token");
 
 // Lazy-load the mTLS agent so `--help` / schema introspection doesn't crash
 // when certs are missing. mTLS is required by BACEN in production but BB

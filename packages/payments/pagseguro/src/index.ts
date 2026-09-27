@@ -44,9 +44,9 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 
 const TOKEN = process.env.PAGSEGURO_TOKEN || "";
-const BASE_URL = process.env.PAGSEGURO_SANDBOX === "true"
+const BASE_URL = process.env.PAGSEGURO_BASE_URL || (process.env.PAGSEGURO_SANDBOX === "true"
   ? "https://sandbox.api.pagseguro.com"
-  : "https://api.pagseguro.com";
+  : "https://api.pagseguro.com");
 
 async function pagseguroRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const res = await fetch(`${BASE_URL}${path}`, {

@@ -1,5 +1,7 @@
 # @codespar/mcp-legiti
 
+> **Deprecated: no live endpoint.** Measured on 2026-09-27 against two public DNS resolvers (8.8.8.8 and 1.1.1.1): `collection-prod.inspcdn.net`, the host this server calls, does not resolve in DNS. No tool in this server reaches a service. The package is deprecated on npm and stays in this repository for reference only. If you have a working endpoint, point the server at it with `LEGITI_BASE_URL`. To bring the package back, open an issue in [mcp-dev-latam](https://github.com/codespar/mcp-dev-latam/issues) with the provider's documented base URL.
+
 MCP server for [Legiti](https://legiti.com) — Brazilian fraud prevention, ticketing-native with a simple synchronous evaluation API.
 
 Fourth entry in the CodeSpar `fraud` category, after [`@codespar/mcp-clearsale`](../clearsale), [`@codespar/mcp-konduto`](../konduto), and [`@codespar/mcp-sift`](../sift). Legiti (formerly Inspetor, São Paulo) occupies the mid-size BR tier: smaller public footprint than ClearSale, more vertical depth than Konduto for ticketing / events, and a simpler API surface than Sift.

@@ -50,7 +50,7 @@ function validationError(msg: string) {
   return { content: [{ type: "text" as const, text: `Validation error: ${msg}` }], isError: true as const };
 }
 
-const BASE_URL = "https://brasilapi.com.br/api";
+const BASE_URL = process.env.BRASIL_API_BASE_URL || "https://brasilapi.com.br/api";
 
 // Every request must identify itself. Node's fetch (undici) supplies
 // "User-Agent: node" when the caller leaves the header out, and BrasilAPI's

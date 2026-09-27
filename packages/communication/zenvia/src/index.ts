@@ -37,7 +37,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 
 const API_TOKEN = process.env.ZENVIA_API_TOKEN || "";
-const BASE_URL = "https://api.zenvia.com/v2";
+const BASE_URL = process.env.ZENVIA_BASE_URL || "https://api.zenvia.com/v2";
 
 async function zenviaRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const res = await fetch(`${BASE_URL}${path}`, {

@@ -28,7 +28,7 @@ import { z } from "zod";
 
 const ACCESS_TOKEN = process.env.BIGDATACORP_ACCESS_TOKEN;
 const TOKEN_ID = process.env.BIGDATACORP_TOKEN_ID;
-const BASE_URL = process.env.BIGDATACORP_API_BASE ?? "https://plataforma.bigdatacorp.com.br";
+const BASE_URL = process.env.BIGDATACORP_BASE_URL || process.env.BIGDATACORP_API_BASE || "https://plataforma.bigdatacorp.com.br";
 
 if (!ACCESS_TOKEN) {
   console.error("[mcp-bigdatacorp] missing BIGDATACORP_ACCESS_TOKEN — refusing to start.");

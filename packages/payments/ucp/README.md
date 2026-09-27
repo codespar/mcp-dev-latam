@@ -1,11 +1,11 @@
 # @codespar/mcp-ucp
 
+> **Deprecated: no live endpoint.** Measured on 2026-09-27: `commerce.googleapis.com` answers every path with Google's generic `Error 404 (Not Found)` page, and `sandbox.commerce.googleapis.com` (used with `UCP_SANDBOX=true`) fails the TLS handshake, because the certificate served there covers `*.googleapis.com` and not the extra label. UCP is an open specification, not an API Google hosts. No tool in this server reaches a service. The package is deprecated on npm and stays in this repository for reference only. If you have a working endpoint, point the server at it with `UCP_BASE_URL`. To bring the package back, open an issue in [mcp-dev-latam](https://github.com/codespar/mcp-dev-latam/issues) with the provider's documented base URL.
+
 > MCP server for **Google UCP** — Universal Commerce Protocol for agentic shopping, cart, checkout, orders, and delivery
 
 [![npm](https://img.shields.io/npm/v/@codespar/mcp-ucp)](https://www.npmjs.com/package/@codespar/mcp-ucp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-
-> **No live endpoint.** Checked on 2026-08-27. This server's `BASE_URL` (`src/index.ts:71-73`) is `https://commerce.googleapis.com/ucp/v1`, which answers HTTP 404 with Google's generic `Error 404 (Not Found)` HTML page instead of an API response. With `UCP_SANDBOX=true` the address becomes `https://sandbox.commerce.googleapis.com/ucp/v1`, which fails the TLS handshake, because the certificate served there covers `*.googleapis.com` and not the extra label. UCP is a published specification and this package ships tool definitions written for it; we have not checked them against a conforming implementation, and no call made through this server currently reaches a service.
 
 ## What is UCP?
 

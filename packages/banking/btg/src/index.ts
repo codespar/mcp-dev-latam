@@ -71,9 +71,9 @@ const BTG_ENV = (process.env.BTG_ENV || "sandbox").toLowerCase();
 
 // TODO(verify): sandbox base URL. BTG publishes a separate sandbox subdomain
 // to onboarded counterparties; the exact host is contract-gated.
-const BASE_URL = BTG_ENV === "production"
+const BASE_URL = process.env.BTG_BASE_URL || (BTG_ENV === "production"
   ? "https://api.btgpactual.com"
-  : "https://sandbox.api.btgpactual.com";
+  : "https://sandbox.api.btgpactual.com");
 
 // Lazy-load the mTLS agent so `--help` / schema introspection doesn't crash
 // when certs are missing. Banking ops that actually hit the wire will fail

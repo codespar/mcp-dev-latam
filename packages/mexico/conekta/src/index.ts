@@ -25,7 +25,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 
 const API_KEY = process.env.CONEKTA_API_KEY || "";
-const BASE_URL = "https://api.conekta.io";
+const BASE_URL = process.env.CONEKTA_BASE_URL || "https://api.conekta.io";
 
 async function conektaRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const headers: Record<string, string> = {

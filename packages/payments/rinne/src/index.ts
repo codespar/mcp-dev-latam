@@ -66,9 +66,9 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 
-const BASE_URL = process.env.RINNE_SANDBOX === "false"
+const BASE_URL = process.env.RINNE_BASE_URL || (process.env.RINNE_SANDBOX === "false"
   ? "https://api.rinne.com.br/core"
-  : "https://api-sandbox.rinne.com.br/core";
+  : "https://api-sandbox.rinne.com.br/core");
 const API_KEY = process.env.RINNE_API_KEY ?? "";
 const AUTH_EMAIL = process.env.RINNE_EMAIL;
 const AUTH_PASSWORD = process.env.RINNE_PASSWORD;

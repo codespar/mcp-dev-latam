@@ -61,7 +61,7 @@ import {
 
 const API_KEY = process.env.PERSONA_API_KEY || "";
 const API_VERSION = process.env.PERSONA_API_VERSION || "2023-01-05";
-const BASE_URL = "https://api.withpersona.com/api/v1";
+const BASE_URL = process.env.PERSONA_BASE_URL || "https://api.withpersona.com/api/v1";
 
 type RequestOpts = { query?: Record<string, string | undefined> };
 

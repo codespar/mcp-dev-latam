@@ -60,8 +60,8 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 | `POMELO_CLIENT_ID` | yes | OAuth2 client id |
 | `POMELO_CLIENT_SECRET` | yes | OAuth2 client secret |
 | `POMELO_ENV` | no | `sandbox` (default) or `production` |
-| `POMELO_BASE_URL` | no | API base override (defaults per env) |
-| `POMELO_AUTH_URL` | no | Auth base override (defaults per env) |
+| `POMELO_BASE_URL` | no | API base override (default `https://api-stage.pomelo.la` in sandbox, `https://api.pomelo.la` in production) |
+| `POMELO_AUTH_URL` | no | Auth base override; the token call is `{AUTH_URL}/oauth/token` (default: the same host as the API, per Pomelo's docs) |
 | `POMELO_AUDIENCE` | no | OAuth2 audience override (defaults per env) |
 
 Authentication is OAuth2 client-credentials; the server exchanges and caches the Bearer token automatically.

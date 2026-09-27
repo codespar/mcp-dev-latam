@@ -54,7 +54,7 @@ import {
 
 const API_KEY = process.env.STRIPE_API_KEY || "";
 const ACP_BASE = process.env.STRIPE_ACP_BASE || "";
-const STRIPE_BASE = "https://api.stripe.com/v1";
+const STRIPE_BASE = process.env.STRIPE_BASE_URL || "https://api.stripe.com/v1";
 
 async function stripeRequest(method: string, path: string, body?: Record<string, unknown>): Promise<unknown> {
   const res = await fetch(`${STRIPE_BASE}${path}`, {

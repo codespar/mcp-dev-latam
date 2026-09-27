@@ -55,7 +55,7 @@ import { SignJWT, importPKCS8, type KeyLike } from "jose";
 
 const KEY_NAME = process.env.COINBASE_CDP_KEY_NAME || "";
 const PRIVATE_KEY_PEM = process.env.COINBASE_CDP_PRIVATE_KEY || "";
-const BASE_URL = "https://api.cdp.coinbase.com";
+const BASE_URL = process.env.COINBASE_CDP_BASE_URL || "https://api.cdp.coinbase.com";
 const HOST = "api.cdp.coinbase.com";
 
 if (!KEY_NAME || !PRIVATE_KEY_PEM) {

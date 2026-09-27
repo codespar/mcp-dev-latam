@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 
 /**
+ * DEPRECATED (2026-09-27): no live endpoint. baas.c6bank.com.br does not resolve.
+ * No tool reaches a service. Override the host with
+ * C6_BASE_URL if you have a working endpoint.
+ *
  * MCP Server for C6 Bank — top Brazilian digital bank, JPMorgan-backed.
  *
  * C6 ranks among the largest Brazilian digital banks by retail account base
@@ -68,9 +72,9 @@ const C6_ENV = (process.env.C6_ENV || "sandbox").toLowerCase();
 
 // TODO(verify): sandbox + production base URLs. C6 publishes a separate
 // sandbox subdomain to onboarded merchants; the exact host is contract-gated.
-const BASE_URL = C6_ENV === "production"
+const BASE_URL = process.env.C6_BASE_URL || (C6_ENV === "production"
   ? "https://baas.c6bank.com.br"
-  : "https://baas-sandbox.c6bank.com.br";
+  : "https://baas-sandbox.c6bank.com.br");
 
 // Lazy-load the mTLS agent so `--help` / schema introspection doesn't crash
 // when certs are missing. Banking ops that actually hit the wire will fail

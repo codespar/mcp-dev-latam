@@ -61,7 +61,7 @@ function regionHost(r: string): string {
     default:   return "https://api.onfido.com";
   }
 }
-const BASE_URL = `${regionHost(REGION)}/v3.6`;
+const BASE_URL = `${process.env.ONFIDO_BASE_URL || regionHost(REGION)}/v3.6`;
 
 type RequestOpts = { multipart?: boolean; raw?: boolean };
 

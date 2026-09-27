@@ -69,7 +69,7 @@ const DEMO_RESPONSES: Record<string, unknown> = {
 
 const INSTANCE_ID = process.env.ZAPI_INSTANCE_ID || "";
 const TOKEN = process.env.ZAPI_TOKEN || "";
-const BASE_URL = `https://api.z-api.io/instances/${INSTANCE_ID}/token/${TOKEN}`;
+const BASE_URL = `${process.env.ZAPI_BASE_URL || "https://api.z-api.io"}/instances/${INSTANCE_ID}/token/${TOKEN}`;
 
 async function zapiRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const res = await fetch(`${BASE_URL}${path}`, {

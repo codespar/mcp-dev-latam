@@ -49,7 +49,7 @@ import {
 
 const ACCESS_TOKEN = process.env.MELI_ACCESS_TOKEN || "";
 const SITE_ID = process.env.MELI_SITE_ID || "MLB";
-const BASE_URL = "https://api.mercadolibre.com";
+const BASE_URL = process.env.MELI_BASE_URL || "https://api.mercadolibre.com";
 
 async function meliRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const headers: Record<string, string> = { "Content-Type": "application/json" };

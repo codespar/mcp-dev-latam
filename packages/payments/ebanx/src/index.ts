@@ -28,9 +28,9 @@ import {
 import { createHmac, timingSafeEqual } from "node:crypto";
 
 const INTEGRATION_KEY = process.env.EBANX_INTEGRATION_KEY || "";
-const BASE_URL = process.env.EBANX_SANDBOX === "true"
+const BASE_URL = process.env.EBANX_BASE_URL || (process.env.EBANX_SANDBOX === "true"
   ? "https://sandbox.ebanx.com/ws"
-  : "https://api.ebanx.com/ws";
+  : "https://api.ebanx.com/ws");
 
 async function ebanxRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const payload = method === "POST"

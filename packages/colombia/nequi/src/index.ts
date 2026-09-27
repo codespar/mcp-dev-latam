@@ -41,9 +41,9 @@ const API_KEY = process.env.NEQUI_API_KEY || "";
 const CLIENT_ID = process.env.NEQUI_CLIENT_ID || "";
 const CLIENT_SECRET = process.env.NEQUI_CLIENT_SECRET || "";
 const NEQUI_ENV = process.env.NEQUI_ENV || "sandbox";
-const BASE_URL = NEQUI_ENV === "production"
+const BASE_URL = process.env.NEQUI_BASE_URL || (NEQUI_ENV === "production"
   ? "https://api.nequi.com"
-  : "https://api.sandbox.nequi.com";
+  : "https://api.sandbox.nequi.com");
 
 let cachedToken: string | null = null;
 let tokenExpiry = 0;

@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 
 /**
+ * DEPRECATED (2026-09-27): no live endpoint. api.certta.com.br does not resolve.
+ * No tool reaches a service. Override the host with
+ * CERTTA_BASE_URL if you have a working endpoint.
+ *
  * MCP Server for Certta — Brazilian identity + signature platform.
  *
  * KYC/KYB (CPF / CNPJ via Receita Federal + SPC / Serasa), face match +
@@ -22,7 +26,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 
 const API_KEY = process.env.CERTTA_API_KEY;
-const BASE_URL = process.env.CERTTA_API_BASE ?? "https://api.certta.com.br";
+const BASE_URL = process.env.CERTTA_BASE_URL || process.env.CERTTA_API_BASE || "https://api.certta.com.br";
 
 if (!API_KEY) {
   console.error("[mcp-certta] missing CERTTA_API_KEY — refusing to start.");

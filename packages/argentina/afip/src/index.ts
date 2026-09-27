@@ -45,9 +45,9 @@ const CERT_PATH = process.env.AFIP_CERT_PATH || "";
 const KEY_PATH = process.env.AFIP_KEY_PATH || "";
 const CUIT = process.env.AFIP_CUIT || "";
 const AFIP_ENV = process.env.AFIP_ENV || "homologation";
-const BASE_URL = AFIP_ENV === "production"
+const BASE_URL = process.env.AFIP_BASE_URL || (AFIP_ENV === "production"
   ? "https://servicios1.afip.gov.ar"
-  : "https://wswhomo.afip.gov.ar";
+  : "https://wswhomo.afip.gov.ar");
 
 async function afipRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const headers: Record<string, string> = {

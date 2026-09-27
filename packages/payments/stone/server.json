@@ -7,12 +7,12 @@
     "source": "github",
     "subfolder": "packages/payments/stone"
   },
-  "version": "0.2.2",
+  "version": "0.2.3",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "@codespar/mcp-stone",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "transport": {
         "type": "stdio"
       },

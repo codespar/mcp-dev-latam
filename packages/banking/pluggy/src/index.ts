@@ -25,7 +25,7 @@ import { z } from "zod";
 
 const CLIENT_ID = process.env.PLUGGY_CLIENT_ID;
 const CLIENT_SECRET = process.env.PLUGGY_CLIENT_SECRET;
-const BASE_URL = process.env.PLUGGY_API_BASE ?? "https://api.pluggy.ai";
+const BASE_URL = process.env.PLUGGY_BASE_URL || process.env.PLUGGY_API_BASE || "https://api.pluggy.ai";
 
 if (!CLIENT_ID || !CLIENT_SECRET) {
   console.error(

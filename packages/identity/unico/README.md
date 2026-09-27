@@ -1,5 +1,7 @@
 # @codespar/mcp-unico
 
+> **Deprecated: no live endpoint.** Measured on 2026-09-27 against two public DNS resolvers (8.8.8.8 and 1.1.1.1): `api.unico.co` (API) and `auth.unico.co` (token) do not resolve in DNS. Unico's developer docs now name `api.id.unico.app` / `api.id.uat.unico.app` for the API and `identity.acesso.io` / `identityhomolog.acesso.io` for OAuth; this server's paths and auth were not written against them and have not been checked. No tool in this server reaches a service. The package is deprecated on npm and stays in this repository for reference only. If you have a working endpoint, point the server at it with `UNICO_BASE_URL` and `UNICO_AUTH_URL`. To bring the package back, open an issue in [mcp-dev-latam](https://github.com/codespar/mcp-dev-latam/issues) with the provider's documented base URL.
+
 MCP server for [Unico](https://unico.io) — the Brazilian identity verification leader. CPF/CNPJ validation, document OCR, face biometrics, liveness, PEP / watchlist / court-records screening.
 
 First entry in the CodeSpar `identity` category. Commerce agents onboarding sellers (marketplaces), running high-value transactions, or operating KYC-regulated flows need identity verification — Unico is the BR standard. Paired with [`@codespar/mcp-onfido`](../onfido) for BR-first + global coverage.

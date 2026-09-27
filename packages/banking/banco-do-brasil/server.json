@@ -7,12 +7,12 @@
     "source": "github",
     "subfolder": "packages/banking/banco-do-brasil"
   },
-  "version": "0.1.0-alpha.4",
+  "version": "0.1.0-alpha.5",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "@codespar/mcp-banco-do-brasil",
-      "version": "0.1.0-alpha.4",
+      "version": "0.1.0-alpha.5",
       "transport": {
         "type": "stdio"
       },

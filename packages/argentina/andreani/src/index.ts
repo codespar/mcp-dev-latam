@@ -41,7 +41,7 @@ import {
 const API_KEY = process.env.ANDREANI_API_KEY || "";
 const USER = process.env.ANDREANI_USER || "";
 const PASSWORD = process.env.ANDREANI_PASSWORD || "";
-const BASE_URL = "https://api.andreani.com/v2";
+const BASE_URL = process.env.ANDREANI_BASE_URL || "https://api.andreani.com/v2";
 
 let cachedToken: string | null = null;
 

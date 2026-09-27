@@ -68,9 +68,9 @@ const PARTNER_KEY = process.env.SHOPEE_PARTNER_KEY || "";
 const ACCESS_TOKEN = process.env.SHOPEE_ACCESS_TOKEN || "";
 const SHOP_ID = process.env.SHOPEE_SHOP_ID || "";
 const ENV = (process.env.SHOPEE_ENV || "production").toLowerCase();
-const BASE_URL = ENV === "sandbox"
+const BASE_URL = process.env.SHOPEE_BASE_URL || (ENV === "sandbox"
   ? "https://partner.test-stable.shopeemobile.com"
-  : "https://partner.shopeemobile.com";
+  : "https://partner.shopeemobile.com");
 const API_PREFIX = "/api/v2";
 
 function sign(apiPath: string, timestamp: number): string {

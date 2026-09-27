@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 
 /**
+ * DEPRECATED (2026-09-27): no live endpoint. UCP is a spec; commerce.googleapis.com serves no API.
+ * No tool reaches a service. Override the host with
+ * UCP_BASE_URL if you have a working endpoint.
+ *
  * MCP Server for Google UCP — Universal Commerce Protocol.
  *
  * UCP is Google's open standard for agentic commerce. It enables
@@ -67,9 +71,9 @@ import {
 const API_KEY = process.env.UCP_API_KEY || "";
 const MERCHANT_ID = process.env.UCP_MERCHANT_ID || "";
 const SANDBOX = process.env.UCP_SANDBOX === "true";
-const BASE_URL = SANDBOX
+const BASE_URL = process.env.UCP_BASE_URL || (SANDBOX
   ? "https://sandbox.commerce.googleapis.com/ucp/v1"
-  : "https://commerce.googleapis.com/ucp/v1";
+  : "https://commerce.googleapis.com/ucp/v1");
 
 async function ucpRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const res = await fetch(`${BASE_URL}${path}`, {

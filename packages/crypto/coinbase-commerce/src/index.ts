@@ -62,7 +62,7 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 const API_KEY = process.env.COINBASE_COMMERCE_API_KEY || "";
 const API_VERSION = process.env.COINBASE_COMMERCE_API_VERSION || "2018-03-22";
 const WEBHOOK_SECRET = process.env.COINBASE_COMMERCE_WEBHOOK_SECRET || "";
-const BASE_URL = "https://api.commerce.coinbase.com";
+const BASE_URL = process.env.COINBASE_COMMERCE_BASE_URL || "https://api.commerce.coinbase.com";
 
 async function coinbaseRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const res = await fetch(`${BASE_URL}${path}`, {

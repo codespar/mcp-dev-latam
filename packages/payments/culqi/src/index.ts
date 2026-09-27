@@ -51,7 +51,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 
 const SECRET_KEY = process.env.CULQI_SECRET_KEY || "";
-const BASE_URL = "https://api.culqi.com/v2";
+const BASE_URL = process.env.CULQI_BASE_URL || "https://api.culqi.com/v2";
 
 async function culqiRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const res = await fetch(`${BASE_URL}${path}`, {

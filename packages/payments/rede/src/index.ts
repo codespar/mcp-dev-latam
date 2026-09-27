@@ -56,9 +56,9 @@ import {
 const PV = process.env.REDE_PV || "";
 const TOKEN = process.env.REDE_TOKEN || "";
 const ENV = (process.env.REDE_ENV || "sandbox").toLowerCase();
-const BASE_URL = ENV === "production"
+const BASE_URL = process.env.REDE_BASE_URL || (ENV === "production"
   ? "https://api.userede.com.br/erede/v1"
-  : "https://sandbox-erede.useredecloud.com.br/v1";
+  : "https://sandbox-erede.useredecloud.com.br/v1");
 
 async function redeRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const basic = Buffer.from(`${PV}:${TOKEN}`).toString("base64");

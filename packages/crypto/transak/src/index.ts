@@ -79,7 +79,7 @@ const API_KEY = process.env.TRANSAK_API_KEY || "";
 const API_SECRET = process.env.TRANSAK_API_SECRET || "";
 const ACCESS_TOKEN = process.env.TRANSAK_ACCESS_TOKEN || "";
 const ENV = (process.env.TRANSAK_ENV || "staging").toLowerCase();
-const BASE_URL = ENV === "production" ? "https://api.transak.com" : "https://api-stg.transak.com";
+const BASE_URL = process.env.TRANSAK_BASE_URL || (ENV === "production" ? "https://api.transak.com" : "https://api-stg.transak.com");
 
 type TransakRequestOpts = { requiresAuth?: boolean };
 

@@ -44,7 +44,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 
 const API_TOKEN = process.env.IUGU_API_TOKEN || "";
-const BASE_URL = "https://api.iugu.com/v1";
+const BASE_URL = process.env.IUGU_BASE_URL || "https://api.iugu.com/v1";
 
 async function iuguRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const credentials = btoa(`${API_TOKEN}:`);

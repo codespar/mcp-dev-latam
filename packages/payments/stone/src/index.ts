@@ -40,6 +40,10 @@
  *   STONE_CLIENT_ID — OAuth2 client ID
  *   STONE_CLIENT_SECRET — OAuth2 client secret
  *   STONE_BASE_URL — override base URL (default https://api.openbank.stone.com.br/api/v1)
+ *   STONE_AUTH_URL — override the OAuth2 token URL (default
+ *     https://accounts.openbank.stone.com.br/auth/realms/stone_bank/protocol/openid-connect/token;
+ *     sandbox: https://sandbox-accounts.openbank.stone.com.br/..., with
+ *     STONE_BASE_URL=https://sandbox-api.openbank.stone.com.br/api/v1)
  */
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
@@ -54,6 +58,12 @@ import {
 const CLIENT_ID = process.env.STONE_CLIENT_ID || "";
 const CLIENT_SECRET = process.env.STONE_CLIENT_SECRET || "";
 const BASE_URL = process.env.STONE_BASE_URL || "https://api.openbank.stone.com.br/api/v1";
+// Token endpoint per Stone's docs and the realm's OIDC discovery document
+// (accounts.openbank.stone.com.br/auth/realms/stone_bank/.well-known/openid-configuration).
+// Up to 0.2.2 this was login.openbank.stone.com.br, which does not resolve.
+const AUTH_URL =
+  process.env.STONE_AUTH_URL ||
+  "https://accounts.openbank.stone.com.br/auth/realms/stone_bank/protocol/openid-connect/token";
 
 let accessToken = "";
 let tokenExpiry = 0;
@@ -61,7 +71,7 @@ let tokenExpiry = 0;
 async function getAccessToken(): Promise<string> {
   if (accessToken && Date.now() < tokenExpiry) return accessToken;
 
-  const res = await fetch("https://login.openbank.stone.com.br/auth/realms/stone_bank/protocol/openid-connect/token", {
+  const res = await fetch(AUTH_URL, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({

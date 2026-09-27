@@ -45,7 +45,7 @@ import {
 
 const ACCESS_TOKEN = process.env.TIENDANUBE_ACCESS_TOKEN || "";
 const STORE_ID = process.env.TIENDANUBE_STORE_ID || "";
-const BASE_URL = `https://api.tiendanube.com/v1/${STORE_ID}`;
+const BASE_URL = `${process.env.TIENDANUBE_BASE_URL || "https://api.tiendanube.com/v1"}/${STORE_ID}`;
 
 async function tiendaNubeRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const headers: Record<string, string> = {

@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 
 /**
+ * DEPRECATED (2026-09-27): no live endpoint. api.x402.org does not resolve.
+ * No tool reaches a service. Override the host with
+ * X402_BASE_URL if you have a working endpoint.
+ *
  * MCP Server for x402 — HTTP-native micropayments protocol by Coinbase.
  *
  * x402 enables machine-to-machine payments at the HTTP layer.
@@ -37,7 +41,7 @@ import {
 const API_KEY = process.env.X402_API_KEY || "";
 const NETWORK = process.env.X402_NETWORK || "base";
 const WALLET_ADDRESS = process.env.X402_WALLET_ADDRESS || "";
-const BASE_URL = "https://api.x402.org/v1";
+const BASE_URL = process.env.X402_BASE_URL || "https://api.x402.org/v1";
 
 async function x402Request(method: string, path: string, body?: unknown): Promise<unknown> {
   const res = await fetch(`${BASE_URL}${path}`, {

@@ -7,12 +7,12 @@
     "source": "github",
     "subfolder": "packages/payments/celcoin"
   },
-  "version": "0.2.3",
+  "version": "0.2.4",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "@codespar/mcp-celcoin",
-      "version": "0.2.3",
+      "version": "0.2.4",
       "transport": {
         "type": "stdio"
       },

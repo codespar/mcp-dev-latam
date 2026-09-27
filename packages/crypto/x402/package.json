@@ -1,7 +1,7 @@
 {
   "name": "@codespar/mcp-x402",
-  "version": "0.1.4",
-  "description": "MCP server for x402 — HTTP-native micropayments protocol by Coinbase (USDC on Base/Solana)",
+  "version": "0.1.5",
+  "description": "DEPRECATED: no live endpoint (api.x402.org does not resolve). MCP server for x402 — HTTP-native micropayments protocol by Coinbase (USDC on Base/Solana)",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {

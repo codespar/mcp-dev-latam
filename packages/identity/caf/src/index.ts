@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 
 /**
+ * DEPRECATED (2026-09-27): no live endpoint. api.caf.io does not resolve.
+ * No tool reaches a service. Override the host with
+ * CAF_BASE_URL if you have a working endpoint.
+ *
  * MCP Server for Caf — Brazilian identity + Trust Platform.
  *
  * KYC/KYB, face authentication + liveness, document validation + OCR,
@@ -22,7 +26,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 
 const API_KEY = process.env.CAF_API_KEY;
-const BASE_URL = process.env.CAF_API_BASE ?? "https://api.caf.io";
+const BASE_URL = process.env.CAF_BASE_URL || process.env.CAF_API_BASE || "https://api.caf.io";
 
 if (!API_KEY) {
   console.error("[mcp-caf] missing CAF_API_KEY — refusing to start.");

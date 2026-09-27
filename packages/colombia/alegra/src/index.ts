@@ -41,7 +41,7 @@ import {
 
 const EMAIL = process.env.ALEGRA_EMAIL || "";
 const API_TOKEN = process.env.ALEGRA_API_TOKEN || "";
-const BASE_URL = "https://api.alegra.com/api/v1";
+const BASE_URL = process.env.ALEGRA_BASE_URL || "https://api.alegra.com/api/v1";
 
 async function alegraRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const headers: Record<string, string> = {

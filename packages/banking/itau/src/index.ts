@@ -79,9 +79,9 @@ const ITAU_ENV = (process.env.ITAU_ENV || "sandbox").toLowerCase();
 
 // TODO(verify): sandbox base URL. Itaú publishes a separate sandbox subdomain
 // to onboarded merchants; the exact host is contract-gated.
-const BASE_URL = ITAU_ENV === "production"
+const BASE_URL = process.env.ITAU_BASE_URL || (ITAU_ENV === "production"
   ? "https://api.itau.com.br"
-  : "https://sandbox.api.itau.com.br";
+  : "https://sandbox.api.itau.com.br");
 
 // Lazy-load the mTLS agent so `--help` / schema introspection doesn't crash
 // when certs are missing. Banking ops that actually hit the wire will fail

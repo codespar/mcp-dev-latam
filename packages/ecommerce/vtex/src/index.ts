@@ -36,9 +36,9 @@ const ACCOUNT_NAME = process.env.VTEX_ACCOUNT_NAME || "";
 const APP_KEY = process.env.VTEX_APP_KEY || "";
 const APP_TOKEN = process.env.VTEX_APP_TOKEN || "";
 const ENVIRONMENT = process.env.VTEX_ENVIRONMENT || "vtexcommercestable";
-const BASE_URL = `https://${ACCOUNT_NAME}.${ENVIRONMENT}.com.br/api`;
+const BASE_URL = process.env.VTEX_BASE_URL || `https://${ACCOUNT_NAME}.${ENVIRONMENT}.com.br/api`;
 // Pricing API lives on the cross-account host api.vtex.com/{account}
-const PRICING_BASE_URL = `https://api.vtex.com/${ACCOUNT_NAME}`;
+const PRICING_BASE_URL = `${process.env.VTEX_PRICING_URL || "https://api.vtex.com"}/${ACCOUNT_NAME}`;
 
 async function vtexRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   return vtexRequestAbs(method, `${BASE_URL}${path}`, body);

@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 /**
+ * DEPRECATED (2026-09-27): no live endpoint. api.dock.tech does not resolve.
+ * No tool reaches a service. Override the host with
+ * DOCK_BASE_URL if you have a working endpoint.
+ *
  * MCP Server for Dock — Brazilian Banking-as-a-Service (BaaS).
  *
  * Dock is Matera's main competitor in BR BaaS. Together they power most
@@ -68,9 +72,10 @@ const CLIENT_ID = process.env.DOCK_CLIENT_ID || "";
 const CLIENT_SECRET = process.env.DOCK_CLIENT_SECRET || "";
 const DOCK_ENV = (process.env.DOCK_ENV || "sandbox").toLowerCase();
 const BASE_URL =
-  DOCK_ENV === "production"
+  process.env.DOCK_BASE_URL ||
+  (DOCK_ENV === "production"
     ? "https://api.dock.tech"
-    : "https://sandbox.api.dock.tech";
+    : "https://sandbox.api.dock.tech");
 
 let tokenCache: { accessToken: string; expiresAt: number } | null = null;
 

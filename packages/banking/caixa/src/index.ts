@@ -84,9 +84,9 @@ const CAIXA_ENV = (process.env.CAIXA_ENV || "sandbox").toLowerCase();
 // the homologação host is commonly prefixed with `hom-` or provisioned per
 // merchant under the same apex. Exact host + basePath are contract-gated —
 // override via forked build if your portal provisioning differs.
-const BASE_URL = CAIXA_ENV === "production"
+const BASE_URL = process.env.CAIXA_BASE_URL || (CAIXA_ENV === "production"
   ? "https://api.caixa.gov.br"
-  : "https://apihom.caixa.gov.br";
+  : "https://apihom.caixa.gov.br");
 
 // Lazy-load the mTLS agent so `--help` / schema introspection doesn't crash
 // when certs are missing. Banking ops that actually hit the wire will fail

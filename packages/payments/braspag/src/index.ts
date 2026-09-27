@@ -68,12 +68,12 @@ const MERCHANT_ID = process.env.BRASPAG_MERCHANT_ID || "";
 const MERCHANT_KEY = process.env.BRASPAG_MERCHANT_KEY || "";
 const ENV = (process.env.BRASPAG_ENV || "sandbox").toLowerCase();
 
-const TRANSACTION_URL = ENV === "production"
+const TRANSACTION_URL = process.env.BRASPAG_BASE_URL || (ENV === "production"
   ? "https://api.braspag.com.br/v2"
-  : "https://apisandbox.braspag.com.br/v2";
-const QUERY_URL = ENV === "production"
+  : "https://apisandbox.braspag.com.br/v2");
+const QUERY_URL = process.env.BRASPAG_QUERY_URL || (ENV === "production"
   ? "https://apiquery.braspag.com.br/v2"
-  : "https://apiquerysandbox.braspag.com.br/v2";
+  : "https://apiquerysandbox.braspag.com.br/v2");
 
 async function braspagRequest(
   method: string,

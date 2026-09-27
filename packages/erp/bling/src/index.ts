@@ -44,7 +44,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 
 const ACCESS_TOKEN = process.env.BLING_ACCESS_TOKEN || "";
-const BASE_URL = "https://www.bling.com.br/Api/v3";
+const BASE_URL = process.env.BLING_BASE_URL || "https://www.bling.com.br/Api/v3";
 
 // Bling order `situacao.valor` code for a canceled order.
 const CANCELED_STATUS = 2;

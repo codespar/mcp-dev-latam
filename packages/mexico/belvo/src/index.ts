@@ -47,7 +47,7 @@ import {
 const SECRET_ID = process.env.BELVO_SECRET_ID || "";
 const SECRET_PASSWORD = process.env.BELVO_SECRET_PASSWORD || "";
 const IS_SANDBOX = process.env.BELVO_SANDBOX === "true";
-const BASE_URL = IS_SANDBOX ? "https://sandbox.belvo.com" : "https://api.belvo.com";
+const BASE_URL = process.env.BELVO_BASE_URL || (IS_SANDBOX ? "https://sandbox.belvo.com" : "https://api.belvo.com");
 
 async function belvoRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const headers: Record<string, string> = { "Content-Type": "application/json" };

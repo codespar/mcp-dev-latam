@@ -63,9 +63,10 @@ const QB_ENV = (process.env.QB_ENV || "sandbox").toLowerCase();
 const MINOR_VERSION = process.env.QB_MINOR_VERSION || "70";
 
 const BASE_URL =
-  QB_ENV === "production"
+  process.env.QB_BASE_URL ||
+  (QB_ENV === "production"
     ? "https://quickbooks.api.intuit.com"
-    : "https://sandbox-quickbooks.api.intuit.com";
+    : "https://sandbox-quickbooks.api.intuit.com");
 
 async function qbRequest(
   method: string,

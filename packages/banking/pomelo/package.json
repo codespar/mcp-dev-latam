@@ -1,6 +1,6 @@
 {
   "name": "@codespar/mcp-pomelo",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "MCP server for Pomelo — pan-LATAM card issuing as a service: users, virtual/physical cards, lifecycle, transactions",
   "type": "module",
   "main": "./dist/index.js",

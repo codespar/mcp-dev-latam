@@ -30,7 +30,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 
 const API_KEY = process.env.PAGARME_API_KEY || "";
-const BASE_URL = "https://api.pagar.me/core/v5";
+const BASE_URL = process.env.PAGARME_BASE_URL || "https://api.pagar.me/core/v5";
 
 async function pagarmeRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const res = await fetch(`${BASE_URL}${path}`, {

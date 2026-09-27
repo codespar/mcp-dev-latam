@@ -37,7 +37,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 
 const TOKEN = process.env.RD_STATION_TOKEN || "";
-const BASE_URL = "https://api.rd.services";
+const BASE_URL = process.env.RD_STATION_BASE_URL || "https://api.rd.services";
 
 async function rdStationRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const res = await fetch(`${BASE_URL}${path}`, {

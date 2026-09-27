@@ -43,6 +43,8 @@ Follow the pattern of existing servers (e.g., `packages/payments/asaas/src/index
 - Use `@modelcontextprotocol/sdk` for the MCP server
 - Implement 8-10 tools covering the main API operations
 - Use environment variables for API keys (never hardcode)
+- Let an environment variable override every provider host: `<PREFIX>_BASE_URL` for the main API and `<PREFIX>_<ROLE>_URL` for any other host (token endpoint, query API), with `<PREFIX>` matching the server's credential variables. The documented default stays as the fallback: `const BASE_URL = process.env.ACME_BASE_URL || "https://api.acme.com/v1";`
+- Use a default host that exists. `python3 scripts/check-catalog-hosts.py` resolves every default URL in the catalog and completes a TLS handshake with it; CI runs it on every PR that touches a server and weekly on `main`
 - Support sandbox mode via env var
 - Handle errors gracefully
 - Return JSON responses

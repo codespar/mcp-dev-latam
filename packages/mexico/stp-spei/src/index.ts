@@ -39,7 +39,7 @@ import {
 
 const API_KEY = process.env.STP_API_KEY || "";
 const COMPANY = process.env.STP_COMPANY || "";
-const BASE_URL = "https://demo.stpmex.com:7024/speiws/rest";
+const BASE_URL = process.env.STP_BASE_URL || "https://demo.stpmex.com:7024/speiws/rest";
 
 async function stpRequest(method: string, path: string, body?: unknown): Promise<unknown> {
   const headers: Record<string, string> = { "Content-Type": "application/json" };

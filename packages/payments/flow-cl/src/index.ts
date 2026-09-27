@@ -50,9 +50,9 @@ const API_KEY = process.env.FLOW_API_KEY || "";
 const SECRET_KEY = process.env.FLOW_SECRET_KEY || "";
 const ENV = (process.env.FLOW_ENV || "sandbox").toLowerCase();
 
-const BASE_URL = ENV === "production"
+const BASE_URL = process.env.FLOW_BASE_URL || (ENV === "production"
   ? "https://www.flow.cl/api"
-  : "https://sandbox.flow.cl/api";
+  : "https://sandbox.flow.cl/api");
 
 /** Flow signature: sort params alphabetically by name, concatenate as
  *  name+value (no separators), HMAC-SHA256 hex with the secretKey. */
