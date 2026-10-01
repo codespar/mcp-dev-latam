@@ -1,0 +1,46 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.codespar/mcp-coinbase",
+  "description": "MCP server for Coinbase Advanced Trade — exchange / treasury API. Account balances, market data, orders, fills, transaction summary.",
+  "repository": {
+    "url": "https://github.com/codespar/mcp-dev-latam",
+    "source": "github",
+    "subfolder": "packages/crypto/coinbase"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@codespar/mcp-coinbase",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "COINBASE_ACCESS_KEY",
+          "description": "Legacy HMAC API key from the Coinbase dashboard (coinbase.com/settings/api)",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": true
+        },
+        {
+          "name": "COINBASE_API_SECRET",
+          "description": "API secret paired with the access key — used for HMAC-SHA256 request signing",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": true
+        }
+      ]
+    }
+  ],
+  "provider": {
+    "homepage": "https://www.coinbase.com",
+    "logoUrl": "https://logo.clearbit.com/coinbase.com",
+    "logoFallback": "https://www.google.com/s2/favicons?domain=coinbase.com&sz=128",
+    "docsUrl": "https://docs.cdp.coinbase.com/advanced-trade/docs/welcome",
+    "sandbox": {
+      "available": false
+    }
+  }
+}

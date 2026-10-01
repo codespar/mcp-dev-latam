@@ -1,0 +1,31 @@
+{
+  "name": "@codespar/mcp-coinbase",
+  "version": "0.1.0",
+  "description": "MCP server for Coinbase Advanced Trade — exchange / treasury API. Account balances, market data, orders, fills, transaction summary.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "mcp-coinbase": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.8.0"
+  },
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "coinbase",
+    "crypto",
+    "exchange",
+    "trading",
+    "treasury"
+  ],
+  "mcpName": "io.github.codespar/mcp-coinbase"
+}
